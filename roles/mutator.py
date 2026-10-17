@@ -39,7 +39,7 @@ def format_mutator_prompt(seed_item: Dict[str, Any]) -> str:
         f"Sanity Inputs (MUST produce identical output on these): {sanity_inputs}\n\n"
         f"Reference Function:\n```python\n{func_src}\n```\n\n"
         f"Output the mutated function inside <code>...</code>.\n\n"
-        f"Assistant: <think>"
+        f"Assistant: <code>\n"
     )
     return prompt
 

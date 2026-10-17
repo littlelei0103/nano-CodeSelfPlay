@@ -29,7 +29,7 @@ class TestRoles(unittest.TestCase):
         self.assertIn("Sanity Inputs", prompt)
         self.assertIn("[5, 10, 45]", prompt)
         self.assertIn("def f_ref", prompt)
-        self.assertIn("Assistant: <think>", prompt)
+        self.assertIn("Assistant: <code>", prompt)
 
     def test_mutator_curriculum_reward(self):
         # 1. 不合法突变 -> 0.0

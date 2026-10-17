@@ -299,15 +299,10 @@ class SPINGRPOTrainer:
         # 1. 基座参考 logprobs (PEFT disable_adapter)
         ref_logprobs = get_reference_logprobs(self.model, generated_ids, prompt_len, temperature=temperature)
 
-        # 2. 策略旧 logprobs (采样分布基准)
-        with torch.no_grad():
-            old_logits = self.model(input_ids=generated_ids).logits
-            old_logprobs = compute_completion_logprobs(old_logits, generated_ids, prompt_len, temperature=temperature)
-            del old_logits
-
-        # 3. 策略当前 logprobs (带梯度)
+        # 2. 策略当前 logprobs (带梯度) 与采样分布基准 (detach)
         cur_logits = self.model(input_ids=generated_ids).logits
         cur_logprobs = compute_completion_logprobs(cur_logits, generated_ids, prompt_len, temperature=temperature)
+        old_logprobs = cur_logprobs.detach()
 
         # 4. 计算损失
         per_token_loss, metrics = compute_grpo_loss(

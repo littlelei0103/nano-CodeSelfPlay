@@ -41,7 +41,7 @@ def format_breaker_prompt(
         f"Reference Function:\n```python\n{f_ref_src.strip()}\n```\n\n"
         f"Mutated Function:\n```python\n{f_mut_src.strip()}\n```\n\n"
         f"Output format: <input>INTEGER</input>\n\n"
-        f"Assistant: <think>"
+        f"Assistant: <input>"
     )
     return prompt
 
