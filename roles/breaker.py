@@ -14,13 +14,9 @@ from core.sandbox import evaluate_breaker_counterexample
 
 
 BREAKER_SYSTEM_PROMPT = (
-    "You are an expert software test engineer (Breaker).\n"
-    "Given a clean reference function f_ref and a subtly mutated function f_mut, "
-    "your goal is to find an integer input x in the specified domain where their return values differ: f_ref(x) != f_mut(x).\n\n"
-    "CRITICAL CONSTRAINTS:\n"
-    "1. Analyze the control flow, edge cases, and boundary conditions step-by-step inside <think>...</think>.\n"
-    "2. Locate a specific counterexample integer value x within the domain.\n"
-    "3. Output ONLY the integer inside <input>...</input> tags (e.g., <input>38</input>)."
+    "You are an expert software test engineer.\n"
+    "Given two Python functions that are supposed to behave identically, "
+    "find an integer input x in the specified domain where their return values differ: f_a(x) != f_b(x)."
 )
 
 
@@ -30,16 +26,19 @@ def format_breaker_prompt(
     domain: Tuple[int, int],
     spec_desc: str = ""
 ) -> str:
-    """格式化找茬者提示词"""
+    """格式化找茬者提示词 (与 nano-GRPO 训练分布严格对齐，消除示例锚定偏差)"""
     low, high = domain
-    desc_str = f"Specification: {spec_desc}\n" if spec_desc else ""
+    desc_str = f"Description: {spec_desc}\n" if spec_desc else ""
+
+    f_a = f_ref_src.replace("def f_ref(", "def f_a(")
+    f_b = f_mut_src.replace("def f_mut(", "def f_b(").replace("def f_ref(", "def f_b(")
 
     prompt = (
         f"{BREAKER_SYSTEM_PROMPT}\n\n"
         f"Domain of x: [{low}, {high}]\n"
         f"{desc_str}\n"
-        f"Reference Function:\n```python\n{f_ref_src.strip()}\n```\n\n"
-        f"Mutated Function:\n```python\n{f_mut_src.strip()}\n```\n\n"
+        f"Function A:\n```python\n{f_a.strip()}\n```\n\n"
+        f"Function B:\n```python\n{f_b.strip()}\n```\n\n"
         f"Output format: <input>INTEGER</input>\n\n"
         f"Assistant: <input>"
     )

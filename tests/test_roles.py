@@ -61,8 +61,8 @@ class TestRoles(unittest.TestCase):
         f_ref = "def f_ref(x: int) -> bool:\n    return x < 30\n"
         f_mut = "def f_mut(x: int) -> bool:\n    return x <= 30\n"
         prompt = format_breaker_prompt(f_ref, f_mut, (0, 50), "Test spec")
-        self.assertIn("f_ref", prompt)
-        self.assertIn("f_mut", prompt)
+        self.assertIn("f_a", prompt)
+        self.assertIn("f_b", prompt)
         self.assertIn("Domain of x: [0, 50]", prompt)
         self.assertIn("<input>INTEGER</input>", prompt)
 
