@@ -37,24 +37,47 @@ class ExecutionTimeoutError(Exception):
 def extract_python_function(code_text: str, target_name: Optional[str] = None) -> Tuple[Optional[str], Optional[str], Optional[str]]:
     """
     从代码文本中提取规范的 Python 函数定义。
-    支持从 <code>...</code> 或 ```python ... ``` 标签中抽取。
+    支持从 <code>...</code> 或 ```python ... ``` 标签中抽取，并过滤多余的尾部标记。
     
     Returns:
         (func_src, func_name, error_msg)
     """
     cleaned = code_text.strip()
 
-    # 1. 尝试从 <code>...</code> 标签抽取
+    # 1. 优先尝试从 <code>...</code> 闭合标签抽取
     code_tag_match = re.search(r"<code>(.*?)</code>", cleaned, re.DOTALL | re.IGNORECASE)
     if code_tag_match:
         cleaned = code_tag_match.group(1).strip()
     else:
-        # 2. 尝试从 Markdown 代码块抽取
+        # 尝试从 Markdown 代码块抽取
         md_match = re.search(r"```(?:python)?\s*(.*?)```", cleaned, re.DOTALL | re.IGNORECASE)
         if md_match:
             cleaned = md_match.group(1).strip()
 
-    # 3. 语法 AST 检查
+    # 2. 清洗可能未闭合或孤立的 html/markdown 标签
+    cleaned = re.sub(r"</?code>", "", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"```(?:python)?", "", cleaned, flags=re.IGNORECASE)
+
+    # 3. 按行扫描提取 def 函数块 (防止模型末尾输出测试用例或自然语言导致语法解析失败)
+    lines = cleaned.splitlines()
+    fn_lines = []
+    in_fn = False
+    for line in lines:
+        if not in_fn:
+            if line.strip().startswith("def "):
+                in_fn = True
+                fn_lines.append(line)
+        else:
+            if line.startswith(" ") or line.startswith("\t") or not line.strip():
+                fn_lines.append(line)
+            else:
+                # 遇到顶格非空行，判定函数主体已结束
+                break
+
+    if fn_lines:
+        cleaned = "\n".join(fn_lines).strip()
+
+    # 4. 语法 AST 检查
     try:
         tree = ast.parse(cleaned)
     except Exception as e:

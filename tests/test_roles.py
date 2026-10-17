@@ -26,10 +26,10 @@ class TestRoles(unittest.TestCase):
             "func_src": "def f_ref(x: int) -> bool:\n    return x < 30\n",
         }
         prompt = format_mutator_prompt(seed)
-        self.assertIn("Sanity Inputs", prompt)
+        self.assertIn("Sanity inputs", prompt)
         self.assertIn("[5, 10, 45]", prompt)
         self.assertIn("def f_ref", prompt)
-        self.assertIn("Assistant: <code>", prompt)
+        self.assertIn("<code>", prompt)
 
     def test_mutator_curriculum_reward(self):
         # 1. 不合法突变 -> 0.0

@@ -46,13 +46,26 @@ def generate_with_policy(
     generation_config: GenerationConfig,
     **inputs: Any
 ) -> torch.Tensor:
-    """使用指定策略生成输出序列"""
+    """使用指定策略生成输出序列 (自动保障生成阶段处于 eval 与 use_cache=True 状态)"""
+    was_training = model.training
+    model.eval()
+
+    base_model = getattr(model, "base_model", model)
+    underlying = getattr(base_model, "model", base_model)
+    orig_use_cache = getattr(underlying.config, "use_cache", None)
+    underlying.config.use_cache = True
+
     original = getattr(model, "generation_config", None)
     model.generation_config = generation_config
     try:
-        return model.generate(**inputs, generation_config=generation_config)
+        with torch.no_grad():
+            return model.generate(**inputs, generation_config=generation_config)
     finally:
         model.generation_config = original
+        if orig_use_cache is not None:
+            underlying.config.use_cache = orig_use_cache
+        if was_training:
+            model.train()
 
 
 def compute_completion_mask(

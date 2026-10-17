@@ -13,33 +13,103 @@ from typing import Any, Dict, List, Optional, Tuple
 from core.sandbox import extract_python_function, validate_mutation
 
 
-MUTATOR_SYSTEM_PROMPT = (
-    "You are an expert software QA and bug-injection engineer (Mutator).\n"
-    "Your objective is to subtly mutate a clean Python reference function by introducing a hard-to-detect logic flaw.\n\n"
-    "CRITICAL CONSTRAINTS:\n"
-    "1. Keep the exact same function name and parameter signature.\n"
-    "2. Subtlety / Sanity Invariant: Your mutated function MUST produce the EXACT same output as f_ref on the provided sanity inputs.\n"
-    "3. Non-equivalence: It MUST NOT be identical across the whole domain; it must diverge on subtle boundary values (e.g., off-by-one, equality flip, clamping threshold, modulo shift).\n"
-    "4. Format: First analyze the logic and plan the subtle defect inside <think>...</think>, then output the complete modified Python function inside <code>...</code>."
-)
+FAMILY_DEMOS = {
+    "comparison": (
+        "# Example:\n"
+        "# Reference:\n"
+        "def f_ref(x: int) -> bool:\n"
+        "    return x < 20\n"
+        "# Sanity inputs: [0, 5, 30]\n"
+        "# Mutated function:\n"
+        "<code>\n"
+        "def f_mut(x: int) -> bool:\n"
+        "    return x <= 20\n"
+        "</code>\n"
+    ),
+    "interval": (
+        "# Example:\n"
+        "# Reference:\n"
+        "def f_ref(x: int) -> bool:\n"
+        "    return 10 <= x <= 30\n"
+        "# Sanity inputs: [0, 20, 50]\n"
+        "# Mutated function:\n"
+        "<code>\n"
+        "def f_mut(x: int) -> bool:\n"
+        "    return 10 < x <= 30\n"
+        "</code>\n"
+    ),
+    "clamping": (
+        "# Example:\n"
+        "# Reference:\n"
+        "def f_ref(x: int) -> int:\n"
+        "    return min(40, max(10, x))\n"
+        "# Sanity inputs: [5, 25, 45]\n"
+        "# Mutated function:\n"
+        "<code>\n"
+        "def f_mut(x: int) -> int:\n"
+        "    return min(40, max(11, x))\n"
+        "</code>\n"
+    ),
+    "arithmetic": (
+        "# Example:\n"
+        "# Reference:\n"
+        "def f_ref(x: int) -> int:\n"
+        "    return (x * 2) + 5\n"
+        "# Sanity inputs: [0, 10, 20]\n"
+        "# Mutated function:\n"
+        "<code>\n"
+        "def f_mut(x: int) -> int:\n"
+        "    return (x * 2) + 5 if x != 15 else 36\n"
+        "</code>\n"
+    ),
+    "piecewise": (
+        "# Example:\n"
+        "# Reference:\n"
+        "def f_ref(x: int) -> int:\n"
+        "    if x < 15:\n"
+        "        return x\n"
+        "    return x * 2\n"
+        "# Sanity inputs: [0, 5, 30]\n"
+        "# Mutated function:\n"
+        "<code>\n"
+        "def f_mut(x: int) -> int:\n"
+        "    if x <= 15:\n"
+        "        return x\n"
+        "    return x * 2\n"
+        "</code>\n"
+    ),
+    "boolean": (
+        "# Example:\n"
+        "# Reference:\n"
+        "def f_ref(x: int) -> bool:\n"
+        "    return (x > 10) and (x % 2 == 0)\n"
+        "# Sanity inputs: [0, 14, 25]\n"
+        "# Mutated function:\n"
+        "<code>\n"
+        "def f_mut(x: int) -> bool:\n"
+        "    return (x >= 10) and (x % 2 == 0)\n"
+        "</code>\n"
+    )
+}
 
 
 def format_mutator_prompt(seed_item: Dict[str, Any]) -> str:
-    """格式化出题者提示词"""
-    domain = seed_item.get("domain", (0, 50))
-    low, high = domain
+    """格式化出题者提示词 (采用与算子家族匹配的 Few-shot In-context Completion 格式)"""
+    fam = seed_item.get("family", "comparison")
+    demo = FAMILY_DEMOS.get(fam, FAMILY_DEMOS["comparison"])
     sanity_inputs = seed_item.get("sanity_inputs", [])
     func_src = seed_item["func_src"].strip()
-    desc = seed_item.get("description", "Standard reference function")
 
     prompt = (
-        f"{MUTATOR_SYSTEM_PROMPT}\n\n"
-        f"Domain of x: [{low}, {high}]\n"
-        f"Description: {desc}\n"
-        f"Sanity Inputs (MUST produce identical output on these): {sanity_inputs}\n\n"
-        f"Reference Function:\n```python\n{func_src}\n```\n\n"
-        f"Output the mutated function inside <code>...</code>.\n\n"
-        f"Assistant: <code>\n"
+        f"# Python Code Mutation: Introduce a subtle logic bug (off-by-one, boundary flip, or threshold shift).\n"
+        f"# The mutated function f_mut must produce identical outputs on the sanity inputs, but diverge on subtle boundary inputs.\n\n"
+        f"{demo}\n"
+        f"# Reference:\n"
+        f"{func_src}\n"
+        f"# Sanity inputs: {sanity_inputs}\n"
+        f"# Mutated function:\n"
+        f"<code>\n"
+        f"def f_mut(x: int)"
     )
     return prompt
 
@@ -50,7 +120,7 @@ def extract_mutator_code(completion_text: str) -> Tuple[Optional[str], Optional[
     Returns:
         (func_src, func_name, error_msg)
     """
-    return extract_python_function(completion_text, target_name="f_ref")
+    return extract_python_function(completion_text)
 
 
 def compute_mutator_reward(

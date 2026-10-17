@@ -214,7 +214,8 @@ def main():
             for c_i in range(args.mut_rollouts):
                 mut_total_candidates += 1
                 completion = tokenizer.decode(out_mut[c_i][p_len:], skip_special_tokens=True).strip()
-                code_src, _, _ = extract_mutator_code("<code>" + completion)
+                raw_candidate = completion if "def " in completion else ("def f_mut(x: int)" + completion)
+                code_src, _, _ = extract_mutator_code(raw_candidate)
                 if not code_src:
                     candidate_rewards.append(0.0)
                     continue
