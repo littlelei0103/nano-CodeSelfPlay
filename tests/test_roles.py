@@ -29,26 +29,33 @@ class TestRoles(unittest.TestCase):
         self.assertIn("Sanity inputs", prompt)
         self.assertIn("[5, 10, 45]", prompt)
         self.assertIn("def f_ref", prompt)
-        self.assertIn("<code>", prompt)
+        self.assertIn("<answer>", prompt)
+        self.assertIn("OLD:", prompt)
 
-    def test_mutator_curriculum_reward(self):
-        # 1. 不合法突变 -> 0.0
-        r_fail, d_fail = compute_mutator_reward(is_valid_mutation=False, breaker_solve_rate=0.0, validation_reason="syntax_error")
-        self.assertEqual(r_fail, 0.0)
-        self.assertFalse(d_fail["valid"])
+    def test_mutator_dense_shaping_reward(self):
+        # 1. 完全失败 -> 0.0
+        r0, d0 = compute_mutator_reward()
+        self.assertEqual(r0, 0.0)
 
-        # 2. 合法且彻底难倒 Breaker (solve_rate=0.0) -> 满分 1.0
-        r_hard, d_hard = compute_mutator_reward(is_valid_mutation=True, breaker_solve_rate=0.0)
-        self.assertEqual(r_hard, 1.0)
-        self.assertTrue(d_hard["valid"])
+        # 2. 格式提取成功但语法错误 -> 0.1
+        r1, d1 = compute_mutator_reward(is_valid_format=True)
+        self.assertEqual(r1, 0.1)
 
-        # 3. 合法但被 Breaker 轻易识破 (solve_rate=1.0) -> 0.0
-        r_easy, d_easy = compute_mutator_reward(is_valid_mutation=True, breaker_solve_rate=1.0)
-        self.assertEqual(r_easy, 0.0)
+        # 3. 语法 AST 通过但 sanity 失败 -> 0.3
+        r2, d2 = compute_mutator_reward(is_valid_format=True, is_valid_syntax=True)
+        self.assertEqual(r2, 0.3)
 
-        # 4. 合法且部分被识破 (solve_rate=0.25) -> 0.75
-        r_mid, d_mid = compute_mutator_reward(is_valid_mutation=True, breaker_solve_rate=0.25)
-        self.assertAlmostEqual(r_mid, 0.75)
+        # 4. sanity 通过但全域等价 -> 0.6
+        r3, d3 = compute_mutator_reward(is_valid_format=True, is_valid_syntax=True, is_valid_sanity=True)
+        self.assertEqual(r3, 0.6)
+
+        # 5. 非等价且难倒 Breaker (solve_rate=0.0) -> 满分 1.0
+        r4, d4 = compute_mutator_reward(is_valid_format=True, is_valid_syntax=True, is_valid_sanity=True, is_non_equivalent=True, breaker_solve_rate=0.0)
+        self.assertEqual(r4, 1.0)
+
+        # 6. 非等价但 Breaker 破解率 0.5 -> 0.6 + 0.4*0.5 = 0.8
+        r5, d5 = compute_mutator_reward(is_valid_format=True, is_valid_syntax=True, is_valid_sanity=True, is_non_equivalent=True, breaker_solve_rate=0.5)
+        self.assertAlmostEqual(r5, 0.8)
 
     def test_breaker_prompt_formatting(self):
         f_ref = "def f_ref(x: int) -> bool:\n    return x < 30\n"

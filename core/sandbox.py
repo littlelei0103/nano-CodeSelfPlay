@@ -108,6 +108,51 @@ def extract_python_function(code_text: str, target_name: Optional[str] = None) -
     return extracted_src, func_name, None
 
 
+def apply_line_edit_or_extract(
+    f_ref_src: str,
+    raw_text: str
+) -> Tuple[Optional[str], Optional[str], Optional[str], bool]:
+    """
+    支持行级补丁 (Line-Edit Mode) 与完整函数 (Full-Function Mode) 双模式解析。
+    
+    Returns:
+        (func_src, func_name, error_msg, is_line_edit)
+    """
+    # 1. 尝试匹配 OLD: ... NEW: ... 行级补丁模式
+    old_match = re.search(r"OLD:\s*(.+?)(?:\n|$)", raw_text, re.IGNORECASE)
+    new_match = re.search(r"NEW:\s*(.+?)(?:\n|</answer>|$)", raw_text, re.IGNORECASE)
+
+    if old_match and new_match:
+        old_line = old_match.group(1).strip()
+        new_line = new_match.group(1).strip()
+
+        lines = f_ref_src.splitlines()
+        replaced = False
+        new_lines = []
+        for line in lines:
+            if not replaced and old_line in line:
+                indent = line[:len(line) - len(line.lstrip())]
+                new_lines.append(indent + new_line.lstrip())
+                replaced = True
+            else:
+                new_lines.append(line)
+
+        if replaced:
+            candidate_src = "\n".join(new_lines) + "\n"
+            try:
+                tree = ast.parse(candidate_src)
+                funcs = [n for n in tree.body if isinstance(n, ast.FunctionDef)]
+                if funcs:
+                    return candidate_src, funcs[0].name, None, True
+            except Exception as e:
+                # 语法错误继续回退
+                pass
+
+    # 2. 回退到直接提取完整 Python 函数
+    src, name, err = extract_python_function(raw_text)
+    return src, name, err, False
+
+
 def execute_function_safely(
     func_src: str,
     func_name: str,

@@ -144,15 +144,24 @@ def main():
     print(f"Self-Play Rounds: {args.rounds} | Output Dir: {run_dir}")
     print("=" * 72)
 
-    # 1. 加载模型与 LoRA
+    # 1. 加载模型与双 LoRA (breaker & mutator)
     tokenizer, model = setup_lora_and_model(
         model_name=args.model_name,
         device=args.device,
         init_adapter=args.init_adapter
     )
 
-    optimizer = torch.optim.AdamW(
-        [p for p in model.parameters() if p.requires_grad],
+    # 角色专属双优化器
+    model.set_adapter("mutator")
+    opt_mutator = torch.optim.AdamW(
+        [p for n, p in model.named_parameters() if "mutator" in n and p.requires_grad],
+        lr=args.lr,
+        weight_decay=0.01
+    )
+
+    model.set_adapter("breaker")
+    opt_breaker = torch.optim.AdamW(
+        [p for n, p in model.named_parameters() if "breaker" in n and p.requires_grad],
         lr=args.lr,
         weight_decay=0.01
     )
@@ -160,7 +169,8 @@ def main():
     trainer = SPINGRPOTrainer(
         model=model,
         tokenizer=tokenizer,
-        optimizer=optimizer,
+        optimizer_mutator=opt_mutator,
+        optimizer_breaker=opt_breaker,
         device=args.device,
         kl_coef=args.kl_coef
     )
@@ -172,16 +182,17 @@ def main():
     # 对抗题目缓冲池 (Adversarial Bug Pool)
     adversarial_bug_pool: List[Dict[str, Any]] = []
 
-    # 初始评估基座模型在 Held-out 测试集上的表现
-    print("\n[Baseline Eval] Evaluating initial model on held-out benchmark...")
+    # 初始评估基座模型在 Held-out 测试集上的表现 (激活 breaker 适配器)
+    print("\n[Baseline Eval] Evaluating initial breaker adapter on held-out benchmark...")
+    model.set_adapter("breaker")
     base_greedy, base_p4, base_hit = evaluate_on_heldout(model, tokenizer, heldout_problems, args.device)
     print(f"⭐ [Round 00 / Baseline] Held-out Greedy Pass@1: {base_greedy:.2%} | Sample Pass@4: {base_p4:.2%} | Hit Density: {base_hit:.2%}\n")
 
     best_heldout_pass1 = base_greedy
     metrics_log_path = os.path.join(run_dir, "metrics_spin.jsonl")
 
-    # 预设配置
-    cfg_mut = rollout_generation_config(tokenizer, max_new_tokens=96, temperature=args.temperature, do_sample=True)
+    # 预设配置 (行级突变仅需 32 tokens, 高度紧凑高效)
+    cfg_mut = rollout_generation_config(tokenizer, max_new_tokens=32, temperature=args.temperature, do_sample=True)
     cfg_brk = rollout_generation_config(tokenizer, max_new_tokens=24, temperature=args.temperature, do_sample=True)
 
     for round_idx in range(1, args.rounds + 1):
@@ -194,6 +205,7 @@ def main():
         # Phase A: 出题阶段 (Mutator Rollout & Policy Update)
         # -------------------------------------------------------------
         print("\n--- [Phase A: Mutator Exploration & Injection] ---")
+        model.set_adapter("mutator")
         sampled_seeds = random.sample(all_seeds, min(args.seeds_per_round, len(all_seeds)))
         mut_valid_count = 0
         mut_total_candidates = 0
@@ -206,7 +218,7 @@ def main():
             p_len = inputs["input_ids"].shape[1]
             rep_inputs = {k: v.repeat(args.mut_rollouts, 1) for k, v in inputs.items()}
 
-            # 生成突变代码
+            # 生成突变代码 (行级补丁模式)
             with torch.no_grad():
                 out_mut = generate_with_policy(model, cfg_mut, **rep_inputs)
 
@@ -214,25 +226,37 @@ def main():
             for c_i in range(args.mut_rollouts):
                 mut_total_candidates += 1
                 completion = tokenizer.decode(out_mut[c_i][p_len:], skip_special_tokens=True).strip()
-                raw_candidate = completion if "def " in completion else ("def f_mut(x: int)" + completion)
-                code_src, _, _ = extract_mutator_code(raw_candidate)
-                if not code_src:
-                    candidate_rewards.append(0.0)
-                    continue
+                code_src, _, _ = extract_mutator_code(completion, f_ref_src=seed["func_src"])
 
-                # 沙箱三层校验
-                is_valid, reason, details = validate_mutation(
-                    f_ref_src=seed["func_src"],
-                    f_mut_src=code_src,
-                    sanity_inputs=seed["sanity_inputs"],
-                    domain=tuple(seed["domain"])
-                )
+                # 阶梯式判定 (Dense Shaping)
+                is_format = (code_src is not None) and (code_src.strip() != seed["func_src"].strip())
+                is_syntax = False
+                is_sanity = False
+                is_diff = False
+                solve_rate = 1.0
 
-                if not is_valid:
-                    candidate_rewards.append(0.0)
-                else:
+                if is_format:
+                    try:
+                        import ast
+                        ast.parse(code_src)
+                        is_syntax = True
+                    except Exception:
+                        is_syntax = False
+
+                if is_syntax:
+                    is_valid, reason, details = validate_mutation(
+                        f_ref_src=seed["func_src"],
+                        f_mut_src=code_src,
+                        sanity_inputs=seed["sanity_inputs"],
+                        domain=tuple(seed["domain"])
+                    )
+                    is_sanity = details.get("sanity_passed", False)
+                    is_diff = is_valid
+
+                if is_diff:
                     mut_valid_count += 1
-                    # 让当前 Breaker 尝试破解以确定突变难度
+                    # 探针 Breaker 防守能力
+                    model.set_adapter("breaker")
                     clean_ref = details.get("clean_f_ref_src", seed["func_src"])
                     clean_mut = details.get("clean_f_mut_src", code_src)
                     brk_prompt = format_breaker_prompt(clean_ref, clean_mut, tuple(seed["domain"]))
@@ -252,10 +276,9 @@ def main():
                             brk_hits += 1
 
                     solve_rate = brk_hits / 4.0
-                    r_mut, _ = compute_mutator_reward(is_valid=True, breaker_solve_rate=solve_rate)
-                    candidate_rewards.append(r_mut)
+                    model.set_adapter("mutator")
 
-                    # 若难倒了 Breaker (p_solve < 1.0)，存入对抗题库供 Breaker 针对性训练
+                    # 若难倒了 Breaker (p_solve < 1.0)，存入对抗题库
                     if solve_rate < 1.0:
                         adversarial_bug_pool.append({
                             "seed_id": seed["id"],
@@ -265,6 +288,16 @@ def main():
                             "sparsity": details.get("sparsity", 0.0),
                             "witnesses": details.get("witnesses", []),
                         })
+
+                # 计算阶梯塑形奖励
+                r_mut, _ = compute_mutator_reward(
+                    is_valid_format=is_format,
+                    is_valid_syntax=is_syntax,
+                    is_valid_sanity=is_sanity,
+                    is_non_equivalent=is_diff,
+                    breaker_solve_rate=solve_rate
+                )
+                candidate_rewards.append(r_mut)
 
             mut_rewards_list.extend(candidate_rewards)
             # 执行单题 GRPO 反向传播
@@ -278,7 +311,7 @@ def main():
             if is_eff:
                 mut_effective_groups += 1
 
-        grad_norm_mut = trainer.step_optimizer()
+        grad_norm_mut = trainer.step_optimizer(role="mutator")
         mut_validity_rate = mut_valid_count / max(1, mut_total_candidates)
         avg_mut_reward = sum(mut_rewards_list) / max(1, len(mut_rewards_list))
         print(f"  [Mutator Stats] Valid Rate: {mut_validity_rate:.1%} ({mut_valid_count}/{mut_total_candidates}) | Avg Reward: {avg_mut_reward:.3f} | Eff Groups: {mut_effective_groups}/{len(sampled_seeds)} | GradNorm: {grad_norm_mut:.3f}")
@@ -288,10 +321,10 @@ def main():
         # Phase B: 破题阶段 (Breaker Rollout & Policy Update)
         # -------------------------------------------------------------
         print("\n--- [Phase B: Breaker Defense & Counterexample Mining] ---")
+        model.set_adapter("breaker")
         if not adversarial_bug_pool:
-            # 缓冲池为空时，从 held-out 或种子构造基础对
-            print("  [Notice] Adversarial bug pool empty, synthesizing from default seed mutations...")
-            active_pairs = heldout_problems[:min(args.seeds_per_round, len(heldout_problems))]
+            print("  [Notice] Adversarial bug pool empty; skipping Breaker update for this round.")
+            active_pairs = []
         else:
             sample_k = min(args.seeds_per_round, len(adversarial_bug_pool))
             active_pairs = random.sample(adversarial_bug_pool, sample_k)
@@ -335,15 +368,16 @@ def main():
             if is_eff:
                 brk_effective_groups += 1
 
-        grad_norm_brk = trainer.step_optimizer()
-        brk_win_rate = brk_solved_count / max(1, brk_total_candidates)
-        avg_brk_reward = sum(brk_rewards_list) / max(1, len(brk_rewards_list))
+        grad_norm_brk = trainer.step_optimizer(role="breaker") if active_pairs else 0.0
+        brk_win_rate = brk_solved_count / max(1, brk_total_candidates) if brk_total_candidates > 0 else 0.0
+        avg_brk_reward = (sum(brk_rewards_list) / len(brk_rewards_list)) if brk_rewards_list else 0.0
         print(f"  [Breaker Stats] Solve Rate: {brk_win_rate:.1%} ({brk_solved_count}/{brk_total_candidates}) | Avg Reward: {avg_brk_reward:.3f} | Eff Groups: {brk_effective_groups}/{len(active_pairs)} | GradNorm: {grad_norm_brk:.3f}")
 
         # -------------------------------------------------------------
         # Phase C: 独立外部大考 (Held-out Benchmark Evaluation)
         # -------------------------------------------------------------
         print("\n--- [Phase C: Objective Held-out Benchmark Audit] ---")
+        model.set_adapter("breaker")
         ho_greedy, ho_p4, ho_hit = evaluate_on_heldout(model, tokenizer, heldout_problems, args.device)
         round_duration = time.time() - round_start_time
 

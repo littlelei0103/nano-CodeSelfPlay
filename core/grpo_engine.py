@@ -209,7 +209,9 @@ def setup_lora_and_model(
     resume_checkpoint: str = ""
 ) -> Tuple[AutoTokenizer, torch.nn.Module]:
     """
-    初始化基座模型并挂载轻量 LoRA 适配器 (适配 8GB 显存消费级硬件)。
+    初始化基座模型并挂载双 LoRA 角色隔离适配器 (breaker & mutator)。
+    - breaker: 可加载 nano-GRPO 最佳权重热启动 (或全新初始化)
+    - mutator: 从干净的 Base 模型全新初始化 (保留完整代码先验，避免短数字参数污染)
     """
     print(f"[Model Setup] Loading tokenizer & model: {model_name} on {device}...", flush=True)
     tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
@@ -228,15 +230,24 @@ def setup_lora_and_model(
     base_model.config.use_cache = False
     base_model.gradient_checkpointing_enable()
 
+    # 1. 挂载 breaker 适配器 (找茬者)
+    loaded_mutator = False
     if resume_checkpoint and os.path.exists(resume_checkpoint):
-        print(f"[Model Setup] Resuming LoRA from checkpoint: {resume_checkpoint}", flush=True)
-        model = PeftModel.from_pretrained(base_model, resume_checkpoint, is_trainable=True)
+        breaker_dir = os.path.join(resume_checkpoint, "breaker") if os.path.isdir(os.path.join(resume_checkpoint, "breaker")) else resume_checkpoint
+        print(f"[Model Setup] Resuming breaker LoRA from: {breaker_dir}", flush=True)
+        model = PeftModel.from_pretrained(base_model, breaker_dir, adapter_name="breaker", is_trainable=True)
+        mutator_dir = os.path.join(resume_checkpoint, "mutator")
+        if os.path.isdir(mutator_dir):
+            print(f"[Model Setup] Resuming mutator LoRA from: {mutator_dir}", flush=True)
+            model.load_adapter(mutator_dir, adapter_name="mutator", is_trainable=True)
+            loaded_mutator = True
     elif init_adapter and os.path.exists(init_adapter):
-        print(f"[Model Setup] Initializing with pre-trained adapter: {init_adapter}", flush=True)
-        model = PeftModel.from_pretrained(base_model, init_adapter, is_trainable=True)
+        breaker_dir = os.path.join(init_adapter, "breaker") if os.path.isdir(os.path.join(init_adapter, "breaker")) else init_adapter
+        print(f"[Model Setup] Initializing breaker adapter with pre-trained: {breaker_dir}", flush=True)
+        model = PeftModel.from_pretrained(base_model, breaker_dir, adapter_name="breaker", is_trainable=True)
     else:
-        print(f"[Model Setup] Initializing fresh LoRA adapter (r={lora_r}, alpha={lora_alpha})...", flush=True)
-        lora_config = LoraConfig(
+        print(f"[Model Setup] Initializing fresh breaker adapter (r={lora_r}, alpha={lora_alpha})...", flush=True)
+        breaker_cfg = LoraConfig(
             r=lora_r,
             lora_alpha=lora_alpha,
             target_modules="all-linear",
@@ -244,23 +255,40 @@ def setup_lora_and_model(
             bias="none",
             task_type="CAUSAL_LM"
         )
-        model = get_peft_model(base_model, lora_config)
+        model = get_peft_model(base_model, breaker_cfg, adapter_name="breaker")
 
+    # 2. 挂载 mutator 适配器 (若未从 checkpoint 加载，则从干净 Base 全新初始化)
+    if not loaded_mutator:
+        print(f"[Model Setup] Initializing fresh mutator adapter (r={lora_r}, alpha={lora_alpha})...", flush=True)
+        mutator_cfg = LoraConfig(
+            r=lora_r,
+            lora_alpha=lora_alpha,
+            target_modules="all-linear",
+            lora_dropout=0.0,
+            bias="none",
+            task_type="CAUSAL_LM"
+        )
+        model.add_adapter("mutator", mutator_cfg)
+
+    # 默认激活 mutator
+    model.set_adapter("mutator")
     model.train()
     return tokenizer, model
 
 
 class SPINGRPOTrainer:
     """
-    nano-SPIN 统一双角色自博弈训练器。
-    管理模型参数更新、优势估计与零方差保护。
+    nano-SPIN 双角色隔离自博弈训练器。
+    管理双适配器参数更新、优势估计与零方差保护。
     """
 
     def __init__(
         self,
         model: torch.nn.Module,
         tokenizer: Any,
-        optimizer: torch.optim.Optimizer,
+        optimizer_mutator: Optional[torch.optim.Optimizer] = None,
+        optimizer_breaker: Optional[torch.optim.Optimizer] = None,
+        optimizer: Optional[torch.optim.Optimizer] = None,
         device: str = "cuda",
         kl_coef: float = 0.04,
         clip_eps: float = 0.2,
@@ -268,7 +296,8 @@ class SPINGRPOTrainer:
     ):
         self.model = model
         self.tokenizer = tokenizer
-        self.optimizer = optimizer
+        self.opt_mutator = optimizer_mutator or optimizer
+        self.opt_breaker = optimizer_breaker or optimizer
         self.device = device
         self.kl_coef = kl_coef
         self.clip_eps = clip_eps
@@ -340,12 +369,14 @@ class SPINGRPOTrainer:
         metrics["r_std"] = r_std.item()
         return True, sample_loss.item(), metrics
 
-    def step_optimizer(self) -> float:
-        """执行优化器单步更新与梯度裁剪，返回梯度范数"""
-        grad_norm = torch.nn.utils.clip_grad_norm_(
-            [p for p in self.model.parameters() if p.requires_grad],
-            self.max_grad_norm
-        ).item()
-        self.optimizer.step()
-        self.optimizer.zero_grad()
+    def step_optimizer(self, role: str = "mutator") -> float:
+        """根据当前更新角色执行梯度裁剪与专属优化器更新"""
+        opt = self.opt_mutator if role == "mutator" else self.opt_breaker
+        grad_norm = 0.0
+        if opt is not None:
+            active_params = [p for p in self.model.parameters() if p.requires_grad]
+            if active_params:
+                grad_norm = torch.nn.utils.clip_grad_norm_(active_params, self.max_grad_norm).item()
+            opt.step()
+            opt.zero_grad()
         return grad_norm
