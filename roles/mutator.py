@@ -81,16 +81,22 @@ def compute_mutator_reward(
     is_non_equivalent: bool = False,
     breaker_solve_rate: float = 0.0,
     validation_reason: str = "",
+    is_warmup: bool = True,
     is_valid_mutation: Optional[bool] = None,
     is_valid: Optional[bool] = None
 ) -> Tuple[float, Dict[str, Any]]:
     """
-    阶梯密集塑形奖励 (Dense Shaping Reward):
-      - 格式与提取成功: +0.1 (输出合法修改且区别于原函数)
-      - 语法编译 AST 通过: +0.2 (修改后代码无 SyntaxError)
-      - 常规测试集存活 (Sanity Pass): +0.3 (X_sanity 行为严格一致)
-      - 成功注入非等价隐蔽 Bug + 对抗加成: +0.4 * (1.0 - breaker_solve_rate)
-    满分总计: 1.0 (当 Breaker 破解率为 0 且确认非等价时)
+    Mutator 奖励计算:
+      1. 预热期 (is_warmup=True): 阶梯密集塑形奖励 (Dense Shaping Reward)，消除冷启动死锁:
+         - 格式与提取成功: +0.1
+         - 语法编译 AST 通过: +0.2
+         - 常规测试集存活 (Sanity Pass): +0.3
+         - 非等价 + 对抗加成: +0.4 * (1.0 - breaker_solve_rate)
+      2. 协进化期 (is_warmup=False): 动态对抗重构奖励 (消减保底分，强化对抗性):
+         - 未通过语法/常规集/等价: 0.0 (若语法通过仅留极微量 0.05 格式分)
+         - 合法且非等价但被 Breaker 全破 (p_solve = 1.0): 基础分仅 0.15 (严厉杜绝造简单题混保底分)
+         - 对抗奖励加成提升至: +0.85 * (1.0 - breaker_solve_rate)
+         - 高价值边界难题优先加成 (breaker_solve_rate in [0.20, 0.80]): 额外 +0.05
     """
     if is_valid_mutation is not None or is_valid is not None:
         v = is_valid if is_valid is not None else is_valid_mutation
@@ -100,17 +106,32 @@ def compute_mutator_reward(
             is_valid_sanity = True
             is_non_equivalent = True
 
-    reward = 0.0
-    if is_valid_format:
-        reward += 0.1
-    if is_valid_syntax:
-        reward += 0.2
-    if is_valid_sanity:
-        reward += 0.3
-    if is_non_equivalent:
-        reward += 0.4 * max(0.0, min(1.0, 1.0 - breaker_solve_rate))
-
     is_valid_overall = bool(is_valid_format and is_valid_syntax and is_valid_sanity and is_non_equivalent)
+
+    if is_warmup:
+        reward = 0.0
+        if is_valid_format:
+            reward += 0.1
+        if is_valid_syntax:
+            reward += 0.2
+        if is_valid_sanity:
+            reward += 0.3
+        if is_non_equivalent:
+            reward += 0.4 * max(0.0, min(1.0, 1.0 - breaker_solve_rate))
+    else:
+        # 协进化期高对抗重构奖励
+        if not is_valid_overall:
+            reward = 0.05 if (is_valid_format and is_valid_syntax) else 0.0
+        else:
+            # 合法且非等价: 基础保底分仅 0.15 (若 p_solve=1.0 则仅得 0.15)
+            reward = 0.15
+            adv_bonus = 0.85 * max(0.0, min(1.0, 1.0 - breaker_solve_rate))
+            reward += adv_bonus
+            # 高价值边界难题加成 (难解度适中，如 solve_rate 25%~75%)
+            if 0.20 <= breaker_solve_rate <= 0.80:
+                reward += 0.05
+            reward = min(1.0, reward)
+
     reward = round(reward, 4)
     return reward, {
         "reward": reward,
@@ -120,5 +141,7 @@ def compute_mutator_reward(
         "sanity": is_valid_sanity,
         "non_equivalent": is_non_equivalent,
         "solve_rate": breaker_solve_rate,
+        "is_warmup": is_warmup,
         "reason": validation_reason,
     }
+

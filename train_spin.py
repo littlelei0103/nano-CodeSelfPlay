@@ -39,6 +39,7 @@ from core.sandbox import (
     extract_python_function,
     validate_mutation
 )
+from data.anchor_tasks import get_anchor_tasks
 from data.heldout_eval import get_heldout_benchmark
 from data.seed_functions import get_seed_functions
 from roles.breaker import (
@@ -81,7 +82,13 @@ def parse_args():
     parser.add_argument("--breaker_rollouts", type=int, default=4,
                         help="Breaker 每步采样的候选反例数 (G_brk)")
     parser.add_argument("--lr", type=float, default=2e-5,
-                        help="优化器学习率")
+                        help="通用优化器学习率")
+    parser.add_argument("--lr_mutator", type=float, default=2e-5,
+                        help="Mutator 出题模型学习率 (默认 2e-5)")
+    parser.add_argument("--lr_breaker", type=float, default=5e-6,
+                        help="Breaker 做题模型学习率 (默认 5e-6，保守更新防遗忘)")
+    parser.add_argument("--anchor_ratio", type=float, default=0.5,
+                        help="Breaker 训练阶段抽取原始静态锚定题目的比例 (默认 0.5)")
     parser.add_argument("--kl_coef", type=float, default=0.04,
                         help="基座参考策略 KL 散度惩罚系数")
     parser.add_argument("--temperature", type=float, default=0.7,
@@ -91,6 +98,7 @@ def parse_args():
     parser.add_argument("--device", type=str, default="cuda" if torch.cuda.is_available() else "cpu",
                         help="运行设备")
     return parser.parse_args()
+
 
 
 def save_spin_checkpoint(model: torch.nn.Module, tokenizer: Any, save_dir: str):
@@ -203,18 +211,21 @@ def main():
         init_adapter=args.init_adapter
     )
 
-    # 2. 实例化双角色专属独立优化器
+    # 2. 实例化双角色专属独立优化器 (Breaker 采用保守低学习率防遗忘)
+    lr_mut = args.lr_mutator if args.lr_mutator is not None else args.lr
+    lr_brk = args.lr_breaker if args.lr_breaker is not None else args.lr
+
     model.set_adapter("mutator")
     opt_mutator = torch.optim.AdamW(
         [p for n, p in model.named_parameters() if "mutator" in n and p.requires_grad],
-        lr=args.lr,
+        lr=lr_mut,
         weight_decay=0.01
     )
 
     model.set_adapter("breaker")
     opt_breaker = torch.optim.AdamW(
         [p for n, p in model.named_parameters() if "breaker" in n and p.requires_grad],
-        lr=args.lr,
+        lr=lr_brk,
         weight_decay=0.01
     )
 
@@ -228,8 +239,11 @@ def main():
     )
 
     all_seeds = get_seed_functions()
+    anchor_tasks = get_anchor_tasks()
     heldout_problems = get_heldout_benchmark()
-    print(f"[Data Setup] Loaded {len(all_seeds)} seed functions and {len(heldout_problems)} heldout evaluation problems.")
+    print(f"[Data Setup] Loaded {len(all_seeds)} seeds, {len(anchor_tasks)} anchor replay tasks, and {len(heldout_problems)} heldout problems.")
+    print(f"[Hyperparams] LR Mutator: {lr_mut} | LR Breaker: {lr_brk} (Conservative) | Anchor Replay Ratio: {args.anchor_ratio:.0%}")
+
 
     # 3. 实例化动态对抗难题缓冲池 (HardBuffer)
     hard_buffer = HardBuffer(capacity=500)
@@ -365,13 +379,14 @@ def main():
                         step=step
                     )
 
-            # 阶梯塑形奖励
+            # 阶梯塑形奖励 (Warm-up 期间密集阶梯，Co-evolution 期间高对抗消减保底)
             r_mut, _ = compute_mutator_reward(
                 is_valid_format=is_format,
                 is_valid_syntax=is_syntax,
                 is_valid_sanity=is_sanity,
                 is_non_equivalent=is_diff,
-                breaker_solve_rate=solve_rate
+                breaker_solve_rate=solve_rate,
+                is_warmup=is_warmup
             )
             candidate_rewards.append(r_mut)
 
@@ -388,7 +403,7 @@ def main():
         avg_mut_reward = sum(candidate_rewards) / max(1, len(candidate_rewards))
 
         # ---------------------------------------------------------
-        # Phase 2: 训练做题模型 (Breaker Policy Update)
+        # Phase 2: 训练做题模型 (Breaker Policy Update + 50% Anchor Replay)
         # ---------------------------------------------------------
         brk_win_rate = 0.0
         avg_brk_reward = 0.0
@@ -398,50 +413,56 @@ def main():
             # 预热期: Breaker 保持完全冻结，不计算梯度与更新
             brk_desc = "FROZEN (Warm-up)"
         else:
-            # 共演期: 从 HardBuffer 采样隐蔽题目进行针对性突破训练
+            # 共演期: 50% 概率从 HardBuffer 抽取高难对抗题 + 50% 概率从 Anchor Tasks 回放锚定题 (防分布偏移)
             model.set_adapter("breaker")
-            if len(hard_buffer) == 0:
-                brk_desc = "SKIPPED (Buffer empty)"
-            else:
+            use_anchor = (random.random() < args.anchor_ratio) or (len(hard_buffer) == 0)
+            if not use_anchor and len(hard_buffer) > 0:
                 sampled_pairs = hard_buffer.sample(k=1)
                 prob = sampled_pairs[0]
-                f_ref = prob["f_ref_src"]
-                f_mut = prob["f_mut_src"]
-                domain = tuple(prob["domain"])
+                source_tag = "HardBuffer"
+            else:
+                prob = random.choice(anchor_tasks)
+                source_tag = "Anchor"
 
-                brk_prompt = format_breaker_prompt(f_ref, f_mut, domain)
-                brk_inputs = tokenizer(brk_prompt, return_tensors="pt").to(args.device)
-                brk_p_len = brk_inputs["input_ids"].shape[1]
-                brk_rep = {k: v.repeat(args.breaker_rollouts, 1) for k, v in brk_inputs.items()}
+            f_ref = prob["f_ref_src"]
+            f_mut = prob["f_mut_src"]
+            domain = tuple(prob["domain"])
 
-                with torch.no_grad():
-                    out_brk = generate_with_policy(model, cfg_brk, **brk_rep)
+            brk_prompt = format_breaker_prompt(f_ref, f_mut, domain, prob.get("spec", ""))
+            brk_inputs = tokenizer(brk_prompt, return_tensors="pt").to(args.device)
+            brk_p_len = brk_inputs["input_ids"].shape[1]
+            brk_rep = {k: v.repeat(args.breaker_rollouts, 1) for k, v in brk_inputs.items()}
 
-                brk_candidate_rewards = []
-                solved_count = 0
-                for c_j in range(args.breaker_rollouts):
-                    comp = tokenizer.decode(out_brk[c_j][brk_p_len:], skip_special_tokens=True).strip()
-                    val, _, _ = extract_breaker_input("<input>" + comp, domain)
-                    r_brk, _ = compute_breaker_reward(f_ref, f_mut, val, domain)
-                    brk_candidate_rewards.append(r_brk)
-                    if r_brk > 0.0:
-                        solved_count += 1
+            with torch.no_grad():
+                out_brk = generate_with_policy(model, cfg_brk, **brk_rep)
 
-                # 更新 HardBuffer 中该题目的被破解状态
+            brk_candidate_rewards = []
+            solved_count = 0
+            for c_j in range(args.breaker_rollouts):
+                comp = tokenizer.decode(out_brk[c_j][brk_p_len:], skip_special_tokens=True).strip()
+                val, _, _ = extract_breaker_input("<input>" + comp, domain)
+                r_brk, _ = compute_breaker_reward(f_ref, f_mut, val, domain)
+                brk_candidate_rewards.append(r_brk)
+                if r_brk > 0.0:
+                    solved_count += 1
+
+            # 仅对 HardBuffer 中的自博弈题目更新统计
+            if source_tag == "HardBuffer" and "key" in prob:
                 hard_buffer.update_result(prob["key"], solved=(solved_count > 0))
 
-                # Breaker GRPO 反向传播与优化器更新
-                is_eff_brk, loss_brk, _ = trainer.backward_grpo_group(
-                    prompt_ids=brk_inputs["input_ids"],
-                    generated_ids=out_brk,
-                    rewards=brk_candidate_rewards,
-                    temperature=args.temperature,
-                    num_groups_in_update=1
-                )
-                grad_norm_brk = trainer.step_optimizer(role="breaker")
-                brk_win_rate = solved_count / max(1, args.breaker_rollouts)
-                avg_brk_reward = sum(brk_candidate_rewards) / max(1, len(brk_candidate_rewards))
-                brk_desc = f"Solve: {brk_win_rate:.0%} | R: {avg_brk_reward:.2f} | Grad: {grad_norm_brk:.3f}"
+            # Breaker GRPO 反向传播与优化器更新
+            is_eff_brk, loss_brk, _ = trainer.backward_grpo_group(
+                prompt_ids=brk_inputs["input_ids"],
+                generated_ids=out_brk,
+                rewards=brk_candidate_rewards,
+                temperature=args.temperature,
+                num_groups_in_update=1
+            )
+            grad_norm_brk = trainer.step_optimizer(role="breaker")
+            brk_win_rate = solved_count / max(1, args.breaker_rollouts)
+            avg_brk_reward = sum(brk_candidate_rewards) / max(1, len(brk_candidate_rewards))
+            brk_desc = f"[{source_tag}] Solve: {brk_win_rate:.0%} | R: {avg_brk_reward:.2f} | Grad: {grad_norm_brk:.3f}"
+
 
         step_duration = time.time() - step_start_time
         print(f"[{step:03d}/{total_steps:03d} | {mode_desc}] Mutator VMR: {mut_vmr:.0%} | Mut R: {avg_mut_reward:.2f} | Breaker: {brk_desc} | HardBuffer: {len(hard_buffer)} ({step_duration:.1f}s)")

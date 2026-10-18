@@ -57,7 +57,35 @@ class TestRoles(unittest.TestCase):
         r5, d5 = compute_mutator_reward(is_valid_format=True, is_valid_syntax=True, is_valid_sanity=True, is_non_equivalent=True, breaker_solve_rate=0.5)
         self.assertAlmostEqual(r5, 0.8)
 
+    def test_mutator_coevolution_reward(self):
+        # 协进化期 (is_warmup=False) 严格对抗性测试
+        # 1. 语法/sanity 失败 -> 0.0 或极低保底 0.05
+        r0, _ = compute_mutator_reward(is_valid_format=True, is_warmup=False)
+        self.assertEqual(r0, 0.0)
+
+        # 2. 合法且非等价但被 Breaker 100% 破解 -> 削减保底分至仅 0.15
+        r_easy, _ = compute_mutator_reward(
+            is_valid_format=True, is_valid_syntax=True, is_valid_sanity=True, is_non_equivalent=True,
+            breaker_solve_rate=1.0, is_warmup=False
+        )
+        self.assertEqual(r_easy, 0.15)
+
+        # 3. 合法且非等价且完全难倒 Breaker (solve_rate=0.0) -> 满分 1.0 (0.15 + 0.85 = 1.0)
+        r_hard, _ = compute_mutator_reward(
+            is_valid_format=True, is_valid_syntax=True, is_valid_sanity=True, is_non_equivalent=True,
+            breaker_solve_rate=0.0, is_warmup=False
+        )
+        self.assertEqual(r_hard, 1.0)
+
+        # 4. 边界难题 (solve_rate=0.5) -> 0.15 + 0.85*0.5 + 0.05 (bonus) = 0.625
+        r_mid, _ = compute_mutator_reward(
+            is_valid_format=True, is_valid_syntax=True, is_valid_sanity=True, is_non_equivalent=True,
+            breaker_solve_rate=0.5, is_warmup=False
+        )
+        self.assertAlmostEqual(r_mid, 0.625)
+
     def test_breaker_prompt_formatting(self):
+
         f_ref = "def f_ref(x: int) -> bool:\n    return x < 30\n"
         f_mut = "def f_mut(x: int) -> bool:\n    return x <= 30\n"
         prompt = format_breaker_prompt(f_ref, f_mut, (0, 50), "Test spec")
