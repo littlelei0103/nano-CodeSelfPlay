@@ -40,9 +40,9 @@ class TestSPINEndToEnd(unittest.TestCase):
         solve_rate = hits / 4.0
         self.assertEqual(solve_rate, 0.0)  # Breaker 彻底被难倒
 
-        # Mutator 获得满分对抗奖励
+        # Mutator 获得 Hard Buffer Zone 盲区暂存对抗奖励 (0.80)
         r_mut, d_mut = compute_mutator_reward(is_valid=True, breaker_solve_rate=solve_rate)
-        self.assertEqual(r_mut, 1.0)
+        self.assertEqual(r_mut, 0.80)
         self.assertTrue(d_mut["valid"])
 
         # 2. 存入对抗题库 (Adversarial Bug Pool)

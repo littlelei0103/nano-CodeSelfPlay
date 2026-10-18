@@ -32,57 +32,73 @@ class TestRoles(unittest.TestCase):
         self.assertIn("<answer>", prompt)
         self.assertIn("OLD:", prompt)
 
-    def test_mutator_dense_shaping_reward(self):
+    def test_mutator_sweet_spot_curriculum_reward(self):
         # 1. 完全失败 -> 0.0
         r0, d0 = compute_mutator_reward()
         self.assertEqual(r0, 0.0)
 
-        # 2. 格式提取成功但语法错误 -> 0.1
+        # 2. 格式提取成功但语法错误 -> 0.10
         r1, d1 = compute_mutator_reward(is_valid_format=True)
-        self.assertEqual(r1, 0.1)
+        self.assertEqual(r1, 0.10)
 
-        # 3. 语法 AST 通过但 sanity 失败 -> 0.3
+        # 3. 语法 AST 通过但 sanity 失败 -> 0.25 (0.10 + 0.15)
         r2, d2 = compute_mutator_reward(is_valid_format=True, is_valid_syntax=True)
-        self.assertEqual(r2, 0.3)
+        self.assertEqual(r2, 0.25)
 
-        # 4. sanity 通过但全域等价 -> 0.6
+        # 4. sanity 通过但全域等价 (非有效变异) -> 0.45 (0.10 + 0.15 + 0.20)
         r3, d3 = compute_mutator_reward(is_valid_format=True, is_valid_syntax=True, is_valid_sanity=True)
-        self.assertEqual(r3, 0.6)
+        self.assertEqual(r3, 0.45)
 
-        # 5. 非等价且难倒 Breaker (solve_rate=0.0) -> 满分 1.0
-        r4, d4 = compute_mutator_reward(is_valid_format=True, is_valid_syntax=True, is_valid_sanity=True, is_non_equivalent=True, breaker_solve_rate=0.0)
-        self.assertEqual(r4, 1.0)
+        # 5. 黄金带 (Golden Teaching Zone, 0 < p_solve <= 0.5): 提供最大方差与梯度 -> 满分 1.00
+        r4, d4 = compute_mutator_reward(
+            is_valid_format=True, is_valid_syntax=True, is_valid_sanity=True, is_non_equivalent=True,
+            breaker_solve_rate=0.25
+        )
+        self.assertEqual(r4, 1.00)
 
-        # 6. 非等价但 Breaker 破解率 0.5 -> 0.6 + 0.4*0.5 = 0.8
-        r5, d5 = compute_mutator_reward(is_valid_format=True, is_valid_syntax=True, is_valid_sanity=True, is_non_equivalent=True, breaker_solve_rate=0.5)
-        self.assertAlmostEqual(r5, 0.8)
+        # 6. 盲区暂存 (Hard Buffer Zone, p_solve == 0.0) -> 0.80
+        r5, d5 = compute_mutator_reward(
+            is_valid_format=True, is_valid_syntax=True, is_valid_sanity=True, is_non_equivalent=True,
+            breaker_solve_rate=0.0
+        )
+        self.assertEqual(r5, 0.80)
+
+        # 7. 过易惩罚 (Too Easy Zone, p_solve == 1.0) -> 仅剩基础分 0.45
+        r6, d6 = compute_mutator_reward(
+            is_valid_format=True, is_valid_syntax=True, is_valid_sanity=True, is_non_equivalent=True,
+            breaker_solve_rate=1.0
+        )
+        self.assertEqual(r6, 0.45)
 
     def test_mutator_coevolution_reward(self):
-        # 协进化期 (is_warmup=False) 严格对抗性测试
-        # 1. 语法/sanity 失败 -> 0.0 或极低保底 0.05
+        # 协进化期 (is_warmup=False) 严惩无效与等价变异
+        # 1. 语法/sanity 失败 -> 0.0 或微量语法分 0.05
         r0, _ = compute_mutator_reward(is_valid_format=True, is_warmup=False)
         self.assertEqual(r0, 0.0)
 
-        # 2. 合法且非等价但被 Breaker 100% 破解 -> 削减保底分至仅 0.15
-        r_easy, _ = compute_mutator_reward(
-            is_valid_format=True, is_valid_syntax=True, is_valid_sanity=True, is_non_equivalent=True,
-            breaker_solve_rate=1.0, is_warmup=False
-        )
-        self.assertEqual(r_easy, 0.15)
+        r_ast, _ = compute_mutator_reward(is_valid_format=True, is_valid_syntax=True, is_warmup=False)
+        self.assertEqual(r_ast, 0.05)
 
-        # 3. 合法且非等价且完全难倒 Breaker (solve_rate=0.0) -> 满分 1.0 (0.15 + 0.85 = 1.0)
+        # 2. 黄金带 (solve_rate = 0.5) -> 满分 1.00
+        r_gold, _ = compute_mutator_reward(
+            is_valid_format=True, is_valid_syntax=True, is_valid_sanity=True, is_non_equivalent=True,
+            breaker_solve_rate=0.5, is_warmup=False
+        )
+        self.assertEqual(r_gold, 1.00)
+
+        # 3. 盲区暂存 (solve_rate = 0.0) -> 0.80
         r_hard, _ = compute_mutator_reward(
             is_valid_format=True, is_valid_syntax=True, is_valid_sanity=True, is_non_equivalent=True,
             breaker_solve_rate=0.0, is_warmup=False
         )
-        self.assertEqual(r_hard, 1.0)
+        self.assertEqual(r_hard, 0.80)
 
-        # 4. 边界难题 (solve_rate=0.5) -> 0.15 + 0.85*0.5 + 0.05 (bonus) = 0.625
-        r_mid, _ = compute_mutator_reward(
+        # 4. 过易衰减 (solve_rate = 0.75) -> 0.45 + 1.1*0.25 = 0.725
+        r_easy, _ = compute_mutator_reward(
             is_valid_format=True, is_valid_syntax=True, is_valid_sanity=True, is_non_equivalent=True,
-            breaker_solve_rate=0.5, is_warmup=False
+            breaker_solve_rate=0.75, is_warmup=False
         )
-        self.assertAlmostEqual(r_mid, 0.625)
+        self.assertAlmostEqual(r_easy, 0.725)
 
     def test_breaker_prompt_formatting(self):
 

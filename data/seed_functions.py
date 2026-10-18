@@ -183,7 +183,7 @@ SEED_FUNCTIONS: List[Dict[str, Any]] = [
         "id": "clamp_min_upper_30",
         "family": "clamping",
         "domain": (0, 50),
-        "sanity_inputs": [5, 15, 45],
+        "sanity_inputs": [5, 12, 20],
         "description": "Clamp upper bound to 30 using min(x, 30)",
         "func_src": (
             "def f_ref(x: int) -> int:\n"
@@ -194,7 +194,7 @@ SEED_FUNCTIONS: List[Dict[str, Any]] = [
         "id": "clamp_max_lower_15",
         "family": "clamping",
         "domain": (0, 50),
-        "sanity_inputs": [5, 25, 45],
+        "sanity_inputs": [20, 30, 45],
         "description": "Clamp lower bound to 15 using max(x, 15)",
         "func_src": (
             "def f_ref(x: int) -> int:\n"
@@ -205,7 +205,7 @@ SEED_FUNCTIONS: List[Dict[str, Any]] = [
         "id": "clamp_both_10_40",
         "family": "clamping",
         "domain": (0, 50),
-        "sanity_inputs": [5, 25, 45],
+        "sanity_inputs": [15, 25, 35],
         "description": "Clamp x to range [10, 40] using max(10, min(x, 40))",
         "func_src": (
             "def f_ref(x: int) -> int:\n"
@@ -216,7 +216,7 @@ SEED_FUNCTIONS: List[Dict[str, Any]] = [
         "id": "clamp_neg_max_zero",
         "family": "clamping",
         "domain": (-25, 25),
-        "sanity_inputs": [-15, 10, 20],
+        "sanity_inputs": [5, 10, 20],
         "description": "ReLU-style activation: max(0, x)",
         "func_src": (
             "def f_ref(x: int) -> int:\n"
@@ -227,7 +227,7 @@ SEED_FUNCTIONS: List[Dict[str, Any]] = [
         "id": "clamp_neg_min_zero",
         "family": "clamping",
         "domain": (-25, 25),
-        "sanity_inputs": [-20, -10, 15],
+        "sanity_inputs": [-20, -15, -8],
         "description": "Clamp upper bound to zero: min(0, x)",
         "func_src": (
             "def f_ref(x: int) -> int:\n"
@@ -238,7 +238,7 @@ SEED_FUNCTIONS: List[Dict[str, Any]] = [
         "id": "clamp_box_neg15_15",
         "family": "clamping",
         "domain": (-30, 30),
-        "sanity_inputs": [-25, 0, 25],
+        "sanity_inputs": [-8, 0, 8],
         "description": "Symmetric clamp between -15 and 15",
         "func_src": (
             "def f_ref(x: int) -> int:\n"
@@ -305,25 +305,25 @@ SEED_FUNCTIONS: List[Dict[str, Any]] = [
         ),
     },
     {
-        "id": "arith_double_add_one",
+        "id": "arith_abs_center_diff",
         "family": "arithmetic",
-        "domain": (0, 30),
-        "sanity_inputs": [3, 10, 24],
-        "description": "Compute linear mapping 2*x + 1",
+        "domain": (0, 50),
+        "sanity_inputs": [5, 30, 45],
+        "description": "Check if distance to 30 is strictly less than 12",
         "func_src": (
-            "def f_ref(x: int) -> int:\n"
-            "    return 2 * x + 1\n"
+            "def f_ref(x: int) -> bool:\n"
+            "    return abs(x - 30) < 12\n"
         ),
     },
     {
-        "id": "arith_div_floor_3",
+        "id": "arith_mod4_remainder",
         "family": "arithmetic",
         "domain": (0, 50),
         "sanity_inputs": [6, 17, 33],
-        "description": "Integer floor division by 3",
+        "description": "Check if remainder modulo 4 is at least 2",
         "func_src": (
-            "def f_ref(x: int) -> int:\n"
-            "    return x // 3\n"
+            "def f_ref(x: int) -> bool:\n"
+            "    return x % 4 >= 2\n"
         ),
     },
     {

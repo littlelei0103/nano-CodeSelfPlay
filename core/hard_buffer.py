@@ -100,7 +100,15 @@ class HardBuffer:
                 sparsity = max(0.001, item["sparsity"])
                 sampled_count = item["times_sampled"]
 
-                diff_factor = 1.0 - p_solve + 0.15
+                # 甜蜜点课程加权采样 (Sweet-Spot Curriculum Sampling):
+                # 优先抽取处于当前 Breaker 认知边缘 (0 < p_solve <= 0.5) 的黄金教学题，产生最大梯度信号
+                if 0.0 < p_solve <= 0.5:
+                    diff_factor = 2.5
+                elif p_solve == 0.0:
+                    diff_factor = 0.6  # 盲区题目适度采样，避免早期零梯度死锁
+                else:
+                    diff_factor = max(0.2, 1.0 - p_solve)
+
                 subtle_factor = 1.0 / (sparsity + 0.05)
                 decay_factor = 1.0 / math.sqrt(sampled_count + 1)
 

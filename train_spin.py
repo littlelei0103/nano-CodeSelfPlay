@@ -54,22 +54,18 @@ from roles.mutator import (
 )
 
 
-DEFAULT_INIT_ADAPTER = (
-    "../nano-GRPO/checkpoints_counterexample/20261014T102327Z-d1694cb8/checkpoint-best"
-    if os.path.exists("../nano-GRPO/checkpoints_counterexample/20261014T102327Z-d1694cb8/checkpoint-best")
-    else ""
-)
+DEFAULT_INIT_ADAPTER = ""
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description="nano-SPIN Adversarial Self-Play Training")
     parser.add_argument("--model_name", type=str, default="Qwen/Qwen2.5-1.5B",
                         help="基座模型名称或本地路径")
-    parser.add_argument("--init_adapter", type=str, default=DEFAULT_INIT_ADAPTER,
-                        help="预训练 Breaker LoRA 适配器路径 (热启动 nano-GRPO 训练好的最佳权重)")
-    parser.add_argument("--total_steps", type=int, default=60,
+    parser.add_argument("--init_adapter", type=str, default="",
+                        help="预训练 Breaker LoRA 适配器路径 (默认空字符串，零起点白手起家 Tabula Rasa 自博弈)")
+    parser.add_argument("--total_steps", type=int, default=30,
                         help="自博弈总训练步数 (每步包含独立的更新流)")
-    parser.add_argument("--mutator_warmup_steps", type=int, default=15,
+    parser.add_argument("--mutator_warmup_steps", type=int, default=5,
                         help="Mutator 独占预热步数 (此期间仅更新 Mutator，Breaker 冻结并建立 HardBuffer)")
     parser.add_argument("--eval_interval", type=int, default=10,
                         help="独立外部基准评估与检查点保存间隔步数")
@@ -79,18 +75,18 @@ def parse_args():
                         help="轮次兼容模式下每轮包含的题目步数")
     parser.add_argument("--mut_rollouts", type=int, default=4,
                         help="Mutator 每步采样的候选突变数 (G_mut)")
-    parser.add_argument("--breaker_rollouts", type=int, default=4,
-                        help="Breaker 每步采样的候选反例数 (G_brk)")
+    parser.add_argument("--breaker_rollouts", type=int, default=8,
+                        help="Breaker 每步采样的候选反例数 (G_brk，对齐 nano-GRPO G=8 避免零方差)")
     parser.add_argument("--lr", type=float, default=2e-5,
                         help="通用优化器学习率")
     parser.add_argument("--lr_mutator", type=float, default=2e-5,
                         help="Mutator 出题模型学习率 (默认 2e-5)")
-    parser.add_argument("--lr_breaker", type=float, default=5e-6,
-                        help="Breaker 做题模型学习率 (默认 5e-6，保守更新防遗忘)")
-    parser.add_argument("--anchor_ratio", type=float, default=0.5,
-                        help="Breaker 训练阶段抽取原始静态锚定题目的比例 (默认 0.5)")
-    parser.add_argument("--kl_coef", type=float, default=0.04,
-                        help="基座参考策略 KL 散度惩罚系数")
+    parser.add_argument("--lr_breaker", type=float, default=2e-5,
+                        help="Breaker 做题模型学习率 (默认 2e-5，进取型步长助力从 40% 快速进化)")
+    parser.add_argument("--anchor_ratio", type=float, default=0.1,
+                        help="Breaker 训练阶段抽取原始静态锚定题目的比例 (默认 0.1，90% 自博弈在线生成)")
+    parser.add_argument("--kl_coef", type=float, default=0.01,
+                        help="基座参考策略 KL 散度惩罚系数 (对齐 nano-GRPO 0.01)")
     parser.add_argument("--temperature", type=float, default=0.7,
                         help="采样探索温度")
     parser.add_argument("--output_dir", type=str, default="checkpoints_spin",
@@ -242,7 +238,7 @@ def main():
     anchor_tasks = get_anchor_tasks()
     heldout_problems = get_heldout_benchmark()
     print(f"[Data Setup] Loaded {len(all_seeds)} seeds, {len(anchor_tasks)} anchor replay tasks, and {len(heldout_problems)} heldout problems.")
-    print(f"[Hyperparams] LR Mutator: {lr_mut} | LR Breaker: {lr_brk} (Conservative) | Anchor Replay Ratio: {args.anchor_ratio:.0%}")
+    print(f"[Hyperparams] LR Mutator: {lr_mut} | LR Breaker: {lr_brk} (Aggressive Tabula Rasa) | Anchor Replay Ratio: {args.anchor_ratio:.0%}")
 
 
     # 3. 实例化动态对抗难题缓冲池 (HardBuffer)
@@ -458,6 +454,44 @@ def main():
                 temperature=args.temperature,
                 num_groups_in_update=1
             )
+
+            # 动态零方差救援 (Dynamic Variance Rescue):
+            # 若 HardBuffer 题目因过难导致候选反例全错 (方差为 0)，立即使用 Anchor 基础题救援，防止梯度饥饿
+            if (not is_eff_brk) and (source_tag == "HardBuffer"):
+                rescue_prob = random.choice(anchor_tasks)
+                r_ref = rescue_prob["f_ref_src"]
+                r_mut = rescue_prob["f_mut_src"]
+                r_dom = tuple(rescue_prob["domain"])
+                r_prompt = format_breaker_prompt(r_ref, r_mut, r_dom, rescue_prob.get("spec", ""))
+                r_inputs = tokenizer(r_prompt, return_tensors="pt").to(args.device)
+                r_p_len = r_inputs["input_ids"].shape[1]
+                r_rep = {k: v.repeat(args.breaker_rollouts, 1) for k, v in r_inputs.items()}
+
+                with torch.no_grad():
+                    out_rescue = generate_with_policy(model, cfg_brk, **r_rep)
+
+                rescue_rewards = []
+                rescue_hits = 0
+                for c_k in range(args.breaker_rollouts):
+                    r_comp = tokenizer.decode(out_rescue[c_k][r_p_len:], skip_special_tokens=True).strip()
+                    r_val, _, _ = extract_breaker_input("<input>" + r_comp, r_dom)
+                    r_reward, _ = compute_breaker_reward(r_ref, r_mut, r_val, r_dom)
+                    rescue_rewards.append(r_reward)
+                    if r_reward > 0.0:
+                        rescue_hits += 1
+
+                is_rescued, _, _ = trainer.backward_grpo_group(
+                    prompt_ids=r_inputs["input_ids"],
+                    generated_ids=out_rescue,
+                    rewards=rescue_rewards,
+                    temperature=args.temperature,
+                    num_groups_in_update=1
+                )
+                if is_rescued:
+                    source_tag = "Rescue[Anchor]"
+                    brk_candidate_rewards = rescue_rewards
+                    solved_count = rescue_hits
+
             grad_norm_brk = trainer.step_optimizer(role="breaker")
             brk_win_rate = solved_count / max(1, args.breaker_rollouts)
             avg_brk_reward = sum(brk_candidate_rewards) / max(1, len(brk_candidate_rewards))
