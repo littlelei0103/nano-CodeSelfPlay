@@ -1,7 +1,28 @@
+# Byte-compiled / optimized / DLL files
 __pycache__/
-*.pyc
-*.pyo
+*.py[cod]
+*$py.class
 .pytest_cache/
-checkpoints_spin/
-assets/*.png
+
+# Checkpoints & Model Weights (Large binary files)
+checkpoints*/
+checkpoint-*/
+*.bin
+*.pt
+*.pth
+*.safetensors
+*.ckpt
+
+# Logs & Runtime telemetry
+logs/
 *.log
+*.log*
+
+# Environments & IDE
+.env
+.venv
+env/
+venv/
+.vscode/
+.idea/
+.DS_Store
