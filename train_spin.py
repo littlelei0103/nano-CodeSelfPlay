@@ -191,6 +191,27 @@ def main():
     best_heldout_pass1 = base_greedy
     metrics_log_path = os.path.join(run_dir, "metrics_spin.jsonl")
 
+    # 保存初始状态作为 Round 0 检查点 (用于跨代评估 Cross-Play 对比 V0)
+    round0_dir = os.path.join(run_dir, "checkpoint-round-0")
+    model.save_pretrained(round0_dir)
+    tokenizer.save_pretrained(round0_dir)
+    r0_entry = {
+        "round": 0,
+        "mut_validity_rate": 0.0,
+        "mut_avg_reward": 0.0,
+        "mut_effective_groups": 0,
+        "brk_solve_rate": 0.0,
+        "brk_avg_reward": 0.0,
+        "brk_effective_groups": 0,
+        "pool_size": 0,
+        "heldout_greedy_pass1": base_greedy,
+        "heldout_sample_pass4": base_p4,
+        "heldout_hit_rate": base_hit,
+        "duration_sec": 0.0
+    }
+    with open(metrics_log_path, "a", encoding="utf-8") as f:
+        f.write(json.dumps(r0_entry) + "\n")
+
     # 预设配置 (行级突变仅需 32 tokens, 高度紧凑高效)
     cfg_mut = rollout_generation_config(tokenizer, max_new_tokens=32, temperature=args.temperature, do_sample=True)
     cfg_brk = rollout_generation_config(tokenizer, max_new_tokens=24, temperature=args.temperature, do_sample=True)
@@ -405,7 +426,11 @@ def main():
         with open(metrics_log_path, "a", encoding="utf-8") as f:
             f.write(json.dumps(log_entry) + "\n")
 
-        # 保存最新与最佳模型权重
+        # 保存最新、各轮与最佳模型权重 (用于跨代对抗评估 Cross-Play)
+        round_ckpt_dir = os.path.join(run_dir, f"checkpoint-round-{round_idx}")
+        model.save_pretrained(round_ckpt_dir)
+        tokenizer.save_pretrained(round_ckpt_dir)
+
         last_ckpt_dir = os.path.join(run_dir, "checkpoint-last")
         model.save_pretrained(last_ckpt_dir)
         tokenizer.save_pretrained(last_ckpt_dir)
