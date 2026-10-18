@@ -98,6 +98,8 @@ def parse_args():
                         help="采样探索温度")
     parser.add_argument("--output_dir", type=str, default="checkpoints_spin",
                         help="检查点与日志输出根目录")
+    parser.add_argument("--resume_dir", type=str, default="",
+                        help="续跑检查点目录 (若指定，则从中恢复最新的 round 检查点与 HardBuffer 状态，并继续向前训练)")
     parser.add_argument("--device", type=str, default="cuda" if torch.cuda.is_available() else "cpu",
                         help="运行设备")
     return parser.parse_args()
@@ -194,9 +196,24 @@ def main():
         total_steps = args.total_steps
         eval_interval = args.eval_interval
 
-    run_timestamp = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
-    run_dir = os.path.join(args.output_dir, run_timestamp)
-    os.makedirs(run_dir, exist_ok=True)
+    if args.resume_dir and os.path.isdir(args.resume_dir):
+        run_dir = args.resume_dir
+        found_rounds = []
+        for r in range(20):
+            ckpt_r = os.path.join(run_dir, f"checkpoint-round-{r}")
+            if os.path.isdir(ckpt_r):
+                found_rounds.append(r)
+        if not found_rounds:
+            raise FileNotFoundError(f"在 {run_dir} 中未找到任何 checkpoint-round-X 检查点！")
+        latest_round = max(found_rounds)
+        resume_ckpt = os.path.join(run_dir, f"checkpoint-round-{latest_round}")
+        print(f"[Resume] Detected checkpoint directory: {run_dir}")
+        print(f"[Resume] Resuming from Round {latest_round} checkpoint: {resume_ckpt}")
+    else:
+        run_timestamp = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
+        run_dir = os.path.join(args.output_dir, run_timestamp)
+        os.makedirs(run_dir, exist_ok=True)
+        resume_ckpt = ""
 
     print("=" * 72)
     print("🚀 nano-SPIN: Code Mutation & Counterexample Adversarial Self-Play")
@@ -205,13 +222,16 @@ def main():
     print(f"Eval Interval: {eval_interval} | Output Dir: {run_dir}")
     if args.init_adapter:
         print(f"Pretrained Breaker Warm-start: {args.init_adapter}")
+    if resume_ckpt:
+        print(f"Resumed Adapters: {resume_ckpt}")
     print("=" * 72)
 
     # 1. 加载模型与双独立 LoRA (breaker & mutator)
     tokenizer, model = setup_lora_and_model(
         model_name=args.model_name,
         device=args.device,
-        init_adapter=args.init_adapter
+        init_adapter=args.init_adapter,
+        resume_checkpoint=resume_ckpt
     )
 
     # 2. 实例化双角色专属独立优化器 (Breaker 采用保守低学习率防遗忘)
@@ -245,42 +265,61 @@ def main():
     anchor_tasks = get_anchor_tasks()
     heldout_problems = get_heldout_benchmark()
     print(f"[Data Setup] Loaded {len(all_seeds)} seeds, {len(anchor_tasks)} anchor replay tasks, and {len(heldout_problems)} heldout problems.")
-    print(f"[Hyperparams] LR Mutator: {lr_mut} | LR Breaker: {lr_brk} (Aggressive Tabula Rasa) | Anchor Replay Ratio: {args.anchor_ratio:.0%}")
-
+    print(f"[Hyperparams] LR Mutator: {lr_mut} | LR Breaker: {lr_brk} | Anchor Replay Ratio: {args.anchor_ratio:.0%}")
 
     # 3. 实例化动态对抗难题缓冲池 (HardBuffer)
     hard_buffer = HardBuffer(capacity=500)
+    hb_path = os.path.join(run_dir, "hard_buffer.jsonl")
+    if args.resume_dir and os.path.exists(hb_path):
+        print(f"[HardBuffer] Loading prior HardBuffer from {hb_path}...")
+        hard_buffer.load_jsonl(hb_path)
+        print(f"[HardBuffer] Successfully loaded {len(hard_buffer)} prior adversarial tasks.")
 
-    # 4. 初始基线评估 (Round 0)
-    print("\n[Baseline Eval] Evaluating initial breaker adapter on held-out benchmark...")
-    base_greedy, base_p4, base_hit = evaluate_on_heldout(model, tokenizer, heldout_problems, args.device)
-    print(f"⭐ [Round 00 / Baseline] Held-out Greedy Pass@1: {base_greedy:.2%} | Sample Pass@4: {base_p4:.2%} | Hit Density: {base_hit:.2%}\n")
-
-    best_heldout_pass1 = base_greedy
     metrics_log_path = os.path.join(run_dir, "metrics_spin.jsonl")
+    if args.resume_dir and os.path.exists(metrics_log_path):
+        past_metrics = []
+        with open(metrics_log_path, "r", encoding="utf-8") as f:
+            for line in f:
+                if line.strip():
+                    past_metrics.append(json.loads(line))
+        last_step = past_metrics[-1]["step"] if past_metrics else 0
+        start_step = last_step + 1
+        best_heldout_pass1 = max([m.get("heldout_greedy_pass1", 0.0) for m in past_metrics]) if past_metrics else 0.0
+        base_greedy = past_metrics[0].get("heldout_greedy_pass1", 0.40) if past_metrics else 0.40
+        base_p4 = past_metrics[0].get("heldout_sample_pass4", 0.55) if past_metrics else 0.55
+        base_hit = past_metrics[0].get("heldout_hit_rate", 0.2625) if past_metrics else 0.2625
+        print(f"[Resume] Resumed training from step {start_step} up to {total_steps} (Prior Best Pass@1: {best_heldout_pass1:.2%})")
+    else:
+        start_step = 1
+        # 4. 初始基线评估 (Round 0)
+        print("\n[Baseline Eval] Evaluating initial breaker adapter on held-out benchmark...")
+        base_greedy, base_p4, base_hit = evaluate_on_heldout(model, tokenizer, heldout_problems, args.device)
+        print(f"⭐ [Round 00 / Baseline] Held-out Greedy Pass@1: {base_greedy:.2%} | Sample Pass@4: {base_p4:.2%} | Hit Density: {base_hit:.2%}\n")
 
-    # 保存初始基线作为 Round 0 检查点
-    round0_dir = os.path.join(run_dir, "checkpoint-round-0")
-    save_spin_checkpoint(model, tokenizer, round0_dir)
+        best_heldout_pass1 = base_greedy
 
-    r0_entry = {
-        "step": 0,
-        "round": 0,
-        "is_warmup": True,
-        "mut_validity_rate": 0.0,
-        "mut_avg_reward": 0.0,
-        "mut_grad_norm": 0.0,
-        "brk_solve_rate": 0.0,
-        "brk_avg_reward": 0.0,
-        "brk_grad_norm": 0.0,
-        "pool_size": 0,
-        "heldout_greedy_pass1": base_greedy,
-        "heldout_sample_pass4": base_p4,
-        "heldout_hit_rate": base_hit,
-        "duration_sec": 0.0
-    }
-    with open(metrics_log_path, "a", encoding="utf-8") as f:
-        f.write(json.dumps(r0_entry) + "\n")
+        # 保存初始基线作为 Round 0 检查点
+        round0_dir = os.path.join(run_dir, "checkpoint-round-0")
+        save_spin_checkpoint(model, tokenizer, round0_dir)
+
+        r0_entry = {
+            "step": 0,
+            "round": 0,
+            "is_warmup": True,
+            "mut_validity_rate": 0.0,
+            "mut_avg_reward": 0.0,
+            "mut_grad_norm": 0.0,
+            "brk_solve_rate": 0.0,
+            "brk_avg_reward": 0.0,
+            "brk_grad_norm": 0.0,
+            "pool_size": 0,
+            "heldout_greedy_pass1": base_greedy,
+            "heldout_sample_pass4": base_p4,
+            "heldout_hit_rate": base_hit,
+            "duration_sec": 0.0
+        }
+        with open(metrics_log_path, "a", encoding="utf-8") as f:
+            f.write(json.dumps(r0_entry) + "\n")
 
     # 预设计算效率配置 (行级突变 32 tokens, 反例 24 tokens)
     cfg_mut = rollout_generation_config(tokenizer, max_new_tokens=32, temperature=args.temperature, do_sample=True)
@@ -289,7 +328,7 @@ def main():
     # -------------------------------------------------------------
     # 主训练循环: 单 Step 实时交替自博弈 (Step-Level Alternating Flow)
     # -------------------------------------------------------------
-    for step in range(1, total_steps + 1):
+    for step in range(start_step, total_steps + 1):
         step_start_time = time.time()
         is_warmup = (step <= args.mutator_warmup_steps)
         current_round = (step - 1) // eval_interval + 1

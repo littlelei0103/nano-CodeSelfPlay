@@ -338,11 +338,12 @@ def plot_crossplay_heatmap(
     ax.set_title(f"nano-SPIN Cross-Play Evaluation Matrix\n({metric_name})", fontsize=14, fontweight="bold", pad=14)
 
     # 绘制格内百分比数值
+    font_size = 11 if len(rounds) <= 6 else 8.5
     for i in range(len(rounds)):
         for j in range(len(rounds)):
             val = matrix[i, j] * 100
             text_color = "white" if val > 55 else "black"
-            ax.text(j, i, f"{val:.1f}%", ha="center", va="center", color=text_color, fontsize=12, fontweight="bold")
+            ax.text(j, i, f"{val:.1f}%", ha="center", va="center", color=text_color, fontsize=font_size, fontweight="bold")
 
     ax.set_xticks(np.arange(len(rounds) + 1) - 0.5, minor=True)
     ax.set_yticks(np.arange(len(rounds) + 1) - 0.5, minor=True)
@@ -388,21 +389,23 @@ def plot_four_dimension_dashboard(
     ax1.set_title("1. External Held-out Benchmark (20 Problems)\nBreaker Generalization vs Baselines", fontsize=12, fontweight="bold", pad=8)
     ax1.set_ylabel("Accuracy / Pass Rate (%)", fontsize=10, fontweight="bold")
     ax1.set_xticks(x)
-    ax1.set_xticklabels(methods, fontsize=9, fontweight="bold")
+    x_fontsize = 7.5 if len(methods) > 8 else 9
+    ax1.set_xticklabels(methods, fontsize=x_fontsize, fontweight="bold")
     ax1.set_ylim(0, 100)
     ax1.yaxis.set_major_formatter(ticker.PercentFormatter())
     ax1.grid(True, linestyle=":", alpha=0.6, axis="y")
     ax1.legend(loc="upper left", frameon=True, fontsize=9)
 
     # 在柱状图上方标注数值
+    bar_fs = 6.5 if len(methods) > 8 else 7.5
     for rect in rects1:
         h = rect.get_height()
         ax1.annotate(f"{h:.1f}%", xy=(rect.get_x() + rect.get_width()/2, h), xytext=(0, 2),
-                     textcoords="offset points", ha="center", va="bottom", fontsize=7.5, fontweight="bold")
+                     textcoords="offset points", ha="center", va="bottom", fontsize=bar_fs, fontweight="bold")
     for rect in rects2:
         h = rect.get_height()
         ax1.annotate(f"{h:.1f}%", xy=(rect.get_x() + rect.get_width()/2, h), xytext=(0, 2),
-                     textcoords="offset points", ha="center", va="bottom", fontsize=7.5, fontweight="bold")
+                     textcoords="offset points", ha="center", va="bottom", fontsize=bar_fs, fontweight="bold")
 
     # -------------------------------------------------------------
     # Panel 2: Mutator 进化指标监控 (VMR & Deception Rate vs V0)
@@ -438,11 +441,12 @@ def plot_four_dimension_dashboard(
     ax3.set_ylabel("Mutator $\\mathcal{M}_i$ ($\\downarrow$ Harder Bugs)", fontsize=10, fontweight="bold", labelpad=6)
     ax3.set_title("3. Cross-Play Matrix Heatmap\nBreaker $\\mathcal{B}_j$ Solve Rate on Mutator $\\mathcal{M}_i$ Bugs", fontsize=12, fontweight="bold", pad=8)
 
+    cell_fs = 8.0 if len(rounds) > 6 else 10.0
     for i in range(len(rounds)):
         for j in range(len(rounds)):
             val = solve_matrix[i, j] * 100
             tc = "white" if val > 55 else "black"
-            ax3.text(j, i, f"{val:.1f}%", ha="center", va="center", color=tc, fontsize=10, fontweight="bold")
+            ax3.text(j, i, f"{val:.1f}%", ha="center", va="center", color=tc, fontsize=cell_fs, fontweight="bold")
 
     # -------------------------------------------------------------
     # Panel 4: 对抗题库扩张与自博弈平衡
