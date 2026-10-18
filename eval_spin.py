@@ -55,8 +55,11 @@ def parse_args():
 
 
 def find_latest_run_dir() -> str:
-    """自动查找 checkpoints_spin 下包含 checkpoint-round-0..3 的最新目录"""
+    """自动查找 checkpoints_spin 下包含 checkpoint-round 检查点的最新目录"""
     candidates = sorted(glob.glob("checkpoints_spin/20*"))
+    for c in reversed(candidates):
+        if os.path.isdir(os.path.join(c, "checkpoint-round-0")) and os.path.isdir(os.path.join(c, "checkpoint-round-5")):
+            return c
     for c in reversed(candidates):
         if os.path.isdir(os.path.join(c, "checkpoint-round-0")) and os.path.isdir(os.path.join(c, "checkpoint-round-3")):
             return c
@@ -478,9 +481,9 @@ def main():
     print(f"Device: {args.device} | Base Model: {args.base_model}")
     print(f"========================================================================\n")
 
-    # 检查可用轮次检查点 (checkpoint-round-0 .. 3)
+    # 检查可用轮次检查点 (checkpoint-round-0 .. 5+)
     available_rounds = []
-    for r in [0, 1, 2, 3]:
+    for r in range(12):
         ckpt_r = os.path.join(run_dir, f"checkpoint-round-{r}")
         if os.path.isdir(ckpt_r):
             available_rounds.append(r)

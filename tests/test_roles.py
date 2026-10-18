@@ -100,6 +100,29 @@ class TestRoles(unittest.TestCase):
         )
         self.assertAlmostEqual(r_easy, 0.725)
 
+    def test_mutator_tightened_curriculum_reward(self):
+        # 中后期深水区课程收紧测试 (is_tightened=True)
+        # 1. 黄金带 (0 < p_solve <= 0.35) -> 0.25 + 0.75 = 1.00
+        r_gold, _ = compute_mutator_reward(
+            is_valid_format=True, is_valid_syntax=True, is_valid_sanity=True, is_non_equivalent=True,
+            breaker_solve_rate=0.25, is_warmup=False, is_tightened=True
+        )
+        self.assertEqual(r_gold, 1.00)
+
+        # 2. 盲区暂存 (solve_rate = 0.0) -> 0.25 + 0.45 = 0.70
+        r_hard, _ = compute_mutator_reward(
+            is_valid_format=True, is_valid_syntax=True, is_valid_sanity=True, is_non_equivalent=True,
+            breaker_solve_rate=0.0, is_warmup=False, is_tightened=True
+        )
+        self.assertEqual(r_hard, 0.70)
+
+        # 3. 过易惩罚 (solve_rate = 1.0) -> 仅剩保底分 0.25
+        r_easy, _ = compute_mutator_reward(
+            is_valid_format=True, is_valid_syntax=True, is_valid_sanity=True, is_non_equivalent=True,
+            breaker_solve_rate=1.0, is_warmup=False, is_tightened=True
+        )
+        self.assertEqual(r_easy, 0.25)
+
     def test_breaker_prompt_formatting(self):
 
         f_ref = "def f_ref(x: int) -> bool:\n    return x < 30\n"

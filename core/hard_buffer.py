@@ -78,11 +78,11 @@ class HardBuffer:
         }
         return True
 
-    def sample(self, k: int = 1) -> List[Dict[str, Any]]:
+    def sample(self, k: int = 1, is_tightened: bool = False) -> List[Dict[str, Any]]:
         """
         优先加权采样 k 道题目。
         优先权重综合考虑:
-          - 难度: (1.0 - solve_rate + 0.1)
+          - 甜蜜点区间 (前期 0.50，中后期收紧至 0.35)
           - 隐蔽度: 1.0 / (sparsity + 0.05)
           - 探索度衰减: 1.0 / sqrt(times_sampled + 1)
         """
@@ -94,6 +94,7 @@ class HardBuffer:
             selected_keys = keys
         else:
             weights = []
+            curriculum_threshold = 0.35 if is_tightened else 0.50
             for key in keys:
                 item = self.items[key]
                 p_solve = max(0.0, min(1.0, item["solve_rate"]))
@@ -101,8 +102,7 @@ class HardBuffer:
                 sampled_count = item["times_sampled"]
 
                 # 甜蜜点课程加权采样 (Sweet-Spot Curriculum Sampling):
-                # 优先抽取处于当前 Breaker 认知边缘 (0 < p_solve <= 0.5) 的黄金教学题，产生最大梯度信号
-                if 0.0 < p_solve <= 0.5:
+                if 0.0 < p_solve <= curriculum_threshold:
                     diff_factor = 2.5
                 elif p_solve == 0.0:
                     diff_factor = 0.6  # 盲区题目适度采样，避免早期零梯度死锁

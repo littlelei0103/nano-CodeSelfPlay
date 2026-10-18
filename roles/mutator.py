@@ -82,25 +82,25 @@ def compute_mutator_reward(
     breaker_solve_rate: float = 0.0,
     validation_reason: str = "",
     is_warmup: bool = True,
+    is_tightened: bool = False,
     is_valid_mutation: Optional[bool] = None,
     is_valid: Optional[bool] = None
 ) -> Tuple[float, Dict[str, Any]]:
     """
     Mutator 甜蜜点课程奖励 (Sweet-Spot Curriculum Reward):
-      基础分阶梯 (满分 0.45):
-        - Lv1 格式与提取成功: +0.10
-        - Lv2 语法 AST 编译通过: +0.15
-        - Lv3 常规测试集存活 (Sanity Pass): +0.20
-      Lv4 动态对抗加成 (仅在非等价有效突变时激活):
-        - 黄金带 (Golden Teaching Zone, 0 < p_solve <= 0.5):
-          Breaker 产生非零方差 (1~2个做对，2~3个做错)，提供最大梯度信号 -> +0.55 (总奖励 1.00)
-        - 盲区暂存 (Hard Buffer Zone, p_solve == 0.0):
-          Breaker 暂时无法破解，次高奖励 -> +0.35 (总奖励 0.80)，存入 HardBuffer
-        - 过易惩罚 (Too Easy Zone, p_solve > 0.5):
-          随 p_solve 线性衰减: adv = 1.1 * max(0.0, 1.0 - p_solve) (p_solve=1.0 时仅得基础分 0.45)
+      1. 前期 (Round 1~2, is_tightened=False):
+         - 基础分阶梯 (满分 0.45): 格式 +0.10, 语法 AST +0.15, 常规测试集 +0.20
+         - 黄金带 (0 < p_solve <= 0.50): 提供最大方差与梯度 -> 对抗加成 +0.55 (总分 1.00)
+         - 盲区暂存 (p_solve == 0.0): -> 对抗加成 +0.35 (总分 0.80)，存入 HardBuffer
+         - 过易衰减 (p_solve > 0.50): adv = 1.1 * max(0.0, 1.0 - p_solve) (p_solve=1.0 仅得 0.45)
+      2. 中后期收紧 (Round 3~5, is_tightened=True):
+         - 基础保底分下调至 0.25 (格式 +0.05, 语法 +0.10, 常规测试集 +0.10)
+         - 黄金带收紧为深水区 (0 < p_solve <= 0.35): 对抗加成提高至 +0.75 (总分 1.00)
+         - 盲区暂存 (p_solve == 0.0): 对抗加成 +0.45 (总分 0.70)
+         - 过易衰减 (p_solve > 0.35): adv = 0.75 * max(0.0, (1.0 - p_solve) / 0.65) (p_solve=1.0 仅得 0.25)
 
       协进化期 (is_warmup=False) 严惩无效/等价变异:
-        - 若未通过完整有效性检验: 仅保留语法分 0.05 (AST有效) 或 0.0 (格式/语法崩溃)
+        - 若未通过完整有效性检验: 仅保留微量语法分 0.05 (AST有效) 或 0.0
     """
     if is_valid_mutation is not None or is_valid is not None:
         v = is_valid if is_valid is not None else is_valid_mutation
@@ -112,22 +112,35 @@ def compute_mutator_reward(
 
     is_valid_overall = bool(is_valid_format and is_valid_syntax and is_valid_sanity and is_non_equivalent)
 
-    # 1. 甜蜜点对抗加成计算
-    if 0.0 < breaker_solve_rate <= 0.5:
-        adv_bonus = 0.55
-    elif breaker_solve_rate == 0.0:
-        adv_bonus = 0.35
+    # 1. 动态收紧对抗加成与基础分
+    if not is_tightened:
+        base_target = 0.45
+        fmt_val, syn_val, san_val = 0.10, 0.15, 0.20
+        if 0.0 < breaker_solve_rate <= 0.50:
+            adv_bonus = 0.55
+        elif breaker_solve_rate == 0.0:
+            adv_bonus = 0.35
+        else:
+            adv_bonus = 1.1 * max(0.0, 1.0 - breaker_solve_rate)
     else:
-        adv_bonus = 1.1 * max(0.0, 1.0 - breaker_solve_rate)
+        # 中后期深水区课程收紧
+        base_target = 0.25
+        fmt_val, syn_val, san_val = 0.05, 0.10, 0.10
+        if 0.0 < breaker_solve_rate <= 0.35:
+            adv_bonus = 0.75
+        elif breaker_solve_rate == 0.0:
+            adv_bonus = 0.45
+        else:
+            adv_bonus = 0.75 * max(0.0, (1.0 - breaker_solve_rate) / 0.65)
 
     if is_warmup:
         reward = 0.0
         if is_valid_format:
-            reward += 0.10
+            reward += fmt_val
         if is_valid_syntax:
-            reward += 0.15
+            reward += syn_val
         if is_valid_sanity:
-            reward += 0.20
+            reward += san_val
         if is_non_equivalent:
             reward += adv_bonus
     else:
@@ -135,8 +148,7 @@ def compute_mutator_reward(
         if not is_valid_overall:
             reward = 0.05 if (is_valid_format and is_valid_syntax) else 0.0
         else:
-            base_reward = 0.45
-            reward = base_reward + adv_bonus
+            reward = base_target + adv_bonus
 
     reward = round(min(1.0, max(0.0, reward)), 4)
     return reward, {
@@ -148,6 +160,7 @@ def compute_mutator_reward(
         "non_equivalent": is_non_equivalent,
         "solve_rate": breaker_solve_rate,
         "is_warmup": is_warmup,
+        "is_tightened": is_tightened,
         "reason": validation_reason,
     }
 

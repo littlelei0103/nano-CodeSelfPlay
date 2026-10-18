@@ -21,6 +21,7 @@ train_spin.py - nano-SPIN 双角色代码对抗自博弈训练主循环 (Adversa
 import argparse
 import ast
 import json
+import math
 import os
 import random
 import time
@@ -63,15 +64,15 @@ def parse_args():
                         help="基座模型名称或本地路径")
     parser.add_argument("--init_adapter", type=str, default="",
                         help="预训练 Breaker LoRA 适配器路径 (默认空字符串，零起点白手起家 Tabula Rasa 自博弈)")
-    parser.add_argument("--total_steps", type=int, default=30,
-                        help="自博弈总训练步数 (每步包含独立的更新流)")
+    parser.add_argument("--total_steps", type=int, default=75,
+                        help="自博弈总训练步数 (默认 75 步，划分为 5 轮完整自博弈)")
     parser.add_argument("--mutator_warmup_steps", type=int, default=5,
                         help="Mutator 独占预热步数 (此期间仅更新 Mutator，Breaker 冻结并建立 HardBuffer)")
-    parser.add_argument("--eval_interval", type=int, default=10,
-                        help="独立外部基准评估与检查点保存间隔步数")
+    parser.add_argument("--eval_interval", type=int, default=15,
+                        help="独立外部基准评估与检查点保存间隔步数 (默认 15 步一轮，共 5 轮)")
     parser.add_argument("--rounds", type=int, default=0,
                         help="若指定 rounds > 0，则总步数自动设置为 rounds * seeds_per_round (保持与轮次模式兼容)")
-    parser.add_argument("--seeds_per_round", type=int, default=8,
+    parser.add_argument("--seeds_per_round", type=int, default=15,
                         help="轮次兼容模式下每轮包含的题目步数")
     parser.add_argument("--mut_rollouts", type=int, default=4,
                         help="Mutator 每步采样的候选突变数 (G_mut)")
@@ -83,6 +84,12 @@ def parse_args():
                         help="Mutator 出题模型学习率 (默认 2e-5)")
     parser.add_argument("--lr_breaker", type=float, default=2e-5,
                         help="Breaker 做题模型学习率 (默认 2e-5，进取型步长助力从 40% 快速进化)")
+    parser.add_argument("--lr_breaker_min", type=float, default=5e-6,
+                        help="Breaker 后期余弦衰减的最低学习率 (默认 5e-6)")
+    parser.add_argument("--cosine_decay_start", type=int, default=25,
+                        help="Breaker 开始余弦学习率衰减的步数 (默认 25 步)")
+    parser.add_argument("--curriculum_tighten_step", type=int, default=30,
+                        help="甜蜜点课程收紧步数 (默认 30 步，即从 Round 3 开始收紧黄金带至 0.35)")
     parser.add_argument("--anchor_ratio", type=float, default=0.1,
                         help="Breaker 训练阶段抽取原始静态锚定题目的比例 (默认 0.1，90% 自博弈在线生成)")
     parser.add_argument("--kl_coef", type=float, default=0.01,
@@ -287,7 +294,21 @@ def main():
         is_warmup = (step <= args.mutator_warmup_steps)
         current_round = (step - 1) // eval_interval + 1
 
-        mode_desc = f"MUTATOR WARM-UP ({step}/{args.mutator_warmup_steps})" if is_warmup else "CO-EVOLUTION SELF-PLAY"
+        is_tightened = (step > args.curriculum_tighten_step)
+
+        # 针对 Breaker 的余弦学习率衰减 (Cosine Annealing)
+        if step <= args.cosine_decay_start:
+            current_lr_brk = lr_brk
+        else:
+            progress = (step - args.cosine_decay_start) / max(1, total_steps - args.cosine_decay_start)
+            cosine_factor = 0.5 * (1.0 + math.cos(math.pi * progress))
+            current_lr_brk = args.lr_breaker_min + (lr_brk - args.lr_breaker_min) * cosine_factor
+
+        for param_group in opt_breaker.param_groups:
+            param_group["lr"] = current_lr_brk
+
+        tight_tag = " [TIGHT]" if is_tightened else ""
+        mode_desc = f"MUTATOR WARM-UP ({step}/{args.mutator_warmup_steps})" if is_warmup else f"CO-EVOLUTION SELF-PLAY{tight_tag}"
 
         # ---------------------------------------------------------
         # Phase 1: 训练出题模型 (Mutator Policy Update)
@@ -375,14 +396,15 @@ def main():
                         step=step
                     )
 
-            # 阶梯塑形奖励 (Warm-up 期间密集阶梯，Co-evolution 期间高对抗消减保底)
+            # 阶梯塑形奖励 (支持前后期渐进式甜蜜点课程收紧)
             r_mut, _ = compute_mutator_reward(
                 is_valid_format=is_format,
                 is_valid_syntax=is_syntax,
                 is_valid_sanity=is_sanity,
                 is_non_equivalent=is_diff,
                 breaker_solve_rate=solve_rate,
-                is_warmup=is_warmup
+                is_warmup=is_warmup,
+                is_tightened=is_tightened
             )
             candidate_rewards.append(r_mut)
 
@@ -413,7 +435,7 @@ def main():
             model.set_adapter("breaker")
             use_anchor = (random.random() < args.anchor_ratio) or (len(hard_buffer) == 0)
             if not use_anchor and len(hard_buffer) > 0:
-                sampled_pairs = hard_buffer.sample(k=1)
+                sampled_pairs = hard_buffer.sample(k=1, is_tightened=is_tightened)
                 prob = sampled_pairs[0]
                 source_tag = "HardBuffer"
             else:
@@ -499,7 +521,8 @@ def main():
 
 
         step_duration = time.time() - step_start_time
-        print(f"[{step:03d}/{total_steps:03d} | {mode_desc}] Mutator VMR: {mut_vmr:.0%} | Mut R: {avg_mut_reward:.2f} | Breaker: {brk_desc} | HardBuffer: {len(hard_buffer)} ({step_duration:.1f}s)")
+        lr_tag = f" | LR_b: {current_lr_brk:.1e}" if current_lr_brk != lr_brk else ""
+        print(f"[{step:03d}/{total_steps:03d} | {mode_desc}] Mutator VMR: {mut_vmr:.0%} | Mut R: {avg_mut_reward:.2f} | Breaker: {brk_desc}{lr_tag} | HardBuffer: {len(hard_buffer)} ({step_duration:.1f}s)")
 
         # ---------------------------------------------------------
         # Phase 3: 周期性独立外部大考与跨代检查点保存
