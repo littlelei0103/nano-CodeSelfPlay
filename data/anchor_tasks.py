@@ -1,5 +1,5 @@
 """
-data/anchor_tasks.py - nano-SPIN 静态基准锚定题库 (Anchor Tasks Replay Pool)
+data/anchor_tasks.py - nano-CodeSelfPlay 静态基准锚定题库 (Anchor Tasks Replay Pool)
 
 包含 nano-GRPO 初始训练的 60 道高质量合成差分测试题。
 在自博弈训练期间，用于在 Phase 2 (Breaker 更新) 执行 50% 锚定数据回放，

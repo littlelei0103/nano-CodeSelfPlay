@@ -1,0 +1,33 @@
+{
+  "source_run": "checkpoints_v2_pure/20261018T080726Z-seed42",
+  "record": {
+    "key": "97575e864ed09c78",
+    "seed_id": "cmp_eq_15",
+    "domain": [
+      0,
+      50
+    ],
+    "f_ref_src": "def f_ref(x: int) -> bool:\n    return x == 15",
+    "f_mut_src": "def f_ref(x: int) -> bool:\n    return x == 15 or x == 20",
+    "sparsity": 0.0196078431372549,
+    "witnesses": [
+      20
+    ],
+    "solve_rate": 0.18181818181818182,
+    "total_hits": 8,
+    "total_trials": 44,
+    "added_step": 5,
+    "times_sampled": 5,
+    "times_solved": 3,
+    "groups_evaluated": 5
+  },
+  "sanity_inputs": [
+    0,
+    25,
+    40
+  ],
+  "rechecked_witnesses": [
+    20
+  ],
+  "note": "solve_rate is the final cumulative 8/44 statistic, not a measurement of the Breaker at step 5. Per-step model answers were not recorded."
+}

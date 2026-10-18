@@ -97,6 +97,43 @@ class TestHardBuffer(unittest.TestCase):
             if os.path.exists(tmp_path):
                 os.remove(tmp_path)
 
+    def test_candidate_level_solve_rate_tracking(self):
+        # 初始插入：4个候选中有1个破解，初始 solve_rate = 0.25
+        self.buffer.add(
+            f_ref_src=self.f_ref,
+            f_mut_src=self.f_mut,
+            domain=(0, 50),
+            seed_id="candidate_tracking",
+            sparsity=0.02,
+            candidate_hits=1,
+            total_candidates=4,
+            step=1
+        )
+        item = list(self.buffer.items.values())[0]
+        self.assertEqual(item["total_hits"], 1)
+        self.assertEqual(item["total_trials"], 4)
+        self.assertAlmostEqual(item["solve_rate"], 0.25)
+
+        # 第一次回放测试：4个候选中有1个破解
+        # total_hits -> 2, total_trials -> 8, solve_rate 仍为 2/8 = 0.25 (而不是跳变到 1.0)
+        self.buffer.update_result(item["key"], candidate_hits=1, total_candidates=4)
+        self.assertEqual(item["total_hits"], 2)
+        self.assertEqual(item["total_trials"], 8)
+        self.assertAlmostEqual(item["solve_rate"], 0.25)
+        self.assertEqual(item["times_sampled"], 0)
+        self.assertEqual(item["groups_evaluated"], 1)
+        self.assertEqual(item["times_solved"], 1)
+
+        # 第二次回放测试：4个候选全部未破解
+        # total_hits -> 2, total_trials -> 12, solve_rate 平滑下降至 2/12 = 0.1667
+        self.buffer.update_result(item["key"], candidate_hits=0, total_candidates=4)
+        self.assertEqual(item["total_hits"], 2)
+        self.assertEqual(item["total_trials"], 12)
+        self.assertAlmostEqual(item["solve_rate"], 2.0 / 12.0)
+        self.assertEqual(item["times_sampled"], 0)
+        self.assertEqual(item["groups_evaluated"], 2)
+        self.assertEqual(item["times_solved"], 1)
+
 
 if __name__ == "__main__":
     unittest.main()

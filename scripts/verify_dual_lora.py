@@ -29,7 +29,7 @@ def parse_args():
     parser.add_argument("--model_name", type=str, default="Qwen/Qwen2.5-1.5B",
                         help="基座模型名称或本地路径")
     parser.add_argument("--init_adapter", type=str,
-                        default="../nano-GRPO/checkpoints_counterexample/20261014T102327Z-d1694cb8/checkpoint-best",
+                        default="",
                         help="nano-GRPO 训练好的 breaker 适配器路径")
     parser.add_argument("--num_seeds", type=int, default=10,
                         help="用于测试 Mutator 初始合法率的种子函数数量")
@@ -186,7 +186,7 @@ def verify_initial_mutator_vmr(model: torch.nn.Module, tokenizer: any, num_seeds
 def main():
     args = parse_args()
     print("=" * 72)
-    print("🔍 Running nano-SPIN Dual-LoRA & Mutator Cold-Start Verification Suite")
+    print("🔍 Running nano-CodeSelfPlay Dual-LoRA & Mutator Cold-Start Verification Suite")
     print("=" * 72)
 
     # 1. 加载双 LoRA 模型

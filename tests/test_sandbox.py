@@ -117,6 +117,27 @@ class TestSandbox(unittest.TestCase):
         self.assertFalse(div)
         self.assertIn("out of domain", str(err))
 
+    def test_timeout_infinite_loop(self):
+        f_infinite = "def f_inf(x: int) -> int:\n    while True:\n        pass\n"
+        ok, res, err = execute_function_safely(f_infinite, "f_inf", 1, timeout_sec=0.2)
+        self.assertFalse(ok)
+        self.assertIn("Timeout", str(err))
+
+    def test_builtin_pollution_isolated(self):
+        f_evil = "def f_evil(x: int) -> int:\n    __builtins__['abs'] = lambda y: 99\n    return abs(x)\n"
+        ok, res, err = execute_function_safely(f_evil, "f_evil", -5)
+        # 无论子进程执行结果如何，父进程内置 abs 绝不可被篡改
+        self.assertEqual(abs(-2), 2)
+
+    def test_evaluate_counterexample_rejects_syntax_error_mutant(self):
+        f_ref = "def f_ref(x: int) -> bool:\n    return x < 30\n"
+        # 语法错误函数 (例如字符串粗暴替换产生的非法代码)
+        f_malformed = "def f_ref(x: int) ->= bool:\n    return x <= 30\n"
+        domain = (0, 50)
+        div, r_ref, r_mut, err = evaluate_breaker_counterexample(f_ref, f_malformed, 5, domain)
+        self.assertFalse(div)
+        self.assertIn("malformed", str(err).lower())
+
 
 if __name__ == "__main__":
     unittest.main()

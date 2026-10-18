@@ -1,318 +1,276 @@
-# nano-SPIN: Dual-LoRA Adversarial Self-Play for Code Mutation & Counterexample Discovery
+<h1 align="center">nano-CodeSelfPlay</h1>
 
-轻量、可复现的代码对抗自博弈强化学习框架：用单张消费级 **RTX 5070（8GB 显存）** 实现出题者（Mutator）与做题者（Breaker）双角色同台博弈，从零外部数据实现从 **40% 到 90%** 的递归自我进化（Zero-Data RSI）。
+<p align="center">
+  <strong>一个角色制造 Bug，另一个角色寻找反例。</strong><br>
+  用一个冻结基座、两个 LoRA，搭建可以亲手拆解的代码自博弈强化学习实验。
+</p>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
-[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
-[![PyTorch 2.x](https://img.shields.io/badge/PyTorch-2.x-red.svg)](https://pytorch.org/)
-[![Model: Qwen2.5-1.5B](https://img.shields.io/badge/Model-Qwen2.5--1.5B-purple.svg)](https://huggingface.co/Qwen/Qwen2.5-1.5B)
-[![Hardware: 8GB VRAM](https://img.shields.io/badge/Hardware-8GB%20VRAM%20Compatible-brightgreen.svg)](#hardware)
-[![Paradigm: Dual-LoRA Self-Play](https://img.shields.io/badge/Paradigm-Dual--LoRA%20Self--Play-orange.svg)](#architecture)
+<p align="center">
+  <a href="./LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-6b8afd?style=flat-square"></a>
+  <img alt="Python 3.11+" src="https://img.shields.io/badge/Python-3.11%2B-3776ab?style=flat-square">
+  <img alt="PyTorch 2.2+" src="https://img.shields.io/badge/PyTorch-2.2%2B-ee4c2c?style=flat-square">
+  <img alt="Qwen2.5-1.5B" src="https://img.shields.io/badge/Backbone-Qwen2.5--1.5B-7266b0?style=flat-square">
+  <a href="./tests"><img alt="Tests: unittest" src="https://img.shields.io/badge/Tests-unittest-239e87?style=flat-square"></a>
+</p>
 
----
+<p align="center">
+  <a href="#核心结果">实验结果</a> ·
+  <a href="#一个真实的出题案例">看个例子</a> ·
+  <a href="#如何工作">设计亮点</a> ·
+  <a href="#快速开始">快速开始</a> ·
+  <a href="#复现实验与图表">复现实验</a>
+</p>
 
-## 🌟 项目定位与核心亮点 (Motivation & Highlights)
+<p align="center">
+  <img src="./assets/selfplay-overview.svg" alt="Mutator 修改函数，执行器验证，HardBuffer 保存难题，Breaker 构造整数反例；两个角色共享冻结基座。" width="100%">
+</p>
 
-在前期项目 [`nano-GRPO`](../nano-GRPO) 中，找茬模型（Breaker）在 40 道静态人工离线合成的 Bug 题目上通过可验证强化学习（RLVR），实现了贪心通过率从基座 40.0% 到 78.33% 的跃迁。然而，**静态离线题库始终存在数据天花板**：模型容易过拟合同分布的固定缺陷模式，且无法自主探索未知的广谱边界。
+**在不提供人工编写的缺陷题对时，模型自己生成的突变题能否支撑反例发现能力的训练？** 本项目将这一问题落地为可控的单卡实验：Mutator 基于正确参考函数构造突变，Breaker 寻找触发二者行为差异的反例输入，受限执行环境提供可验证奖励。
 
-**nano-SPIN** 引入了双角色对抗自博弈闭环（Adversarial Self-Play Fine-Tuning）：
-1. **零外部数据递归自我进化（Zero-Data RSI）**：
-   不依赖任何人工标注的 Bug 数据集，仅从 40 个最简单的 Python 正确数学/逻辑种子函数 $f_{\text{ref}}$ 起步，通过出题者与做题者的“左右互搏”自主涌现出涵盖区间越界、极值截断、布尔逻辑与分段阶梯的高难缺陷。
-2. **单底座双独立 LoRA 角色隔离（Dual-LoRA Zero-Bleed Isolation）**：
-   在单张 8GB 显存（RTX 5070 Laptop）上，冻结单个 `Qwen2.5-1.5B-Base` 骨干权重（全精度 `bfloat16`），同时挂载两个物理隔离的轻量 LoRA 适配器（`mutator` 与 `breaker`）并绑定完全独立的 AdamW 优化器。模型在出题与做题之间动态热插拔切换，彻底杜绝单模型角色死锁与动量交叉污染。
-3. **双演化范式完备验证（Two-Regime Exploration & Consolidation）**：
-   - **Regime 1: Tabula Rasa（零起点白手起家）**：两角色均从 40% 的纯 Base 起步自博弈 120 步（9 代模型），贪心 Pass@1 突破至 **60.00%**，采样 Pass@4 高达 **90.00%**（**反超静态人工基准**），候选命中密度冲上全场最高的 **65.00%**！
-   - **Regime 2: Continual Warm-Start（热启动持续进化）**：从 `nano-GRPO` 最佳权重无缝起步，配合 50% 锚定数据回放，贪心 Pass@1 稳固锁定在 **80.00%**（零灾难性遗忘），采样 Pass@4 达到 **90.00%**，并将对抗题库破解率牢牢压制在 **20.4%**。
+> [!NOTE]
+> 已完成 **四种配置 × 三个训练种子** 的对照实验。在不注入静态人工缺陷题对（`anchor_ratio=0`）时，自生成题目训练将测试 **Greedy Pass@1** 从 **40.0%** 提升至 **60.0% ± 5.0%**；60 道人工静态缺陷题训练的结果为 **63.3% ± 10.4%**。
+>
+> **预热后冻结出题者，仍可获得相近成绩。** 当前规模下，持续更新出题者的额外收益尚不明确；本项目提供一套可复现的自博弈基线与消融记录。
 
----
+## 核心结果
 
-## 📊 双范式核心大表：外部独立基准评估（20 题固定隔离测试集）
+默认基座为 `Qwen/Qwen2.5-1.5B`。每次训练 75 个外层步，每 15 步在 20 道验证题上评估，以贪心分数选 best，同分保留较早模型；最终评估 20 道固定测试题。
 
-沿用与 `nano-GRPO` 严格一致的评测协议（20 道未见测试题，涵盖各类复杂的数值与分支边界），在统一基准下全景同表对比：
+<!-- results:start -->
+| 方案 | 测试 Greedy Pass@1 | 测试 Sample Pass@4 | 候选命中率 |
+| :--- | ---: | ---: | ---: |
+| Base | 40.00% | 55.00 ± 5.00% | 30.00 ± 3.31% |
+| Static GRPO | 63.33 ± 10.41% | 80.00 ± 0.00% | 52.50 ± 5.00% |
+| Self-play | 60.00 ± 5.00% | 80.00 ± 13.23% | 54.17 ± 8.04% |
+| Mixed replay (configured ratio 0.1) | 58.33 ± 2.89% | 80.00 ± 8.66% | 59.17 ± 7.11% |
+| Frozen after warmup | 58.33 ± 10.41% | 76.67 ± 7.64% | 51.67 ± 5.91% |
+<!-- results:end -->
 
-| 训练范式与模型 | 初始权重起点 | 训练步数 / 轮次 | 外部数据依赖 | 贪心 Pass@1 | 采样 Pass@4 | 候选命中密度 | 对抗题库规模 (HardBuffer) | 核心表现与能力特征 |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
-| **Qwen2.5-1.5B Base** | — | 0 | 0 | 40.00% (8/20) | 45.00% (9/20) | 26.25% (21/80) | — | 缺乏反例构造思维，输出格式散乱 |
-| **nano-GRPO (静态人工 RLVR)** | Base | 75 Steps | 40 道人工合成 Bug | 78.33% ± 2.9% | 85.00% ± 0.0% | 61.25% ± 3.3% | — | 在同分布静态样本上专精收敛 Top-1 窄分布 |
-| **nano-SPIN: Regime 1<br>(Tabula Rasa 零起点自博弈)** | **纯 Base (40%)** | **120 Steps<br>(Round 0~8, 9代)** | **0 道 (零外部数据)** | **60.00%**<br>*(+20.0% 净跃迁)* | **90.00%**<br>*(反超静态基准 +5.0%)* | **65.00%**<br>*(全场最高密度!)* | **84 道**<br>*(均值解率 45.8%)* | **广谱探索潜力爆发**：采样 Pass@4 与候选命中密度超越静态基准 |
-| **nano-SPIN: Regime 2<br>(Continual 热启动防遗忘)** | **nano-GRPO (78.3%)** | **30 Steps<br>(Round 1~3)** | **0 道 (仅 50% 锚定回放)** | **80.00%**<br>*(防守锁定零遗忘)* | **90.00%**<br>*(探索上限突破)* | **78.75%**<br>*(极高精准度)* | **26 道**<br>*(均值解率压制至 20.4%)* | **兼得确定性与探索力**：稳守 80% 贪心高分，同时压制深水对抗难题 |
+训练组使用种子 **42 / 43 / 44**，表中为均值 ± **样本标准差（ddof=1）**，不是置信区间。Base 的三个采样种子只重复解码同一个模型；训练组的波动包含训练和最终采样随机性。`Pass@4` 表示每题采样四次，至少一次找到有效反例。
 
-- **贪心 Pass@1**：`temperature=0.0` 贪心解码，度量模型的确定性决策精度；
-- **采样 Pass@4**：`temperature=0.7` 独立采样 4 路候选，至少一个成功即算通过，度量反例探索潜力；
-- **候选命中密度 (Hit Density)**：全部 $20 \times 4 = 80$ 个生成候选回答中有效反例的总体占比。
+<p align="center">
+  <img src="./assets/v2_regime_comparison.png" alt="四种训练配置与 Base 的测试结果；三栏柱状图展示均值，误差线表示样本标准差。逐种子结果见报告。" width="100%">
+</p>
 
----
+实验观察与证据边界：
 
-## 📈 深度动力学剖析：为什么对抗自博弈在探索力上战胜了静态监督？
+- **自生成题目支撑学习**：在仅提供正确参考函数、不注入人工缺陷题对的纯自博弈设置下，测试集贪心准确率从 Base 的 **40.0%** 提升至 **60.0% ± 5.0%**，与使用 60 道静态缺陷题的 `Static GRPO`（**63.3% ± 10.4%**）均值接近；静态、自博弈和混合回放的 `Pass@4` 均值均为 **80.0%**。
+- **持续更新与预热后冻结**：预热 5 步后冻结出题者的贪心均值为 **58.3% ± 10.4%**，持续更新出题者仅高出约 **1.7 个百分点**（本轮三个种子的样本标准差更小）。在当前 40 个短函数与行级替换的动作空间下，尚不足以宣称持续更新出题者是必要条件。
+- **数据与泛化边界**：测试题未用于训练或运行内的 checkpoint 选择，但在早期框架探索阶段已被查看过，不构成严格意义的全新盲测。当前评估集规模较小（20 题）且模板相近，尚不包含跨分布或大规模真实代码库的泛化验证。
 
-### 1. 静态监督收敛 Top-1 窄分布 vs. 对抗自博弈激发广谱反例直觉
-在 `nano-GRPO` 中，模型在 40 道固定的静态题目上反复通过可验证奖励优化，其策略分布逐渐向已见题目的特定语法与常数临域高度收敛（表现为贪心 Pass@1 很高，但采样 Pass@4 上限封顶在 85.00%）。
+完整逐种子成绩、配置与来源见 [结果汇总](./reports/v2_experiment_summary.md)、[原始报告](./reports/runs/) 与 [检查点核对记录](./reports/checkpoint_audit.json)。
 
-而在 `nano-SPIN` 的自博弈演化中，Mutator 会不断根据当前 Breaker 的薄弱点动态制造全新品种的逻辑陷阱（例如极值反转、开闭区间混淆、负数对称轴偏移）。为了在博弈中胜出，Breaker 必须迫使自身涵盖更广谱的边界推理空间。因此：
-- **采样探索上限被彻底打破**：Pass@4 从 Base 的 45% 飙升至 **90.00%**（反超静态监督模型的 85.00%）；
-- **候选命中密度达到全场最高的 65.00%**：即使在 $T=0.7$ 的高探索采样下，模型生成的候选输入中近三分之二均为精准击穿潜伏 Bug 的有效反例！
+## 一个真实的出题案例
 
-### 2. 四维评估综合大看板 (2×2 Dashboard)
-全景呈现 9 个代际（Round 0 至 Round 8）在外部基准大考、出题者动力学、跨代博弈矩阵与题库扩张维度的全貌：
-
-![nano-SPIN 120步四维核心评估看板](./assets/spin_four_dimension_eval.png)
-
-### 3. $9 \times 9$ 跨代对抗博弈矩阵（Cross-Play Matrix Heatmap）
-展示全部 9 代出题者与 9 代防守者在 81 场交叉盲测中的攻防进化态势：
-
-![nano-SPIN 9x9 跨代对抗热力图](./assets/spin_crossplay_heatmap.png)
-
-```
-                       Breaker 代际进化 (向右防守更强, 找茬胜率逐步攀升)
-               B_0    B_1    B_2    B_3    B_4    B_5    B_6    B_7    B_8
-Mutator M_0  [ 25.0%  25.0%  58.3%  66.7%  66.7%  66.7%  66.7%  66.7%  66.7% ]
-   |    M_1  [ 50.0%  50.0%  66.7%  75.0%  75.0%  75.0%  75.0%  75.0%  75.0% ]
-   |    M_2  [ 41.7%  41.7%  50.0%  66.7%  66.7%  66.7%  66.7%  66.7%  66.7% ]
-   |    M_3  [ 33.3%  33.3%  58.3%  58.3%  58.3%  58.3%  58.3%  58.3%  58.3% ]
-   |    M_4  [ 50.0%  50.0%  58.3%  66.7%  66.7%  66.7%  66.7%  66.7%  66.7% ]
-   |    M_5  [ 41.7%  41.7%  58.3%  58.3%  58.3%  58.3%  58.3%  58.3%  58.3% ]
-   |    M_6  [ 33.3%  33.3%  66.7%  75.0%  75.0%  75.0%  75.0%  75.0%  75.0% ]
-   |    M_7  [ 41.7%  41.7%  66.7%  66.7%  66.7%  66.7%  66.7%  66.7%  66.7% ]
-   V    M_8  [ 50.0%  50.0%  75.0%  83.3%  83.3%  83.3%  83.3%  83.3%  83.3% ]
-               ^                                                        ^
-               |--- 初代防守孱弱 (仅 25%~50%)                             |--- 终代高维统治 (稳定 66.7%~83.3%)
-```
-
-- **向右防守递增**：面对第 8 代出题者 $\mathcal{M}_8$ 的复杂突变，初代 $\mathcal{B}_0$ 仅有 50% 胜率，而成熟后代 Breaker 展现出高达 **83.3%** 的统治级防守胜率（**跨代代差胜率净增 +33.3%**）；
-- **向下出题递难**：各代 Mutator 的有效出题率（VMR）从早期的 66.7% 稳步提升至后期的 **87.5%**，注入缺陷的隐蔽度与对抗难度持续攀升。
-
----
-
-## 🛡️ 攻克三大自博弈坍缩陷阱 (Key Engineering Breakthroughs)
-
-在对抗自博弈落地过程中，我们识别并攻克了三个致命的动力学死锁陷阱：
-
-### 1. 角色死锁与参数污染 (Role Entanglement & Zero-Gradient Deadlock)
-- **陷阱**：单 LoRA 共享权重时，模型若先学做题，输出分布会高度特化为“输出短数字输入”，在出题时无法直接写出合法的 Python 函数，导致组内 Reward 全为 0，陷入无法产生梯度的死锁。
-- **解法**：采用 **Dual-LoRA 物理隔离 + 行级突变补丁（Line-Edit Patch）**。底座完全冻结，挂载独立的 `mutator` 与 `breaker` 适配器。Mutator 仅需输出单行替换指令（`OLD: ... NEW: ...`），大幅降低长代码抄写损耗，合法出题率从 0% 跃升至 **87.5%**。
-
-### 2. 冷启动零方差与初期摆烂 (Zero Variance & Cold-Start Slacking)
-- **陷阱**：稀疏 0/1 奖励会导致早期 Mutator 极易遭遇组内全部 0 分，无法反向传播；后期 Mutator 又倾向于输出最容易被破解的题以求稳。
-- **解法**：设计**阶梯塑形奖励（Dense Shaping Reward）** 与 **渐进式深水区课程（Progressive Curriculum Tightening）**：
-  - 前期（$0 < p_{\text{solve}} \le 0.50$）：提供稳健的语法与等价性保底分，鼓励积极出题；
-  - 中后期（$0 < p_{\text{solve}} \le 0.35$）：将黄金带收紧至深水区，并将最高对抗奖励提至 **`+0.75`**，倒逼 Mutator 放弃平庸改动，专精隐蔽高难 Bug。
-
-### 3. 分布偏移与灾难性遗忘 (Distribution Shift & Catastrophic Forgetting)
-- **陷阱**：Breaker 在后期长期面对自生成的奇葩突变，容易丢失通用的常规边界推理能力（贪心退化）。
-- **解法**：引入 **50% 锚定数据回放（Anchor Replay）** 结合 **余弦学习率衰减（Cosine Annealing）**。在 Phase 2 中保持回放静态锚定题，同时将 Breaker 学习率从 `2e-5` 平滑衰减至 `5e-6`，抑制熵膨胀，成功将贪心 Pass@1 稳固在 **60.0% ~ 80.0%**。
-
----
-
-## 🔬 真实对抗攻防案例剖析 (Case Study from HardBuffer)
-
-以下是从 `HardBuffer`（条目 `key: 765df80382d55cfd`）中提取的真实高隐蔽对抗攻防实例：
-
-### 1. 种子正确函数与 Mutator 行级注入
-出题模型以区间反转函数 `bool_not_range`（定义域 $[0, 50]$）为靶心，通过行级补丁将闭区间修改为半开区间：
+来自纯自博弈 Seed 42 的 HardBuffer，条目 `97575e864ed09c78`：
 
 ```python
-# 种子正确函数 (Reference Function f_ref)
-def f_ref(x: int) -> bool:
-    return not (15 <= x <= 35)
+# 正确函数
+def f_ref(x):
+    return x == 15
 
-# Mutator 生成的行级补丁 (Line-Edit Patch)
-# OLD: return not (15 <= x <= 35)
-# NEW: return not (15 < x <= 35)
+# Mutator 生成的突变
+def f_mut(x):
+    return x == 15 or x == 20
 
-# 实际合成的突变缺陷函数 (Mutated Function f_mut)
-def f_mut(x: int) -> bool:
-    return not (15 < x <= 35)
+# 能揭露差异的输入
+assert f_ref(20) != f_mut(20)
 ```
 
-### 2. 安全沙箱三层防作弊校验
-- **常规测试 $X_{\text{sanity}} = [5, 25, 45]$ 验证**：
-  - $x = 5$：$f_{\text{ref}}(5) = \text{True},\ f_{\text{mut}}(5) = \text{True}$（通过 ✅）
-  - $x = 25$：$f_{\text{ref}}(25) = \text{False},\ f_{\text{mut}}(25) = \text{False}$（通过 ✅）
-  - $x = 45$：$f_{\text{ref}}(45) = \text{True},\ f_{\text{mut}}(45) = \text{True}$（通过 ✅）
-- **极端错误稀疏度（Sparsity = 1.96%）**：
-  在全域 $[0, 50]$ 共 51 个整数中，**仅有单个点 $x = 15$ 能触发行为不一致**：
-  - $f_{\text{ref}}(15) = \text{not}(\text{True}) = \mathbf{False}$
-  - $f_{\text{mut}}(15) = \text{not}(\text{False}) = \mathbf{True}$
+原种子的常规输入 `[0, 25, 40]` 无法区分两者；在整数域 `[0, 50]` 内，差分点只有 **20**。这个例子展示了“通过常规测试，但仍存在边界缺陷”的任务形式。
 
-### 3. 初代模型 vs. 进化模型的攻防对决
-- **初代模型 $\mathcal{B}_0$（失败 ❌）**：
-  盲目尝试常规负数或中间数（如输出 `<input>0</input>` 或 `<input>20</input>`），无法识别边界闭合差异，破解率为 $0\%$，被成功难倒！
-- **终代进化模型 $\mathcal{B}_8$（成功破解 ✅）**：
-  在 `<think>` 中敏锐定位到控制流两端的开闭符号差异：
-  > *"Left boundary in f_ref is closed (`15 <= x`), but open in f_mut (`15 < x`). The discrepancy point is exactly at $x=15$."*
-  
-  输出 `<input>15</input>`，精准击穿潜伏缺陷，斩获满分奖励！
+[案例原始记录](./reports/case_study.json) 包含代码、常规输入与重新执行验证的差分点。记录中的 `8/44` 是该题最终累计候选命中率，不是某一步的模型成绩；没有逐步回答日志，因此不据此编造能力演进轨迹。
 
----
+## 如何工作
 
-<a id="architecture"></a>
-## 🏗️ 系统闭环架构与交互流程
+| 设计 | 实现方式 |
+| :--- | :--- |
+| **一个基座，两个角色** | 冻结基座，独立 `mutator` / `breaker` LoRA 与 AdamW |
+| **短输出动作** | Mutator 输出 `OLD:` / `NEW:` 行级替换；Breaker 输出整数 |
+| **执行验证** | 常规输入校验后，穷举该种子的有限整数域，确认存在真实差分 |
+| **动态题库** | HardBuffer 按历史命中率、缺陷稀疏度与采样次数回放 |
+| **零方差处理** | 全对或全错组跳过更新，必要时尝试一组备用题 |
+| **四种实验模式** | 持续自博弈、混合回放、预热后冻结出题者、Breaker-only 静态 GRPO |
 
-```mermaid
-flowchart TD
-    A["种子函数库 (40 Seeds: f_ref + X_sanity)"] --> B["出题者: Mutator LoRA<br/>(Prompt 引导思考注入单行补丁)"]
-    B --> C["候选补丁: OLD: ... / NEW: ..."]
-    
-    subgraph S1 ["安全沙箱三层防作弊校验 (Sandbox Guard)"]
-        C --> D1["1. 语法编译与 AST 解析校验"]
-        D1 -->|通过| D2["2. 隐蔽性约束: X_sanity 上 f_mut == f_ref<br/>(杜绝死值作弊与低幼改动)"]
-        D2 -->|通过| D3["3. 非等价约束: 全域网格探针验证存在反例<br/>(杜绝等价代码与空操作)"]
-    end
-    
-    D3 -->|有效突变| E["当前 Breaker 尝试探针破解 (G=4)"]
-    D3 -->|校验失败| F["阶梯奖励 R_mutator = 0.0 ~ 0.2"]
-    
-    E --> G["计算破解率 p_solve<br/>甜蜜点奖励: R_mutator(p_solve)"]
-    G --> H["Mutator GRPO 策略参数更新<br/>(optimizer_mutator 独立反向传播)"]
-    
-    G -->|成功难倒 Breaker (p_solve < 1.0)| I["入库: 动态对抗题库 HardBuffer<br/>(优先经验加权采样)"]
-    
-    I -->|50% 自博弈难题| J["做题者: Breaker LoRA<br/>(自博弈对抗采样 G=8)"]
-    K0["静态锚定题库 (Anchor Tasks)"] -->|50% 锚定回放| J
-    
-    J --> K["安全沙箱差分执行: f_ref(x) != f_mut(x)"]
-    K -->|命中反例| L["奖励 R_breaker = +1.0"]
-    K -->|未命中| M["奖励 R_breaker = 0.0"]
-    
-    L & M --> N["Breaker GRPO 策略参数更新<br/>(optimizer_breaker 独立反向传播 + Cosine 退火)"]
-    
-    N --> O["周期性外部独立大考 (Held-out Benchmark 20 题)<br/>贪心 Pass@1 & 采样 Pass@4 & 跨代矩阵"]
-```
+<p align="center">
+  <img src="./assets/v2_training_evolution.png" alt="三个训练种子的验证贪心曲线与唯一生成题对数量；阴影为样本标准差。" width="100%">
+</p>
 
----
+题库扩大不等于出题者变强；冻结出题者仍然采样新题，只是不更新权重。
 
-## ⚡ 快速开始与复现指南 (Quickstart)
+<details>
+<summary><strong>策略更新、课程奖励与判题契约</strong></summary>
 
-### 1. 环境准备与依赖安装
+每个候选组只更新一次，`old_logprobs` 为更新前当前分布的 detach 值，因此初始重要性比率为 1；这不是多轮 PPO 更新。采样、当前策略和基座参考使用相同温度，关闭 top-k / top-p 截断。基座参考通过 PEFT `disable_adapter()` 获取，使用 FP32 k3 KL。
+
+默认生成上限为 Mutator 32 tokens、Breaker 24 tokens。Mutator 在预热期获得格式、语法与常规测试的塑形奖励；有效突变在前期对 `0 < p_solve <= 0.50` 的组给予较高奖励，Step 30 后收紧到 `0 < p_solve <= 0.35`。`p_solve=0` 也有单独的奖励分支。双方奖励不是严格零和。
+
+协议 `numeric-selfplay-v2`：
+
+1. 输入必须是定义域内的整数，不将 float 或 bool 转成整数。
+2. 每次输入都重新执行函数定义，创建全新的命名空间与默认参数，保持批量和单次判题的状态语义一致。
+3. 返回值支持 `bool`、`int`、有限 `float`，按 Python 数值相等规则比较。
+4. 参考函数必须正常返回。突变返回不同值，或发生真实运行时异常（如除零），可以构成差分。
+5. 超时、资源耗尽、进程故障和无法解析的返回结果不提供差分奖励；批次超时会保守拒绝整个突变。
+
+代码通过 AST 受限语法检查，在 `python -I -S` 子进程中执行，默认每批次超时 1 秒；支持 `resource` 的系统还施加 512 MiB 地址空间限制。这是面向小型数值函数的受限执行环境，不是通用的不可信代码托管沙盒。
+
+</details>
+
+<details>
+<summary><strong>数据划分、回放比例与跨代分析</strong></summary>
+
+| 数据 | 数量 | 用途 |
+| :--- | ---: | :--- |
+| 正确种子函数 | 40 | 人工编写的函数与常规输入，供 Mutator 出题 |
+| 静态锚定题 | 60 | 静态组训练，以及混合组回放和救援 |
+| Validation | 20 | 训练监控与 best 选择 |
+| Test | 20 | 选模结束后的固定基准评估 |
+
+静态训练、验证、测试没有相交 ID 或完全相同的函数对，但模板仍相关。`anchor_ratio=0` 表示不注入静态 Bug 题对，不意味着没有人工种子、预训练数据或验证集指导。
+
+`anchor_ratio=0.1` 是抽题概率配置。题库为空或需要救援时也可能使用锚定题，不能把它写成实测有且仅有 10% 的训练候选来自静态题。
+
+[Seed 42 跨代原始报告](./reports/crossplay_seed42.json) 使用训练种子上的新生成突变，衡量双方相互适应，不代表独立分布泛化。每个种子保留第一个有效突变，各行题数可能不同；空题库为 N/A，而不是 0% 胜率。它也不能单独证明 Mutator 持续变强。
+
+</details>
+
+## 快速开始
+
+建议 Linux、Python 3.11 与支持所选 PyTorch 版本的 NVIDIA GPU。CPU 可运行测试，完整训练建议使用 GPU；显存占用随环境与生成配置变化，当前报告未记录可比较的峰值。
+
 ```bash
-git clone https://github.com/littlelei0103/nano-SPIN.git
-cd nano-SPIN
-
-# 推荐复用 nano-grpo 的 conda 环境
-conda activate nano-grpo
+python -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
+python -m unittest discover -s tests -v
 ```
 
-### 2. 运行完整单元回归测试
+六步流程检查：
+
 ```bash
-# 验证沙箱三层校验、行级补丁解析、Dual-LoRA 挂载与端到端闭环 (秒级全绿)
-python -m unittest discover tests/ -v
+python train_selfplay.py \
+  --total_steps 6 --eval_interval 3 --mutator_warmup_steps 2 \
+  --anchor_ratio 0 --seed 42 --output_dir checkpoints_smoke
 ```
 
-### 3. 运行主线自博弈训练
+该命令检查生成、优化器更新与保存链路，不验证最终效果。有效梯度仍需要候选组奖励有方差。
 
-#### 模式一：Tabula Rasa（零起点白手起家 120 步长程自博弈）
+## 复现实验与图表
+
+### 训练
+
+以下以 Seed 42 为例；三种子实验分别替换为 42、43、44。
+
 ```bash
-python train_spin.py \
-  --total_steps 120 \
-  --eval_interval 15 \
-  --mutator_warmup_steps 5 \
-  --lr_mutator 2e-5 \
-  --lr_breaker 2e-5 \
-  --cosine_decay_start 25 \
-  --curriculum_tighten_step 30 \
-  --anchor_ratio 0.1 \
-  --output_dir checkpoints_spin
+# A：纯自博弈
+python train_selfplay.py --total_steps 75 --eval_interval 15 \
+  --mutator_warmup_steps 5 --anchor_ratio 0 \
+  --seed 42 --output_dir checkpoints_v2_pure
+
+# B：混合回放
+python train_selfplay.py --total_steps 75 --eval_interval 15 \
+  --mutator_warmup_steps 5 --anchor_ratio 0.1 \
+  --seed 42 --output_dir checkpoints_v2_mixed
+
+# C：预热后冻结 Mutator（仍会持续生成题目）
+python train_selfplay.py --total_steps 75 --eval_interval 15 \
+  --mutator_warmup_steps 5 --anchor_ratio 0 --freeze_mutator_after_warmup \
+  --seed 42 --output_dir checkpoints_v2_frozen_mutator
+
+# D：纯静态，只训练 Breaker，跳过 Mutator 生成与更新
+python train_selfplay.py --total_steps 75 --eval_interval 15 \
+  --breaker_only_static --seed 42 --output_dir checkpoints_v2_breaker_static
 ```
 
-#### 模式二：Continual Warm-Start（热启动防遗忘自博弈）
+静态模式从第 1 步训练，按种子打乱 60 题后循环遍历；其余三组的前 5 步只预热 Mutator。**75 个外层步不代表相同的更新次数或计算预算。**
+
+### 不加载模型，重建发布图表
+
+仓库包含原始最终报告和验证轨迹，不需要下载权重或重跑训练：
+
 ```bash
-python train_spin.py \
-  --total_steps 30 \
-  --eval_interval 10 \
-  --init_adapter ../nano-GRPO/checkpoints_counterexample/<run-id>/checkpoint-best \
-  --anchor_ratio 0.5 \
-  --lr_breaker 5e-6 \
-  --output_dir checkpoints_spin
+python scripts/aggregate_all_reports.py --update-readme
+python scripts/plot_comparison.py
 ```
 
-#### 模式三：断点无缝续跑扩展训练
+汇总器默认读取 `reports/runs/`，验证分组配置、种子完整性、选模和共享判题指纹。缺失或重复种子会报错，不补零或静默覆盖。未来本地新实验可用 `--source runs` 读取检查点目录下的报告；同组同种子的多个运行需先明确选定。
+
+### 训练计算量
+
+<!-- cost:start -->
+| 方案 | Breaker 有效更新（完整运行） | Breaker 候选数 | Mutator 候选数 | 耗时（秒） |
+| :--- | ---: | ---: | ---: | ---: |
+| Static GRPO | 43.00 ± 3.00 | 600.00 ± 0.00 | 0.00 ± 0.00 | 312.63 ± 55.43 |
+| Self-play | 54.00 ± 3.61 | N/A (not recorded) | N/A (not recorded) | N/A (not recorded) |
+| Mixed replay (configured ratio 0.1) | 53.67 ± 5.03 | N/A (not recorded) | N/A (not recorded) | N/A (not recorded) |
+| Frozen after warmup | 59.33 ± 1.53 | N/A (not recorded) | N/A (not recorded) | N/A (not recorded) |
+<!-- cost:end -->
+
+有效更新次数来自 AdamW 检查点计数；静态组生成量与耗时来自运行记录。其余旧运行没有完整保存所有探针、救援候选数及耗时，因此显示 N/A，不使用手写近似值。
+
+冻结组依然每步生成 4 个候选，75 步的配置对应 300 个 Mutator 候选，不能只算预热的 20 个。这个配置推导也不能替代包含中断丢弃尝试的真实耗时记录。静态组耗时包括主循环中的周期验证与保存，排除模型加载、初始验证和最终测试。
+
+<details>
+<summary><strong>评估、检查点与续训</strong></summary>
+
 ```bash
-# 从已有的运行目录无损恢复 HardBuffer 与最新代际检查点，向前继续扩展训练
-python train_spin.py \
-  --resume_dir checkpoints_spin/<run-timestamp> \
-  --total_steps 120
+# 原始 Base 评估（需要加载模型；写入 reports/base_benchmark_eval.json）
+python scripts/eval_base_benchmark.py
+
+# 对指定运行做跨代分析，优先看验证集
+python eval_selfplay.py --run_dir checkpoints_v2_pure/RUN_DIRECTORY \
+  --split val --seed 42 --output_dir eval_outputs/RUN_DIRECTORY
+
+# 单次训练遥测图
+python scripts/plot_training.py --run_dir checkpoints_v2_pure/RUN_DIRECTORY \
+  --output eval_outputs/RUN_DIRECTORY/training.png
 ```
 
-### 4. 运行全代际四维评估与跨代矩阵热力图绘制
+`scripts/plot_training.py` 读取单次运行日志，展示验证分数、Breaker 候选命中率、Mutator 有效率与 HardBuffer 大小；无需加载模型。`scripts/plot_comparison.py` 则读取汇总报告，生成前面的多组结果对比图。
+
+新训练默认写入 `checkpoints_selfplay/`，日志为 `metrics.jsonl`。评估、绘图和汇总仍可读取历史 `metrics_spin.jsonl`；已发布的原始报告、检查点与历史图表保留原名。
+
+模型按验证贪心选 best，初始基线也参与选择；最终报告显式加载所选 adapter，加载失败会报错。Round 0 表示该次运行的初始适配器，热启动时不等于 Base。
+
+检查点保存两个适配器、tokenizer、两个优化器、训练步数、best 信息、基线、Python / PyTorch CPU / CUDA RNG，以及同一时刻的 HardBuffer。新运行还保存累计训练遥测，区分 Breaker 训练与出题阶段探针，不把未记录的历史计数当成零。
+
+同一源码下续训示例：
+
 ```bash
-# 自动发现目录下的所有代际检查点，生成出版级四维看板与 N x N 跨代博弈热力图
-python eval_spin.py \
-  --run_dir checkpoints_spin/<run-timestamp> \
-  --output_dir assets \
-  --device cuda
+python train_selfplay.py --resume_dir checkpoints_v2_pure/RUN_DIRECTORY \
+  --total_steps 90 --eval_interval 15 --mutator_warmup_steps 5 \
+  --anchor_ratio 0 --seed 42
 ```
 
----
+需保持训练配置一致，冻结组和静态组也要带回对应开关。延长步数不会重排原有余弦学习率日程。配置、训练源码、数据指纹或 PyTorch 版本改变会拒绝精确恢复；不能通过跳过校验将不同实验混接。
 
-<a id="hardware"></a>
-## 💻 硬件适配与显存开销 (RTX 5070 8GB Profile)
+发布结果来自记录中标识的历史源码版本；当前版本补充了遥测并统一了入口命名。旧检查点若与当前源码指纹不同，可用于 `--init_adapter` 权重热启动新实验，不能直接当作当前源码的精确续训。
 
-整个训练与评估流程完全设计并验证于单张消费级笔记本显卡 **NVIDIA GeForce RTX 5070 Laptop (8GB VRAM)**：
+</details>
 
-| 训练阶段与状态 | 显存占用 (VRAM) | 算力与吞吐表现 | 优化技术保障 |
-| :--- | :---: | :---: | :--- |
-| **模型初始化与加载** | ~2,950 MB | < 5 秒 | 共享冻结基座，PEFT 动态挂载双独立 LoRA |
-| **Mutator 采样与更新 (G=4)** | ~3,350 MB | 约 2.5s / 步 | 单行补丁快速生成（Max 32 tokens），安全子进程沙箱 |
-| **Breaker 采样与更新 (G=8)** | ~3,950 MB | 约 4.5s / 步 | 梯度检查点（Gradient Checkpointing）+ 零缓存推理 |
-| **81 场跨代盲测综合大考** | ~3,600 MB | 约 3 分钟跑完 | 单基座热插拔轮换评估，无冗余底座加载 |
-
----
-
-## 📂 项目代码结构
+## 项目地图
 
 ```text
-nano-SPIN/
-├── core/
-│   ├── grpo_engine.py      # Dual-LoRA 双角色热插拔引擎与双优化器隔离更新
-│   ├── hard_buffer.py      # 动态对抗难题缓冲池 (优先经验加权采样与持久化)
-│   └── sandbox.py          # 安全子进程执行、三层突变校验探针与差分判题
-├── roles/
-│   ├── mutator.py          # Mutator 角色 Prompt、行级补丁提取与深水区课程奖励
-│   └── breaker.py          # Breaker 角色 Prompt、反例输入解析与客观差分奖励
-├── data/
-│   ├── seed_functions.py   # 40 个多样化干净参考种子函数与常规测试集 X_sanity
-│   ├── anchor_tasks.py     # 60 道防遗忘静态锚定题库 (用于 Phase 2 混合回放)
-│   └── heldout_eval.py     # 20 道严格隔离的外部基准大考测试题 (用于客观跨代评估)
-├── tests/                  # 19 项单元回归测试 (涵盖沙箱、角色、双 LoRA 与自博弈闭环)
-│   ├── test_sandbox.py
-│   ├── test_roles.py
-│   ├── test_data.py
-│   ├── test_grpo_engine.py
-│   └── test_spin_e2e.py
-├── train_spin.py           # 对抗自博弈训练主引擎 (支持双范式、Cosine退火与无缝续跑)
-├── eval_spin.py            # 四维综合大考与 N x N 跨代对抗矩阵渲染套件
-├── assets/                 # 出版级高清可视化图表 (PNG & SVG)
-│   ├── spin_four_dimension_eval.png
-│   ├── spin_crossplay_heatmap.png
-│   └── spin_evolution_curves.png
-└── requirements.txt        # 依赖包规范清单
+train_selfplay.py               四种训练模式、验证选模、最终测试
+eval_selfplay.py                跨代与固定基准评估（需要模型）
+core/                          GRPO、受限执行、HardBuffer 与实验状态
+roles/                         两个角色的提示词、解析和奖励
+data/                          正确函数、锚定题、验证与测试基准
+scripts/
+├── plot_training.py            单次运行的训练遥测（只读日志）
+├── plot_comparison.py          四组 × 三种子的发布结果图（只读报告）
+├── aggregate_all_reports.py    校验原始报告、汇总结果与刷新表格
+├── eval_base_benchmark.py      Base 模型基准评估
+└── verify_dual_lora.py         双角色适配器检查
+tests/                         数学、判题、角色隔离、续训与报告回归
+reports/runs/                  发布实验的原始报告和验证轨迹
+reports/                       汇总、案例、检查点审计与历史记录
+assets/                        SVG 架构图与从报告生成的图表
 ```
 
----
+当前结果还不能回答分布外泛化、扩大模型或训练预算后的表现，也未证明持续共演或混合回放具有统计显著优势。作为练手项目，重点是把机制、对照和证据保留下来。
 
-## 📜 许可协议与引用 (License & Citation)
+相关项目：[nano-GRPO](https://github.com/littlelei0103/nano-GRPO)；实际基座：[Qwen2.5-1.5B](https://huggingface.co/Qwen/Qwen2.5-1.5B)。历史探索记录见 [legacy_exploration.json](./reports/legacy_exploration.json)。
 
-本项目采用 [MIT 许可证](./LICENSE) 开源。
-
-如本项目的双独立 LoRA 自博弈架构、行级突变补丁或课程奖励机制对您的研究有所启发，欢迎引用本项目及关联工作：
-
-```bibtex
-@software{nano_spin2026,
-  author = {nano-SPIN Contributors},
-  title = {nano-SPIN: Dual-LoRA Adversarial Self-Play for Code Mutation and Counterexample Discovery},
-  year = {2026},
-  publisher = {GitHub},
-  journal = {GitHub repository},
-  howpublished = {\url{https://github.com/littlelei0103/nano-SPIN}}
-}
-
-@software{nano_grpo2026,
-  author = {nano-GRPO Contributors},
-  title = {nano-GRPO: Verifiable RL for Counterexample Search},
-  year = {2026},
-  publisher = {GitHub},
-  journal = {GitHub repository},
-  howpublished = {\url{https://github.com/littlelei0103/nano-GRPO}}
-}
-```
+<p align="center"><sub>Small models. Short programs. Executable feedback.</sub><br><sub><a href="./LICENSE">MIT License</a></sub></p>

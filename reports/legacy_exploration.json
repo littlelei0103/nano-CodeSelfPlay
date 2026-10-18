@@ -1,0 +1,90 @@
+{
+  "status": "historical_only_not_v2_evidence",
+  "evaluation_protocol": "legacy-unrecorded",
+  "limitations": [
+    "Static anchors may have been used; exact full configuration was not recorded.",
+    "The benchmark was inspected during development and was used for periodic evaluation.",
+    "Sandbox semantics, buffer statistics, and cross-play fallback differed from v2.",
+    "These are final training-log entries, not separate post-training sampled evaluations."
+  ],
+  "runs": [
+    {
+      "run_id": "20261018T054222Z",
+      "source_path": "checkpoints_spin/20261018T054222Z/metrics_spin.jsonl",
+      "source_sha256": "bf9e3f3a1b2042dabab24ad76a18f523d2d80b3343e00684c35d474c70e7801a",
+      "record_count": 9,
+      "initial_record": {
+        "step": 0,
+        "round": 0,
+        "is_warmup": true,
+        "mut_validity_rate": 0.0,
+        "mut_avg_reward": 0.0,
+        "mut_grad_norm": 0.0,
+        "brk_solve_rate": 0.0,
+        "brk_avg_reward": 0.0,
+        "brk_grad_norm": 0.0,
+        "pool_size": 0,
+        "heldout_greedy_pass1": 0.4,
+        "heldout_sample_pass4": 0.55,
+        "heldout_hit_rate": 0.2625,
+        "duration_sec": 0.0
+      },
+      "last_record": {
+        "step": 120,
+        "round": 8,
+        "is_warmup": false,
+        "mut_validity_rate": 0.0,
+        "mut_avg_reward": 0.0,
+        "mut_grad_norm": 0.0,
+        "brk_solve_rate": 0.75,
+        "brk_avg_reward": 0.75,
+        "brk_grad_norm": 4.818804740905762,
+        "pool_size": 84,
+        "heldout_greedy_pass1": 0.6,
+        "heldout_sample_pass4": 0.85,
+        "heldout_hit_rate": 0.65,
+        "duration_sec": 4.02463173866272
+      },
+      "training_config": null
+    },
+    {
+      "run_id": "20261018T031046Z",
+      "source_path": "checkpoints_spin/20261018T031046Z/metrics_spin.jsonl",
+      "source_sha256": "f5b98cba8a9b1d3117e38a1ca9a192a0d2cac1cab3b8e34d3b98f49ce6d64709",
+      "record_count": 4,
+      "initial_record": {
+        "step": 0,
+        "round": 0,
+        "is_warmup": true,
+        "mut_validity_rate": 0.0,
+        "mut_avg_reward": 0.0,
+        "mut_grad_norm": 0.0,
+        "brk_solve_rate": 0.0,
+        "brk_avg_reward": 0.0,
+        "brk_grad_norm": 0.0,
+        "pool_size": 0,
+        "heldout_greedy_pass1": 0.8,
+        "heldout_sample_pass4": 0.9,
+        "heldout_hit_rate": 0.8,
+        "duration_sec": 0.0
+      },
+      "last_record": {
+        "step": 30,
+        "round": 3,
+        "is_warmup": false,
+        "mut_validity_rate": 0.0,
+        "mut_avg_reward": 0.037500000000000006,
+        "mut_grad_norm": 0.8938698768615723,
+        "brk_solve_rate": 0.0,
+        "brk_avg_reward": 0.0,
+        "brk_grad_norm": 0.0,
+        "pool_size": 26,
+        "heldout_greedy_pass1": 0.8,
+        "heldout_sample_pass4": 0.95,
+        "heldout_hit_rate": 0.7875,
+        "duration_sec": 3.790022611618042
+      },
+      "training_config": null
+    }
+  ]
+}

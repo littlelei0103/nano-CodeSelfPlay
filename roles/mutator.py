@@ -1,5 +1,5 @@
 """
-roles/mutator.py - nano-SPIN 出题者角色 (Mutator / Bug Injector)
+roles/mutator.py - nano-CodeSelfPlay 出题者角色 (Mutator / Bug Injector)
 
 职责:
   1. format_mutator_prompt: 生成出题者专用的系统与用户提示词 (引导模型在 <think> 中构思隐蔽缺陷，在 <code> 中输出突变代码)。

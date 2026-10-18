@@ -1,5 +1,5 @@
 """
-roles/breaker.py - nano-SPIN 找茬者角色 (Breaker / Counterexample Finder)
+roles/breaker.py - nano-CodeSelfPlay 找茬者角色 (Breaker / Counterexample Finder)
 
 职责:
   1. format_breaker_prompt: 生成找茬者专用的系统与用户提示词 (引导模型在 <think> 中分析逻辑差异，在 <input> 中给出反例)。

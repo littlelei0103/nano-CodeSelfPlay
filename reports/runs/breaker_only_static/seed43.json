@@ -1,0 +1,62 @@
+{
+  "protocol_version": "numeric-selfplay-v2",
+  "manifest": {
+    "protocol_version": "numeric-selfplay-v2",
+    "config": {
+      "model_name": "Qwen/Qwen2.5-1.5B",
+      "device": "cuda",
+      "seed": 43,
+      "mutator_warmup_steps": 0,
+      "eval_interval": 15,
+      "mut_rollouts": 4,
+      "breaker_rollouts": 8,
+      "lr": 2e-05,
+      "lr_mutator": 2e-05,
+      "lr_breaker": 2e-05,
+      "lr_breaker_min": 5e-06,
+      "cosine_decay_start": 25,
+      "curriculum_tighten_step": 30,
+      "anchor_ratio": 0.0,
+      "kl_coef": 0.01,
+      "temperature": 0.7,
+      "freeze_mutator_after_warmup": false,
+      "breaker_only_static": true
+    },
+    "source_sha256": {
+      "train_spin.py": "85da5c9006b961fcde7153a5cc2a7a840d3112a6c82960979ac3a4de9bbdb8bf",
+      "core/experiment.py": "90b9504b758e99ae6f2b4a63a1caeb5ace0e1b89bfd882bd9cb6151b4052b74d",
+      "core/sandbox.py": "a31e7c8d7144cf281530ca2753759e467016dbe008a0db353726004c9c0f2b80",
+      "core/hard_buffer.py": "01890fbbc808277904e3fb316fde6ae70d43482cb34df66109ea678b9c47e6cf",
+      "core/grpo_engine.py": "c17961cee8119c9a7adeb2c4213e6db6c5d2d140032a5fcea346883082f8d9cd",
+      "roles/mutator.py": "fbae3786c101208fa05081100ce8c6d39cd84cc4cff0b0b1ae0d59b03fdc9942",
+      "roles/breaker.py": "0b80c5178250a9d28228dad7d994bcdd2af8e07e708c82c7e325fa86b228c420",
+      "data/seed_functions.py": "074171eda067b4e4e60d6c63c51090423e407a3d0451dc89e0461679d26454c9",
+      "data/anchor_tasks.py": "849297181aa6eb919eb98c543e1b392a119915aee7bace5e71a953555fc61ace",
+      "data/heldout_eval.py": "5e33abe6a92606f06b87e8999a4ed19608eb5a8d7d458a0f13e88e93bd8e15b7"
+    },
+    "initial_adapter": null,
+    "torch_version": "2.11.0+cu128"
+  },
+  "selection_split": "validation",
+  "selected_step": 60,
+  "selected_checkpoint": "checkpoints_v2_breaker_static/20261018T110624Z-seed43/checkpoint-best",
+  "best_val_greedy_pass1": 0.8,
+  "test_size": 20,
+  "test_greedy_pass1": 0.6,
+  "test_sample_pass4": 0.8,
+  "test_hit_rate": 0.575,
+  "test_decoding": {
+    "temperature": 0.7,
+    "top_p": 1.0,
+    "top_k": 0,
+    "max_new_tokens": 24,
+    "sample_candidates": 4
+  },
+  "training_telemetry": {
+    "actual_breaker_updates": 40,
+    "total_breaker_generations": 600,
+    "actual_mutator_updates": 0,
+    "total_mutator_generations": 0,
+    "total_training_walltime_sec": 315.67303371429443
+  }
+}

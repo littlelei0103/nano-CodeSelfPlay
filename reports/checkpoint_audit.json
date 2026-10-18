@@ -1,0 +1,188 @@
+{
+  "audit_date": "2026-10-18",
+  "method": "CPU inspection of best/last optimizer states and SHA-256 hashes of saved adapters. No model evaluation or retraining.",
+  "runs": {
+    "pure_selfplay": {
+      "42": {
+        "source_run": "checkpoints_v2_pure/20261018T080726Z-seed42",
+        "final_report_sha256": "1e324c87fd8a26536d056e79bad34e9812020312285aa597d2fce2a3247b8dcd",
+        "last_state_sha256": "4c0c649d3692aff9e88f3b88fc30ea9c1995ff5a12dc08b5be1f0487b09f9475",
+        "selected_step": 45,
+        "completed_step": 75,
+        "best_breaker_matches_selected_round": true,
+        "breaker_updates_best": 35,
+        "breaker_updates_last": 57,
+        "mutator_updates_best": 34,
+        "mutator_updates_last": 56,
+        "last_pool_size": 67,
+        "initial_breaker_sha256": "54586081a12f2f5c88ae9577045a5130368102992e047cc536450e3dd302a078"
+      },
+      "43": {
+        "source_run": "checkpoints_v2_pure/20261018T083841Z-seed43",
+        "final_report_sha256": "bb6e95d076e42a7d4a7c0513950f7186f7f7b79a8fc4bfbaff91696f3094c134",
+        "last_state_sha256": "40933cfb5c7937bd2199e1f5b973b556cee7d32e014015d4046b81b81d9e7172",
+        "selected_step": 45,
+        "completed_step": 75,
+        "best_breaker_matches_selected_round": true,
+        "breaker_updates_best": 35,
+        "breaker_updates_last": 55,
+        "mutator_updates_best": 29,
+        "mutator_updates_last": 50,
+        "last_pool_size": 68,
+        "initial_breaker_sha256": "5d599cd0f6b3a4d64065a4e80de188edb7f9c9d81779f4d24621c6e4b0fa20b6"
+      },
+      "44": {
+        "source_run": "checkpoints_v2_pure/20261018T085208Z-seed44",
+        "final_report_sha256": "264a63995e2d0c1bc7551328b82c6d0f432f9efb28d4f88775c533cd04090ae1",
+        "last_state_sha256": "979913cb3c682d29c6d328e0ff1cb82711b38080c9816239f84230cd11907a0a",
+        "selected_step": 45,
+        "completed_step": 75,
+        "best_breaker_matches_selected_round": true,
+        "breaker_updates_best": 33,
+        "breaker_updates_last": 50,
+        "mutator_updates_best": 31,
+        "mutator_updates_last": 53,
+        "last_pool_size": 50,
+        "initial_breaker_sha256": "b1549803979b6b4e78014bcd52b1a81ecf00142481558e19190430174729d6a6"
+      }
+    },
+    "mixed_replay": {
+      "42": {
+        "source_run": "checkpoints_v2_mixed/20261018T082236Z-seed42",
+        "final_report_sha256": "b2665dc69e3f1619a41a14243fed96058426c015d8c2923981e80406489564a6",
+        "last_state_sha256": "e9569c90df198bea27a54acdb3b4bd021b832735d5d67061c7d95445f8e335c6",
+        "selected_step": 60,
+        "completed_step": 75,
+        "best_breaker_matches_selected_round": true,
+        "breaker_updates_best": 51,
+        "breaker_updates_last": 59,
+        "mutator_updates_best": 47,
+        "mutator_updates_last": 54,
+        "last_pool_size": 56,
+        "initial_breaker_sha256": "54586081a12f2f5c88ae9577045a5130368102992e047cc536450e3dd302a078"
+      },
+      "43": {
+        "source_run": "checkpoints_v2_mixed/20261018T090552Z-seed43",
+        "final_report_sha256": "1f3646d7ea2ec445cd7dc1e14b17c62f503f1959e122653b804fb18343124b98",
+        "last_state_sha256": "01dce706e40641ef8816870447f9802bb8b711aa7c7f7c6fe977e89a85428f57",
+        "selected_step": 60,
+        "completed_step": 75,
+        "best_breaker_matches_selected_round": true,
+        "breaker_updates_best": 43,
+        "breaker_updates_last": 53,
+        "mutator_updates_best": 48,
+        "mutator_updates_last": 53,
+        "last_pool_size": 60,
+        "initial_breaker_sha256": "5d599cd0f6b3a4d64065a4e80de188edb7f9c9d81779f4d24621c6e4b0fa20b6"
+      },
+      "44": {
+        "source_run": "checkpoints_v2_mixed/20261018T091749Z-seed44",
+        "final_report_sha256": "28c571a7efe515f6272e54a483319712e174b0edb783ed4c127151f8055c8b30",
+        "last_state_sha256": "3e888d4ed7f2c9d2c48218fc1276deb1a43681215afdf54defa87be59ca44917",
+        "selected_step": 45,
+        "completed_step": 75,
+        "best_breaker_matches_selected_round": true,
+        "breaker_updates_best": 31,
+        "breaker_updates_last": 49,
+        "mutator_updates_best": 34,
+        "mutator_updates_last": 56,
+        "last_pool_size": 62,
+        "initial_breaker_sha256": "b1549803979b6b4e78014bcd52b1a81ecf00142481558e19190430174729d6a6"
+      }
+    },
+    "frozen_mutator_ablation": {
+      "42": {
+        "source_run": "checkpoints_v2_frozen_mutator/20261018T094045Z-seed42",
+        "final_report_sha256": "7770f990dc0f84fe27799ec6e98c9cd5e7819b78350e9ffddbed28eaf83e33c0",
+        "last_state_sha256": "40ca57513a0b791fd2ddacc216e1f856cb43c5b548e7c659b4474fc7d77948f0",
+        "selected_step": 45,
+        "completed_step": 75,
+        "best_breaker_matches_selected_round": true,
+        "breaker_updates_best": 37,
+        "breaker_updates_last": 61,
+        "mutator_updates_best": 5,
+        "mutator_updates_last": 5,
+        "last_pool_size": 61,
+        "initial_breaker_sha256": "54586081a12f2f5c88ae9577045a5130368102992e047cc536450e3dd302a078",
+        "mutator_unchanged_after_warmup": true
+      },
+      "43": {
+        "source_run": "checkpoints_v2_frozen_mutator/20261018T095512Z-seed43",
+        "final_report_sha256": "79662567f2f489fcee1aad18d2490c2c0c0644bef29b895e5d3798abe7f4c671",
+        "last_state_sha256": "f796ae62c56edc0ca11b00647f3780a196fc2b1fc69ca416ac36f7fc1f0d7595",
+        "selected_step": 30,
+        "completed_step": 75,
+        "best_breaker_matches_selected_round": true,
+        "breaker_updates_best": 24,
+        "breaker_updates_last": 59,
+        "mutator_updates_best": 4,
+        "mutator_updates_last": 4,
+        "last_pool_size": 63,
+        "initial_breaker_sha256": "5d599cd0f6b3a4d64065a4e80de188edb7f9c9d81779f4d24621c6e4b0fa20b6",
+        "mutator_unchanged_after_warmup": true
+      },
+      "44": {
+        "source_run": "checkpoints_v2_frozen_mutator/20261018T100639Z-seed44",
+        "final_report_sha256": "540ef8f5795d9ae45c5a9f6cc09fb10bf55e09bffe8d44e2ae5b515b7ffbff1b",
+        "last_state_sha256": "b9ad89c0a5bf3efd996fce622e00ca0e09e19fd14ffc5ff752045558a3e2e549",
+        "selected_step": 45,
+        "completed_step": 75,
+        "best_breaker_matches_selected_round": true,
+        "breaker_updates_best": 35,
+        "breaker_updates_last": 58,
+        "mutator_updates_best": 5,
+        "mutator_updates_last": 5,
+        "last_pool_size": 59,
+        "initial_breaker_sha256": "b1549803979b6b4e78014bcd52b1a81ecf00142481558e19190430174729d6a6",
+        "mutator_unchanged_after_warmup": true
+      }
+    },
+    "breaker_only_static": {
+      "42": {
+        "source_run": "checkpoints_v2_breaker_static/20261018T105908Z-seed42",
+        "final_report_sha256": "8dc68f05430aeee2d3be2c9130b6130eace431f92a8c81899d214b6d0ef90cc2",
+        "last_state_sha256": "40711600e9a126521dd12a5006aaa699e42eb43f5896a59788dcc2bfe3feaa95",
+        "selected_step": 45,
+        "completed_step": 75,
+        "best_breaker_matches_selected_round": true,
+        "breaker_updates_best": 28,
+        "breaker_updates_last": 46,
+        "mutator_updates_best": 0,
+        "mutator_updates_last": 0,
+        "last_pool_size": 0,
+        "initial_breaker_sha256": "54586081a12f2f5c88ae9577045a5130368102992e047cc536450e3dd302a078",
+        "mutator_never_changed": true
+      },
+      "43": {
+        "source_run": "checkpoints_v2_breaker_static/20261018T110624Z-seed43",
+        "final_report_sha256": "a8dedb79caf496a6a335f2fe483210d2969fc9dd950c83b754faf74a01b6e906",
+        "last_state_sha256": "4cc100fede34a70a1a5325e1df6751a4b46ea28952a8db6b701df74583a70366",
+        "selected_step": 60,
+        "completed_step": 75,
+        "best_breaker_matches_selected_round": true,
+        "breaker_updates_best": 34,
+        "breaker_updates_last": 40,
+        "mutator_updates_best": 0,
+        "mutator_updates_last": 0,
+        "last_pool_size": 0,
+        "initial_breaker_sha256": "5d599cd0f6b3a4d64065a4e80de188edb7f9c9d81779f4d24621c6e4b0fa20b6",
+        "mutator_never_changed": true
+      },
+      "44": {
+        "source_run": "checkpoints_v2_breaker_static/20261018T111246Z-seed44",
+        "final_report_sha256": "509113db6038fc73a03cfe919bf3c9c00b831647dee13e77d3599e850720c7d2",
+        "last_state_sha256": "051ea2ef4d837a4b0c86f679b592f9e2a0ec741e0c4d124153639d8519dacc5f",
+        "selected_step": 45,
+        "completed_step": 75,
+        "best_breaker_matches_selected_round": true,
+        "breaker_updates_best": 30,
+        "breaker_updates_last": 43,
+        "mutator_updates_best": 0,
+        "mutator_updates_last": 0,
+        "last_pool_size": 0,
+        "initial_breaker_sha256": "b1549803979b6b4e78014bcd52b1a81ecf00142481558e19190430174729d6a6",
+        "mutator_never_changed": true
+      }
+    }
+  }
+}

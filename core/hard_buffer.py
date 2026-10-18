@@ -1,5 +1,5 @@
 """
-core/hard_buffer.py - nano-SPIN 动态对抗难题缓冲池 (Dynamic Adversarial HardBuffer)
+core/hard_buffer.py - nano-CodeSelfPlay 动态对抗难题缓冲池 (Dynamic Adversarial HardBuffer)
 
 功能与设计理念:
   1. 难题保鲜与抗遗忘: 将 Mutator 生成且未被当前 Breaker 破解 (p_solve < 1.0) 的高价值隐蔽题目入库。
@@ -18,7 +18,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 class HardBuffer:
     """
-    nano-SPIN 动态对抗难题缓冲池
+    nano-CodeSelfPlay 动态对抗难题缓冲池
     """
 
     def __init__(self, capacity: int = 500):
@@ -38,17 +38,30 @@ class HardBuffer:
         seed_id: str = "unknown",
         sparsity: float = 0.1,
         witnesses: Optional[List[int]] = None,
-        solve_rate: float = 0.0,
+        candidate_hits: Optional[int] = None,
+        total_candidates: int = 4,
+        solve_rate: Optional[float] = None,
         step: int = 0
     ) -> bool:
         """
-        向题库注入新的突变题对。若已存在完全相同的代码对则更新指标，否则新增。
+        向题库注入新的突变题对。若已存在完全相同的代码对则累加测试结果更新指标，否则新增。
+        统一采用 candidate-level (hits / trials) 作为核心 solve_rate 指标口径。
         """
+        if candidate_hits is None:
+            if solve_rate is not None:
+                candidate_hits = int(round(float(solve_rate) * total_candidates))
+            else:
+                candidate_hits = 0
+        if total_candidates <= 0 or not 0 <= candidate_hits <= total_candidates:
+            raise ValueError("Require 0 <= candidate_hits <= total_candidates and positive trials")
+
         key = self._compute_key(f_ref_src, f_mut_src)
         if key in self.items:
-            # 更新已有条目的 solve_rate 与 witnesses
+            # 累加已有条目的 candidate hits 与 trials
             item = self.items[key]
-            item["solve_rate"] = 0.5 * (item["solve_rate"] + solve_rate)
+            item["total_trials"] = item.get("total_trials", total_candidates) + total_candidates
+            item["total_hits"] = item.get("total_hits", int(round(item["solve_rate"] * total_candidates))) + candidate_hits
+            item["solve_rate"] = item["total_hits"] / max(1, item["total_trials"])
             if witnesses:
                 existing_wit = set(item.get("witnesses", []))
                 existing_wit.update(witnesses)
@@ -63,6 +76,7 @@ class HardBuffer:
             )
             del self.items[evict_key]
 
+        calc_solve_rate = candidate_hits / total_candidates
         self.items[key] = {
             "key": key,
             "seed_id": seed_id,
@@ -71,10 +85,13 @@ class HardBuffer:
             "f_mut_src": f_mut_src.strip(),
             "sparsity": float(sparsity),
             "witnesses": list(witnesses) if witnesses else [],
-            "solve_rate": float(solve_rate),
+            "solve_rate": float(calc_solve_rate),
+            "total_hits": int(candidate_hits),
+            "total_trials": int(total_candidates),
             "added_step": step,
             "times_sampled": 0,
             "times_solved": 0,
+            "groups_evaluated": 0,
         }
         return True
 
@@ -135,29 +152,61 @@ class HardBuffer:
 
         return results
 
-    def update_result(self, key: str, solved: bool):
-        """记录 Breaker 做题结果"""
+    def update_result(
+        self,
+        key: str,
+        solved: Optional[bool] = None,
+        candidate_hits: Optional[int] = None,
+        total_candidates: int = 4
+    ):
+        """
+        记录 Breaker 对抗做题结果，统一按照候选击中率 (hits / trials) 维护 solve_rate。
+        - candidate_hits: 当前组中成功找到反例的候选数量 (0..total_candidates)
+        - total_candidates: 当前组的候选总数 (如 4)
+        - solved: 是否至少有 1 个候选破解 (若未提供则自动由 candidate_hits > 0 推导)
+        """
+        if candidate_hits is None:
+            raise ValueError("candidate_hits is required; group success cannot determine candidate hit rate")
+        if total_candidates <= 0 or not 0 <= candidate_hits <= total_candidates:
+            raise ValueError("Invalid candidate counts")
+        if solved is not None and bool(solved) != (candidate_hits > 0):
+            raise ValueError("solved disagrees with candidate_hits")
         if key in self.items:
             item = self.items[key]
-            if solved:
-                item["times_solved"] += 1
-            # 平滑更新 solve_rate
-            total = item["times_sampled"]
-            if total > 0:
-                item["solve_rate"] = item["times_solved"] / total
+            item["groups_evaluated"] = item.get("groups_evaluated", 0) + 1
+
+            item["total_trials"] = item.get("total_trials", total_candidates) + total_candidates
+            item["total_hits"] = item.get("total_hits", int(round(item["solve_rate"] * total_candidates))) + candidate_hits
+
+            is_group_solved = (candidate_hits > 0) if solved is None else solved
+            if is_group_solved:
+                item["times_solved"] = item.get("times_solved", 0) + 1
+
+            item["solve_rate"] = item["total_hits"] / max(1, item["total_trials"])
 
     def get_stats(self) -> Dict[str, Any]:
         """返回题库当前统计信息"""
         total = len(self.items)
         if total == 0:
-            return {"total_problems": 0, "avg_solve_rate": 0.0, "avg_sparsity": 0.0}
+            return {
+                "total_problems": 0,
+                "avg_solve_rate": 0.0,
+                "avg_sparsity": 0.0,
+                "avg_group_solve_rate": 0.0,
+                "unsolved_count": 0
+            }
 
         rates = [item["solve_rate"] for item in self.items.values()]
         sparsities = [item["sparsity"] for item in self.items.values()]
+        group_rates = [
+            (item.get("times_solved", 0) / item["groups_evaluated"])
+            for item in self.items.values() if item.get("groups_evaluated", 0) > 0
+        ]
         return {
             "total_problems": total,
             "avg_solve_rate": sum(rates) / total,
             "avg_sparsity": sum(sparsities) / total,
+            "avg_group_solve_rate": (sum(group_rates) / len(group_rates)) if group_rates else 0.0,
             "unsolved_count": sum(1 for r in rates if r == 0.0),
         }
 

@@ -1,0 +1,4183 @@
+{
+  "schema_version": 2,
+  "protocol_version": "numeric-selfplay-v2",
+  "statistics": "Mean and sample standard deviation (ddof=1); not confidence intervals.",
+  "budget_note": "75 outer steps each; static has 75 Breaker opportunities, other groups have 70 plus optional rescue. Not matched compute.",
+  "evaluation_note": "Historical 20-problem test benchmark. Base variation is decoding-only; trained-run variation includes training and decoding.",
+  "base_model": {
+    "protocol_version": "numeric-selfplay-v2",
+    "base_model": "Qwen/Qwen2.5-1.5B",
+    "device": "cuda",
+    "validation_benchmark": {
+      "greedy_pass1": 0.55,
+      "sample_pass4": 0.55,
+      "hit_density": 0.2625,
+      "details": [
+        {
+          "id": "cmp_lte_lt_prev_5",
+          "spec": "Upper bound comparison at 39.",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "39</input>",
+            "parsed": 39,
+            "reward": 1.0,
+            "hit": true
+          },
+          "sample_pass4": true,
+          "candidates": [
+            {
+              "raw": "39</input>",
+              "parsed": 39,
+              "reward": 1.0,
+              "hit": true
+            },
+            {
+              "raw": "40</input>",
+              "parsed": 40,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "14</input>",
+              "parsed": 14,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "39</input>",
+              "parsed": 39,
+              "reward": 1.0,
+              "hit": true
+            }
+          ]
+        },
+        {
+          "id": "cmp_gt_gte_3",
+          "spec": "Check if x is strictly greater than 10 vs at least 10.",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "15</input>",
+            "parsed": 15,
+            "reward": 0.0,
+            "hit": false
+          },
+          "sample_pass4": false,
+          "candidates": [
+            {
+              "raw": "13</input>",
+              "parsed": 13,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "15</input>",
+              "parsed": 15,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "12</input>",
+              "parsed": 12,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "5</input>",
+              "parsed": 5,
+              "reward": 0.0,
+              "hit": false
+            }
+          ]
+        },
+        {
+          "id": "cmp_lte_lt_prev_18",
+          "spec": "Upper bound comparison at 7.",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "7</input>",
+            "parsed": 7,
+            "reward": 1.0,
+            "hit": true
+          },
+          "sample_pass4": false,
+          "candidates": [
+            {
+              "raw": "12</input>",
+              "parsed": 12,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "21</input>",
+              "parsed": 21,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "50</input>",
+              "parsed": 50,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "29</input>",
+              "parsed": 29,
+              "reward": 0.0,
+              "hit": false
+            }
+          ]
+        },
+        {
+          "id": "cmp_gte_gt_next_25",
+          "spec": "Boundary check at threshold 42.",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "42</input>",
+            "parsed": 42,
+            "reward": 1.0,
+            "hit": true
+          },
+          "sample_pass4": true,
+          "candidates": [
+            {
+              "raw": "42</input>",
+              "parsed": 42,
+              "reward": 1.0,
+              "hit": true
+            },
+            {
+              "raw": "42</input>",
+              "parsed": 42,
+              "reward": 1.0,
+              "hit": true
+            },
+            {
+              "raw": "43</input>",
+              "parsed": 43,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "42</input>",
+              "parsed": 42,
+              "reward": 1.0,
+              "hit": true
+            }
+          ]
+        },
+        {
+          "id": "cmp_lt_lte_28",
+          "spec": "Check if x is strictly less than 4 vs at most 4.",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "3</input>",
+            "parsed": 3,
+            "reward": 0.0,
+            "hit": false
+          },
+          "sample_pass4": false,
+          "candidates": [
+            {
+              "raw": "3</input>",
+              "parsed": 3,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "5</input>",
+              "parsed": 5,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "13</input>",
+              "parsed": 13,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "3</input>",
+              "parsed": 3,
+              "reward": 0.0,
+              "hit": false
+            }
+          ]
+        },
+        {
+          "id": "piecewise_scale_branch_9",
+          "spec": "Multiplier activation at threshold 23.",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "23</input>",
+            "parsed": 23,
+            "reward": 1.0,
+            "hit": true
+          },
+          "sample_pass4": false,
+          "candidates": [
+            {
+              "raw": "40</input>",
+              "parsed": 40,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "22</input>",
+              "parsed": 22,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "3</input>",
+              "parsed": 3,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "22</input>",
+              "parsed": 22,
+              "reward": 0.0,
+              "hit": false
+            }
+          ]
+        },
+        {
+          "id": "cmp_gt_gte_30",
+          "spec": "Check if x is strictly greater than 16 vs at least 16.",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "17</input>",
+            "parsed": 17,
+            "reward": 0.0,
+            "hit": false
+          },
+          "sample_pass4": false,
+          "candidates": [
+            {
+              "raw": "17</input>",
+              "parsed": 17,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "42</input>",
+              "parsed": 42,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "45</input>",
+              "parsed": 45,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "17</input>",
+              "parsed": 17,
+              "reward": 0.0,
+              "hit": false
+            }
+          ]
+        },
+        {
+          "id": "piecewise_scale_branch_3",
+          "spec": "Multiplier activation at threshold 24.",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "25</input>",
+            "parsed": 25,
+            "reward": 0.0,
+            "hit": false
+          },
+          "sample_pass4": true,
+          "candidates": [
+            {
+              "raw": "24</input>",
+              "parsed": 24,
+              "reward": 1.0,
+              "hit": true
+            },
+            {
+              "raw": "9</input>",
+              "parsed": 9,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "2</input>",
+              "parsed": 2,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "45</input>",
+              "parsed": 45,
+              "reward": 0.0,
+              "hit": false
+            }
+          ]
+        },
+        {
+          "id": "piecewise_scale_branch_20",
+          "spec": "Multiplier activation at threshold 10.",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "15</input>",
+            "parsed": 15,
+            "reward": 0.0,
+            "hit": false
+          },
+          "sample_pass4": false,
+          "candidates": [
+            {
+              "raw": "0</input>",
+              "parsed": 0,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "40</input>",
+              "parsed": 40,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "5</input>",
+              "parsed": 5,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "3</input>\nThe input for which the return values of f_a(x) and f_b(x) differ is x",
+              "parsed": 3,
+              "reward": 0.0,
+              "hit": false
+            }
+          ]
+        },
+        {
+          "id": "cmp_lte_lt_prev_10",
+          "spec": "Upper bound comparison at 47.",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "47</input>",
+            "parsed": 47,
+            "reward": 1.0,
+            "hit": true
+          },
+          "sample_pass4": true,
+          "candidates": [
+            {
+              "raw": "47</input>",
+              "parsed": 47,
+              "reward": 1.0,
+              "hit": true
+            },
+            {
+              "raw": "50</input>",
+              "parsed": 50,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "37</input>",
+              "parsed": 37,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "46</input>",
+              "parsed": 46,
+              "reward": 0.0,
+              "hit": false
+            }
+          ]
+        },
+        {
+          "id": "cmp_lte_lt_prev_21",
+          "spec": "Upper bound comparison at 4.",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "4</input>",
+            "parsed": 4,
+            "reward": 1.0,
+            "hit": true
+          },
+          "sample_pass4": true,
+          "candidates": [
+            {
+              "raw": "4</input>",
+              "parsed": 4,
+              "reward": 1.0,
+              "hit": true
+            },
+            {
+              "raw": "4</input>",
+              "parsed": 4,
+              "reward": 1.0,
+              "hit": true
+            },
+            {
+              "raw": "3</input>",
+              "parsed": 3,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "4</input>",
+              "parsed": 4,
+              "reward": 1.0,
+              "hit": true
+            }
+          ]
+        },
+        {
+          "id": "interval_both_open_20",
+          "spec": "Strict interior (29, 44) vs closed [29, 44].",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "29</input>",
+            "parsed": 29,
+            "reward": 1.0,
+            "hit": true
+          },
+          "sample_pass4": true,
+          "candidates": [
+            {
+              "raw": "29</input>",
+              "parsed": 29,
+              "reward": 1.0,
+              "hit": true
+            },
+            {
+              "raw": "29</input>",
+              "parsed": 29,
+              "reward": 1.0,
+              "hit": true
+            },
+            {
+              "raw": "36</input>",
+              "parsed": 36,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "29</input>",
+              "parsed": 29,
+              "reward": 1.0,
+              "hit": true
+            }
+          ]
+        },
+        {
+          "id": "piecewise_mod_shift_12",
+          "spec": "Divisibility by 4 with phase shift.",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "12</input>",
+            "parsed": 12,
+            "reward": 1.0,
+            "hit": true
+          },
+          "sample_pass4": true,
+          "candidates": [
+            {
+              "raw": "25</input>",
+              "parsed": 25,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "15</input>",
+              "parsed": 15,
+              "reward": 1.0,
+              "hit": true
+            },
+            {
+              "raw": "37</input>",
+              "parsed": 37,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "37</input>",
+              "parsed": 37,
+              "reward": 0.0,
+              "hit": false
+            }
+          ]
+        },
+        {
+          "id": "piecewise_sign_branch_22",
+          "spec": "Three-way sign split around 13 vs two-way split.",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "13</input>",
+            "parsed": 13,
+            "reward": 1.0,
+            "hit": true
+          },
+          "sample_pass4": true,
+          "candidates": [
+            {
+              "raw": "13</input>",
+              "parsed": 13,
+              "reward": 1.0,
+              "hit": true
+            },
+            {
+              "raw": "36</input>",
+              "parsed": 36,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "14</input>",
+              "parsed": 14,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "22</input>",
+              "parsed": 22,
+              "reward": 0.0,
+              "hit": false
+            }
+          ]
+        },
+        {
+          "id": "interval_extended_right_16",
+          "spec": "Interval endpoint comparison [24, 30] vs [24, 31].",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "24</input>",
+            "parsed": 24,
+            "reward": 0.0,
+            "hit": false
+          },
+          "sample_pass4": false,
+          "candidates": [
+            {
+              "raw": "24</input>",
+              "parsed": 24,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "17</input>",
+              "parsed": 17,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "30</input>",
+              "parsed": 30,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "30</input>\n\nThe output indicates that the function f_a returns True for input x = 30, while",
+              "parsed": 30,
+              "reward": 0.0,
+              "hit": false
+            }
+          ]
+        },
+        {
+          "id": "interval_both_open_19",
+          "spec": "Strict interior (26, 32) vs closed [26, 32].",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "26</input>",
+            "parsed": 26,
+            "reward": 1.0,
+            "hit": true
+          },
+          "sample_pass4": false,
+          "candidates": [
+            {
+              "raw": "30</input>",
+              "parsed": 30,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "27</input>",
+              "parsed": 27,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "31</input>",
+              "parsed": 31,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "27</input>",
+              "parsed": 27,
+              "reward": 0.0,
+              "hit": false
+            }
+          ]
+        },
+        {
+          "id": "clamp_abs_min_clip_36",
+          "spec": "Upper bound clamp using min(x, 16) vs min(x, 17).",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "16</input>",
+            "parsed": 16,
+            "reward": 0.0,
+            "hit": false
+          },
+          "sample_pass4": true,
+          "candidates": [
+            {
+              "raw": "18</input>",
+              "parsed": 18,
+              "reward": 1.0,
+              "hit": true
+            },
+            {
+              "raw": "12</input>",
+              "parsed": 12,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "12</input>",
+              "parsed": 12,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "10</input>",
+              "parsed": 10,
+              "reward": 0.0,
+              "hit": false
+            }
+          ]
+        },
+        {
+          "id": "interval_right_open_37",
+          "spec": "Interval inclusion: [35, 43] vs [35, 43).",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "35</input>",
+            "parsed": 35,
+            "reward": 0.0,
+            "hit": false
+          },
+          "sample_pass4": false,
+          "candidates": [
+            {
+              "raw": "42</input>",
+              "parsed": 42,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "35</input>",
+              "parsed": 35,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "37</input>",
+              "parsed": 37,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "35</input>",
+              "parsed": 35,
+              "reward": 0.0,
+              "hit": false
+            }
+          ]
+        },
+        {
+          "id": "interval_extended_right_34",
+          "spec": "Interval endpoint comparison [9, 24] vs [9, 25].",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "9</input>",
+            "parsed": 9,
+            "reward": 0.0,
+            "hit": false
+          },
+          "sample_pass4": true,
+          "candidates": [
+            {
+              "raw": "9</input>",
+              "parsed": 9,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "9</input>",
+              "parsed": 9,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "24</input>",
+              "parsed": 24,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "25</input>",
+              "parsed": 25,
+              "reward": 1.0,
+              "hit": true
+            }
+          ]
+        },
+        {
+          "id": "piecewise_sign_branch_5",
+          "spec": "Three-way sign split around 44 vs two-way split.",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "44</input>",
+            "parsed": 44,
+            "reward": 1.0,
+            "hit": true
+          },
+          "sample_pass4": true,
+          "candidates": [
+            {
+              "raw": "44</input>",
+              "parsed": 44,
+              "reward": 1.0,
+              "hit": true
+            },
+            {
+              "raw": "44</input>",
+              "parsed": 44,
+              "reward": 1.0,
+              "hit": true
+            },
+            {
+              "raw": "44</input>",
+              "parsed": 44,
+              "reward": 1.0,
+              "hit": true
+            },
+            {
+              "raw": "44</input>",
+              "parsed": 44,
+              "reward": 1.0,
+              "hit": true
+            }
+          ]
+        }
+      ]
+    },
+    "test_benchmark": {
+      "greedy_pass1": 0.4,
+      "sample_pass4_by_seed": {
+        "42": 0.55,
+        "43": 0.5,
+        "44": 0.6
+      },
+      "hit_density_by_seed": {
+        "42": 0.325,
+        "43": 0.2625,
+        "44": 0.3125
+      },
+      "mean_sample_pass4": 0.5499999999999999,
+      "mean_hit_density": 0.3,
+      "seed_42_details": [
+        {
+          "id": "cmp_lt_lte_26",
+          "spec": "Check if x is strictly less than 38 vs at most 38.",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "39</input>",
+            "parsed": 39,
+            "reward": 0.0,
+            "hit": false
+          },
+          "sample_pass4": false,
+          "candidates": [
+            {
+              "raw": "35</input>",
+              "parsed": 35,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "42</input>",
+              "parsed": 42,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "14</input>",
+              "parsed": 14,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "10</input>",
+              "parsed": 10,
+              "reward": 0.0,
+              "hit": false
+            }
+          ]
+        },
+        {
+          "id": "cmp_gt_gte_36",
+          "spec": "Check if x is strictly greater than 46 vs at least 46.",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "47</input>",
+            "parsed": 47,
+            "reward": 0.0,
+            "hit": false
+          },
+          "sample_pass4": false,
+          "candidates": [
+            {
+              "raw": "47</input>",
+              "parsed": 47,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "47</input>",
+              "parsed": 47,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "47</input>",
+              "parsed": 47,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "50</input>",
+              "parsed": 50,
+              "reward": 0.0,
+              "hit": false
+            }
+          ]
+        },
+        {
+          "id": "clamp_abs_max_clip_24",
+          "spec": "Lower bound clamp using max(x, 10) vs max(x, 9).",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "15</input>",
+            "parsed": 15,
+            "reward": 0.0,
+            "hit": false
+          },
+          "sample_pass4": false,
+          "candidates": [
+            {
+              "raw": "15</input>",
+              "parsed": 15,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "21</input>",
+              "parsed": 21,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "10</input>",
+              "parsed": 10,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "20</input>",
+              "parsed": 20,
+              "reward": 0.0,
+              "hit": false
+            }
+          ]
+        },
+        {
+          "id": "clamp_abs_abs_dist_diff_27",
+          "spec": "Special point perturbation at 8.",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "8</input>",
+            "parsed": 8,
+            "reward": 1.0,
+            "hit": true
+          },
+          "sample_pass4": true,
+          "candidates": [
+            {
+              "raw": "8</input>\n\nExplanation: Function A returns 9 when x is 8, while Function B returns 8.",
+              "parsed": 8,
+              "reward": 1.0,
+              "hit": true
+            },
+            {
+              "raw": "8</input>",
+              "parsed": 8,
+              "reward": 1.0,
+              "hit": true
+            },
+            {
+              "raw": "8</input>",
+              "parsed": 8,
+              "reward": 1.0,
+              "hit": true
+            },
+            {
+              "raw": "8</input>",
+              "parsed": 8,
+              "reward": 1.0,
+              "hit": true
+            }
+          ]
+        },
+        {
+          "id": "clamp_abs_min_clip_33",
+          "spec": "Upper bound clamp using min(x, 25) vs min(x, 26).",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "25</input>",
+            "parsed": 25,
+            "reward": 0.0,
+            "hit": false
+          },
+          "sample_pass4": true,
+          "candidates": [
+            {
+              "raw": "24</input>",
+              "parsed": 24,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "9</input>",
+              "parsed": 9,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "4</input>",
+              "parsed": 4,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "42</input>",
+              "parsed": 42,
+              "reward": 1.0,
+              "hit": true
+            }
+          ]
+        },
+        {
+          "id": "interval_left_open_32",
+          "spec": "Interval inclusion: [7, 19] vs (7, 19].",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "7</input>",
+            "parsed": 7,
+            "reward": 1.0,
+            "hit": true
+          },
+          "sample_pass4": true,
+          "candidates": [
+            {
+              "raw": "7</input>",
+              "parsed": 7,
+              "reward": 1.0,
+              "hit": true
+            },
+            {
+              "raw": "7</input>",
+              "parsed": 7,
+              "reward": 1.0,
+              "hit": true
+            },
+            {
+              "raw": "7</input>",
+              "parsed": 7,
+              "reward": 1.0,
+              "hit": true
+            },
+            {
+              "raw": "15</input>",
+              "parsed": 15,
+              "reward": 0.0,
+              "hit": false
+            }
+          ]
+        },
+        {
+          "id": "interval_extended_right_38",
+          "spec": "Interval endpoint comparison [27, 36] vs [27, 37].",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "36</input>",
+            "parsed": 36,
+            "reward": 0.0,
+            "hit": false
+          },
+          "sample_pass4": false,
+          "candidates": [
+            {
+              "raw": "36</input>",
+              "parsed": 36,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "34</input>",
+              "parsed": 34,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "27</input>",
+              "parsed": 27,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "27</input>",
+              "parsed": 27,
+              "reward": 0.0,
+              "hit": false
+            }
+          ]
+        },
+        {
+          "id": "cmp_gt_gte_22",
+          "spec": "Check if x is strictly greater than 36 vs at least 36.",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "37</input>",
+            "parsed": 37,
+            "reward": 0.0,
+            "hit": false
+          },
+          "sample_pass4": false,
+          "candidates": [
+            {
+              "raw": "37</input>",
+              "parsed": 37,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "47</input>",
+              "parsed": 47,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "40</input>",
+              "parsed": 40,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "47</input>",
+              "parsed": 47,
+              "reward": 0.0,
+              "hit": false
+            }
+          ]
+        },
+        {
+          "id": "clamp_abs_min_clip_6",
+          "spec": "Upper bound clamp using min(x, 19) vs min(x, 20).",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "19</input>",
+            "parsed": 19,
+            "reward": 0.0,
+            "hit": false
+          },
+          "sample_pass4": true,
+          "candidates": [
+            {
+              "raw": "25</input>",
+              "parsed": 25,
+              "reward": 1.0,
+              "hit": true
+            },
+            {
+              "raw": "19</input>",
+              "parsed": 19,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "22</input>",
+              "parsed": 22,
+              "reward": 1.0,
+              "hit": true
+            },
+            {
+              "raw": "20</input>",
+              "parsed": 20,
+              "reward": 1.0,
+              "hit": true
+            }
+          ]
+        },
+        {
+          "id": "piecewise_scale_branch_13",
+          "spec": "Multiplier activation at threshold 11.",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "11</input>",
+            "parsed": 11,
+            "reward": 1.0,
+            "hit": true
+          },
+          "sample_pass4": false,
+          "candidates": [
+            {
+              "raw": "12</input>",
+              "parsed": 12,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "5</input>",
+              "parsed": 5,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "37</input>",
+              "parsed": 37,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "16</input>",
+              "parsed": 16,
+              "reward": 0.0,
+              "hit": false
+            }
+          ]
+        },
+        {
+          "id": "clamp_abs_abs_dist_diff_30",
+          "spec": "Special point perturbation at 40.",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "40</input>",
+            "parsed": 40,
+            "reward": 1.0,
+            "hit": true
+          },
+          "sample_pass4": true,
+          "candidates": [
+            {
+              "raw": "40</input>",
+              "parsed": 40,
+              "reward": 1.0,
+              "hit": true
+            },
+            {
+              "raw": "40</input>",
+              "parsed": 40,
+              "reward": 1.0,
+              "hit": true
+            },
+            {
+              "raw": "40</input>",
+              "parsed": 40,
+              "reward": 1.0,
+              "hit": true
+            },
+            {
+              "raw": "40</input>",
+              "parsed": 40,
+              "reward": 1.0,
+              "hit": true
+            }
+          ]
+        },
+        {
+          "id": "interval_left_open_13",
+          "spec": "Interval inclusion: [29, 34] vs (29, 34].",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "30</input>",
+            "parsed": 30,
+            "reward": 0.0,
+            "hit": false
+          },
+          "sample_pass4": true,
+          "candidates": [
+            {
+              "raw": "29</input>",
+              "parsed": 29,
+              "reward": 1.0,
+              "hit": true
+            },
+            {
+              "raw": "30</input>",
+              "parsed": 30,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "29</input>",
+              "parsed": 29,
+              "reward": 1.0,
+              "hit": true
+            },
+            {
+              "raw": "29</input>",
+              "parsed": 29,
+              "reward": 1.0,
+              "hit": true
+            }
+          ]
+        },
+        {
+          "id": "cmp_gte_gt_next_24",
+          "spec": "Boundary check at threshold 37.",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "37</input>",
+            "parsed": 37,
+            "reward": 1.0,
+            "hit": true
+          },
+          "sample_pass4": true,
+          "candidates": [
+            {
+              "raw": "37</input>",
+              "parsed": 37,
+              "reward": 1.0,
+              "hit": true
+            },
+            {
+              "raw": "37</input>",
+              "parsed": 37,
+              "reward": 1.0,
+              "hit": true
+            },
+            {
+              "raw": "37</input>",
+              "parsed": 37,
+              "reward": 1.0,
+              "hit": true
+            },
+            {
+              "raw": "36</input>",
+              "parsed": 36,
+              "reward": 0.0,
+              "hit": false
+            }
+          ]
+        },
+        {
+          "id": "cmp_lt_lte_16",
+          "spec": "Check if x is strictly less than 11 vs at most 11.",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "10</input>",
+            "parsed": 10,
+            "reward": 0.0,
+            "hit": false
+          },
+          "sample_pass4": false,
+          "candidates": [
+            {
+              "raw": "3</input>\n\nIn this case, the integer input x = 3 satisfies the condition x < 11,",
+              "parsed": 3,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "6</input>",
+              "parsed": 6,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "4</input>",
+              "parsed": 4,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "2</input>",
+              "parsed": 2,
+              "reward": 0.0,
+              "hit": false
+            }
+          ]
+        },
+        {
+          "id": "interval_right_open_30",
+          "spec": "Interval inclusion: [33, 42] vs [33, 42).",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "33</input>",
+            "parsed": 33,
+            "reward": 0.0,
+            "hit": false
+          },
+          "sample_pass4": true,
+          "candidates": [
+            {
+              "raw": "33</input>",
+              "parsed": 33,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "33</input>",
+              "parsed": 33,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "42</input>",
+              "parsed": 42,
+              "reward": 1.0,
+              "hit": true
+            },
+            {
+              "raw": "34</input>",
+              "parsed": 34,
+              "reward": 0.0,
+              "hit": false
+            }
+          ]
+        },
+        {
+          "id": "cmp_lt_lte_37",
+          "spec": "Check if x is strictly less than 40 vs at most 40.",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "41</input>",
+            "parsed": 41,
+            "reward": 0.0,
+            "hit": false
+          },
+          "sample_pass4": false,
+          "candidates": [
+            {
+              "raw": "39</input>",
+              "parsed": 39,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "4</input>",
+              "parsed": 4,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "45</input>",
+              "parsed": 45,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "39</input>",
+              "parsed": 39,
+              "reward": 0.0,
+              "hit": false
+            }
+          ]
+        },
+        {
+          "id": "interval_right_open_11",
+          "spec": "Interval inclusion: [16, 24] vs [16, 24).",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "16</input>",
+            "parsed": 16,
+            "reward": 0.0,
+            "hit": false
+          },
+          "sample_pass4": false,
+          "candidates": [
+            {
+              "raw": "25</input>",
+              "parsed": 25,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "22</input>",
+              "parsed": 22,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "17</input>",
+              "parsed": 17,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "16</input>",
+              "parsed": 16,
+              "reward": 0.0,
+              "hit": false
+            }
+          ]
+        },
+        {
+          "id": "interval_left_open_1",
+          "spec": "Interval inclusion: [26, 36] vs (26, 36].",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "26</input>",
+            "parsed": 26,
+            "reward": 1.0,
+            "hit": true
+          },
+          "sample_pass4": true,
+          "candidates": [
+            {
+              "raw": "26</input>",
+              "parsed": 26,
+              "reward": 1.0,
+              "hit": true
+            },
+            {
+              "raw": "27</input>",
+              "parsed": 27,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "27</input>",
+              "parsed": 27,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "26</input>",
+              "parsed": 26,
+              "reward": 1.0,
+              "hit": true
+            }
+          ]
+        },
+        {
+          "id": "interval_left_open_12",
+          "spec": "Interval inclusion: [21, 33] vs (21, 33].",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "21</input>",
+            "parsed": 21,
+            "reward": 1.0,
+            "hit": true
+          },
+          "sample_pass4": true,
+          "candidates": [
+            {
+              "raw": "22</input>",
+              "parsed": 22,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "22</input>",
+              "parsed": 22,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "23</input>",
+              "parsed": 23,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "21</input>",
+              "parsed": 21,
+              "reward": 1.0,
+              "hit": true
+            }
+          ]
+        },
+        {
+          "id": "piecewise_sign_branch_2",
+          "spec": "Three-way sign split around 21 vs two-way split.",
+          "domain": [
+            0,
+            50
+          ],
+          "greedy": {
+            "raw": "21</input>",
+            "parsed": 21,
+            "reward": 1.0,
+            "hit": true
+          },
+          "sample_pass4": true,
+          "candidates": [
+            {
+              "raw": "14</input>",
+              "parsed": 14,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "27</input>",
+              "parsed": 27,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "29</input>",
+              "parsed": 29,
+              "reward": 0.0,
+              "hit": false
+            },
+            {
+              "raw": "21</input>",
+              "parsed": 21,
+              "reward": 1.0,
+              "hit": true
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "breaker_only_static": {
+    "seeds": [
+      42,
+      43,
+      44
+    ],
+    "num_seeds": 3,
+    "runs": {
+      "42": {
+        "seed": 42,
+        "source_report": "reports/runs/breaker_only_static/seed42.json",
+        "source_sha256": "8dc68f05430aeee2d3be2c9130b6130eace431f92a8c81899d214b6d0ef90cc2",
+        "manifest": {
+          "protocol_version": "numeric-selfplay-v2",
+          "config": {
+            "model_name": "Qwen/Qwen2.5-1.5B",
+            "device": "cuda",
+            "seed": 42,
+            "mutator_warmup_steps": 0,
+            "eval_interval": 15,
+            "mut_rollouts": 4,
+            "breaker_rollouts": 8,
+            "lr": 2e-05,
+            "lr_mutator": 2e-05,
+            "lr_breaker": 2e-05,
+            "lr_breaker_min": 5e-06,
+            "cosine_decay_start": 25,
+            "curriculum_tighten_step": 30,
+            "anchor_ratio": 0.0,
+            "kl_coef": 0.01,
+            "temperature": 0.7,
+            "freeze_mutator_after_warmup": false,
+            "breaker_only_static": true
+          },
+          "source_sha256": {
+            "train_spin.py": "85da5c9006b961fcde7153a5cc2a7a840d3112a6c82960979ac3a4de9bbdb8bf",
+            "core/experiment.py": "90b9504b758e99ae6f2b4a63a1caeb5ace0e1b89bfd882bd9cb6151b4052b74d",
+            "core/sandbox.py": "a31e7c8d7144cf281530ca2753759e467016dbe008a0db353726004c9c0f2b80",
+            "core/hard_buffer.py": "01890fbbc808277904e3fb316fde6ae70d43482cb34df66109ea678b9c47e6cf",
+            "core/grpo_engine.py": "c17961cee8119c9a7adeb2c4213e6db6c5d2d140032a5fcea346883082f8d9cd",
+            "roles/mutator.py": "fbae3786c101208fa05081100ce8c6d39cd84cc4cff0b0b1ae0d59b03fdc9942",
+            "roles/breaker.py": "0b80c5178250a9d28228dad7d994bcdd2af8e07e708c82c7e325fa86b228c420",
+            "data/seed_functions.py": "074171eda067b4e4e60d6c63c51090423e407a3d0451dc89e0461679d26454c9",
+            "data/anchor_tasks.py": "849297181aa6eb919eb98c543e1b392a119915aee7bace5e71a953555fc61ace",
+            "data/heldout_eval.py": "5e33abe6a92606f06b87e8999a4ed19608eb5a8d7d458a0f13e88e93bd8e15b7"
+          },
+          "initial_adapter": null,
+          "torch_version": "2.11.0+cu128"
+        },
+        "test_decoding": {
+          "temperature": 0.7,
+          "top_p": 1.0,
+          "top_k": 0,
+          "max_new_tokens": 24,
+          "sample_candidates": 4
+        },
+        "selected_step": 45,
+        "best_val_greedy_pass1": 0.8,
+        "test_greedy_pass1": 0.55,
+        "test_sample_pass4": 0.8,
+        "test_hit_rate": 0.475,
+        "pool_size": 0,
+        "trajectory": [
+          {
+            "protocol_version": "numeric-selfplay-v2",
+            "step": 0,
+            "round": 0,
+            "val_greedy_pass1": 0.55,
+            "val_sample_pass4": 0.55,
+            "val_hit_rate": 0.2625,
+            "pool_size": 0
+          },
+          {
+            "step": 15,
+            "round": 1,
+            "is_warmup": false,
+            "mut_validity_rate": 0.0,
+            "mut_avg_reward": 0.0,
+            "mut_grad_norm": 0.0,
+            "brk_solve_rate": 0.125,
+            "brk_source": "StaticAnchor",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 1,
+            "brk_overall_hit_rate": 0.125,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.125,
+            "brk_grad_norm": 1.441690444946289,
+            "cum_breaker_updates": 10,
+            "cum_breaker_candidates": 120,
+            "cum_mutator_updates": 0,
+            "cum_mutator_candidates": 0,
+            "pool_size": 0,
+            "val_greedy_pass1": 0.7,
+            "val_sample_pass4": 0.6,
+            "val_hit_rate": 0.325,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 3.7708420753479004
+          },
+          {
+            "step": 30,
+            "round": 2,
+            "is_warmup": false,
+            "mut_validity_rate": 0.0,
+            "mut_avg_reward": 0.0,
+            "mut_grad_norm": 0.0,
+            "brk_solve_rate": 0.25,
+            "brk_source": "StaticAnchor",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 2,
+            "brk_overall_hit_rate": 0.25,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.25,
+            "brk_grad_norm": 2.1447174549102783,
+            "cum_breaker_updates": 21,
+            "cum_breaker_candidates": 240,
+            "cum_mutator_updates": 0,
+            "cum_mutator_candidates": 0,
+            "pool_size": 0,
+            "val_greedy_pass1": 0.7,
+            "val_sample_pass4": 0.85,
+            "val_hit_rate": 0.5625,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 6.443066120147705
+          },
+          {
+            "step": 45,
+            "round": 3,
+            "is_warmup": false,
+            "mut_validity_rate": 0.0,
+            "mut_avg_reward": 0.0,
+            "mut_grad_norm": 0.0,
+            "brk_solve_rate": 0.125,
+            "brk_source": "StaticAnchor",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 1,
+            "brk_overall_hit_rate": 0.125,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.125,
+            "brk_grad_norm": 2.591123104095459,
+            "cum_breaker_updates": 28,
+            "cum_breaker_candidates": 360,
+            "cum_mutator_updates": 0,
+            "cum_mutator_candidates": 0,
+            "pool_size": 0,
+            "val_greedy_pass1": 0.8,
+            "val_sample_pass4": 0.85,
+            "val_hit_rate": 0.6625,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 2.1268317699432373
+          },
+          {
+            "step": 60,
+            "round": 4,
+            "is_warmup": false,
+            "mut_validity_rate": 0.0,
+            "mut_avg_reward": 0.0,
+            "mut_grad_norm": 0.0,
+            "brk_solve_rate": 1.0,
+            "brk_source": "StaticAnchor",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 8,
+            "brk_overall_hit_rate": 1.0,
+            "brk_effective_update": false,
+            "brk_avg_reward": 1.0,
+            "brk_grad_norm": 0.0,
+            "cum_breaker_updates": 33,
+            "cum_breaker_candidates": 480,
+            "cum_mutator_updates": 0,
+            "cum_mutator_candidates": 0,
+            "pool_size": 0,
+            "val_greedy_pass1": 0.8,
+            "val_sample_pass4": 0.85,
+            "val_hit_rate": 0.675,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 0.8481500148773193
+          },
+          {
+            "step": 75,
+            "round": 5,
+            "is_warmup": false,
+            "mut_validity_rate": 0.0,
+            "mut_avg_reward": 0.0,
+            "mut_grad_norm": 0.0,
+            "brk_solve_rate": 0.625,
+            "brk_source": "StaticAnchor",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 5,
+            "brk_overall_hit_rate": 0.625,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.625,
+            "brk_grad_norm": 4.889365196228027,
+            "cum_breaker_updates": 46,
+            "cum_breaker_candidates": 600,
+            "cum_mutator_updates": 0,
+            "cum_mutator_candidates": 0,
+            "pool_size": 0,
+            "val_greedy_pass1": 0.8,
+            "val_sample_pass4": 0.75,
+            "val_hit_rate": 0.5875,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 3.8599853515625
+          }
+        ],
+        "training_telemetry": {
+          "actual_breaker_updates": 46,
+          "total_breaker_generations": 600,
+          "actual_mutator_updates": 0,
+          "total_mutator_generations": 0,
+          "total_training_walltime_sec": 366.4709906578064
+        },
+        "cost": {
+          "breaker_updates": 46,
+          "breaker_updates_best": 28,
+          "mutator_updates": 0,
+          "breaker_candidates": 600,
+          "mutator_candidates": 0,
+          "walltime_seconds": 366.4709906578064
+        }
+      },
+      "43": {
+        "seed": 43,
+        "source_report": "reports/runs/breaker_only_static/seed43.json",
+        "source_sha256": "a8dedb79caf496a6a335f2fe483210d2969fc9dd950c83b754faf74a01b6e906",
+        "manifest": {
+          "protocol_version": "numeric-selfplay-v2",
+          "config": {
+            "model_name": "Qwen/Qwen2.5-1.5B",
+            "device": "cuda",
+            "seed": 43,
+            "mutator_warmup_steps": 0,
+            "eval_interval": 15,
+            "mut_rollouts": 4,
+            "breaker_rollouts": 8,
+            "lr": 2e-05,
+            "lr_mutator": 2e-05,
+            "lr_breaker": 2e-05,
+            "lr_breaker_min": 5e-06,
+            "cosine_decay_start": 25,
+            "curriculum_tighten_step": 30,
+            "anchor_ratio": 0.0,
+            "kl_coef": 0.01,
+            "temperature": 0.7,
+            "freeze_mutator_after_warmup": false,
+            "breaker_only_static": true
+          },
+          "source_sha256": {
+            "train_spin.py": "85da5c9006b961fcde7153a5cc2a7a840d3112a6c82960979ac3a4de9bbdb8bf",
+            "core/experiment.py": "90b9504b758e99ae6f2b4a63a1caeb5ace0e1b89bfd882bd9cb6151b4052b74d",
+            "core/sandbox.py": "a31e7c8d7144cf281530ca2753759e467016dbe008a0db353726004c9c0f2b80",
+            "core/hard_buffer.py": "01890fbbc808277904e3fb316fde6ae70d43482cb34df66109ea678b9c47e6cf",
+            "core/grpo_engine.py": "c17961cee8119c9a7adeb2c4213e6db6c5d2d140032a5fcea346883082f8d9cd",
+            "roles/mutator.py": "fbae3786c101208fa05081100ce8c6d39cd84cc4cff0b0b1ae0d59b03fdc9942",
+            "roles/breaker.py": "0b80c5178250a9d28228dad7d994bcdd2af8e07e708c82c7e325fa86b228c420",
+            "data/seed_functions.py": "074171eda067b4e4e60d6c63c51090423e407a3d0451dc89e0461679d26454c9",
+            "data/anchor_tasks.py": "849297181aa6eb919eb98c543e1b392a119915aee7bace5e71a953555fc61ace",
+            "data/heldout_eval.py": "5e33abe6a92606f06b87e8999a4ed19608eb5a8d7d458a0f13e88e93bd8e15b7"
+          },
+          "initial_adapter": null,
+          "torch_version": "2.11.0+cu128"
+        },
+        "test_decoding": {
+          "temperature": 0.7,
+          "top_p": 1.0,
+          "top_k": 0,
+          "max_new_tokens": 24,
+          "sample_candidates": 4
+        },
+        "selected_step": 60,
+        "best_val_greedy_pass1": 0.8,
+        "test_greedy_pass1": 0.6,
+        "test_sample_pass4": 0.8,
+        "test_hit_rate": 0.575,
+        "pool_size": 0,
+        "trajectory": [
+          {
+            "protocol_version": "numeric-selfplay-v2",
+            "step": 0,
+            "round": 0,
+            "val_greedy_pass1": 0.55,
+            "val_sample_pass4": 0.6,
+            "val_hit_rate": 0.2875,
+            "pool_size": 0
+          },
+          {
+            "step": 15,
+            "round": 1,
+            "is_warmup": false,
+            "mut_validity_rate": 0.0,
+            "mut_avg_reward": 0.0,
+            "mut_grad_norm": 0.0,
+            "brk_solve_rate": 0.125,
+            "brk_source": "StaticAnchor",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 1,
+            "brk_overall_hit_rate": 0.125,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.125,
+            "brk_grad_norm": 1.941601276397705,
+            "cum_breaker_updates": 8,
+            "cum_breaker_candidates": 120,
+            "cum_mutator_updates": 0,
+            "cum_mutator_candidates": 0,
+            "pool_size": 0,
+            "val_greedy_pass1": 0.7,
+            "val_sample_pass4": 0.55,
+            "val_hit_rate": 0.3375,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 1.9987452030181885
+          },
+          {
+            "step": 30,
+            "round": 2,
+            "is_warmup": false,
+            "mut_validity_rate": 0.0,
+            "mut_avg_reward": 0.0,
+            "mut_grad_norm": 0.0,
+            "brk_solve_rate": 0.75,
+            "brk_source": "StaticAnchor",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 6,
+            "brk_overall_hit_rate": 0.75,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.75,
+            "brk_grad_norm": 1.7739136219024658,
+            "cum_breaker_updates": 14,
+            "cum_breaker_candidates": 240,
+            "cum_mutator_updates": 0,
+            "cum_mutator_candidates": 0,
+            "pool_size": 0,
+            "val_greedy_pass1": 0.7,
+            "val_sample_pass4": 0.75,
+            "val_hit_rate": 0.5125,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 4.07043981552124
+          },
+          {
+            "step": 45,
+            "round": 3,
+            "is_warmup": false,
+            "mut_validity_rate": 0.0,
+            "mut_avg_reward": 0.0,
+            "mut_grad_norm": 0.0,
+            "brk_solve_rate": 1.0,
+            "brk_source": "StaticAnchor",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 8,
+            "brk_overall_hit_rate": 1.0,
+            "brk_effective_update": false,
+            "brk_avg_reward": 1.0,
+            "brk_grad_norm": 0.0,
+            "cum_breaker_updates": 23,
+            "cum_breaker_candidates": 360,
+            "cum_mutator_updates": 0,
+            "cum_mutator_candidates": 0,
+            "pool_size": 0,
+            "val_greedy_pass1": 0.7,
+            "val_sample_pass4": 0.8,
+            "val_hit_rate": 0.575,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 2.6308541297912598
+          },
+          {
+            "step": 60,
+            "round": 4,
+            "is_warmup": false,
+            "mut_validity_rate": 0.0,
+            "mut_avg_reward": 0.0,
+            "mut_grad_norm": 0.0,
+            "brk_solve_rate": 0.0,
+            "brk_source": "StaticAnchor",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 0,
+            "brk_overall_hit_rate": 0.0,
+            "brk_effective_update": false,
+            "brk_avg_reward": 0.0,
+            "brk_grad_norm": 0.0,
+            "cum_breaker_updates": 34,
+            "cum_breaker_candidates": 480,
+            "cum_mutator_updates": 0,
+            "cum_mutator_candidates": 0,
+            "pool_size": 0,
+            "val_greedy_pass1": 0.8,
+            "val_sample_pass4": 0.85,
+            "val_hit_rate": 0.6875,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 0.9867095947265625
+          },
+          {
+            "step": 75,
+            "round": 5,
+            "is_warmup": false,
+            "mut_validity_rate": 0.0,
+            "mut_avg_reward": 0.0,
+            "mut_grad_norm": 0.0,
+            "brk_solve_rate": 0.625,
+            "brk_source": "StaticAnchor",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 5,
+            "brk_overall_hit_rate": 0.625,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.625,
+            "brk_grad_norm": 4.159878730773926,
+            "cum_breaker_updates": 40,
+            "cum_breaker_candidates": 600,
+            "cum_mutator_updates": 0,
+            "cum_mutator_candidates": 0,
+            "pool_size": 0,
+            "val_greedy_pass1": 0.8,
+            "val_sample_pass4": 0.85,
+            "val_hit_rate": 0.6875,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 2.002974271774292
+          }
+        ],
+        "training_telemetry": {
+          "actual_breaker_updates": 40,
+          "total_breaker_generations": 600,
+          "actual_mutator_updates": 0,
+          "total_mutator_generations": 0,
+          "total_training_walltime_sec": 315.67303371429443
+        },
+        "cost": {
+          "breaker_updates": 40,
+          "breaker_updates_best": 34,
+          "mutator_updates": 0,
+          "breaker_candidates": 600,
+          "mutator_candidates": 0,
+          "walltime_seconds": 315.67303371429443
+        }
+      },
+      "44": {
+        "seed": 44,
+        "source_report": "reports/runs/breaker_only_static/seed44.json",
+        "source_sha256": "509113db6038fc73a03cfe919bf3c9c00b831647dee13e77d3599e850720c7d2",
+        "manifest": {
+          "protocol_version": "numeric-selfplay-v2",
+          "config": {
+            "model_name": "Qwen/Qwen2.5-1.5B",
+            "device": "cuda",
+            "seed": 44,
+            "mutator_warmup_steps": 0,
+            "eval_interval": 15,
+            "mut_rollouts": 4,
+            "breaker_rollouts": 8,
+            "lr": 2e-05,
+            "lr_mutator": 2e-05,
+            "lr_breaker": 2e-05,
+            "lr_breaker_min": 5e-06,
+            "cosine_decay_start": 25,
+            "curriculum_tighten_step": 30,
+            "anchor_ratio": 0.0,
+            "kl_coef": 0.01,
+            "temperature": 0.7,
+            "freeze_mutator_after_warmup": false,
+            "breaker_only_static": true
+          },
+          "source_sha256": {
+            "train_spin.py": "85da5c9006b961fcde7153a5cc2a7a840d3112a6c82960979ac3a4de9bbdb8bf",
+            "core/experiment.py": "90b9504b758e99ae6f2b4a63a1caeb5ace0e1b89bfd882bd9cb6151b4052b74d",
+            "core/sandbox.py": "a31e7c8d7144cf281530ca2753759e467016dbe008a0db353726004c9c0f2b80",
+            "core/hard_buffer.py": "01890fbbc808277904e3fb316fde6ae70d43482cb34df66109ea678b9c47e6cf",
+            "core/grpo_engine.py": "c17961cee8119c9a7adeb2c4213e6db6c5d2d140032a5fcea346883082f8d9cd",
+            "roles/mutator.py": "fbae3786c101208fa05081100ce8c6d39cd84cc4cff0b0b1ae0d59b03fdc9942",
+            "roles/breaker.py": "0b80c5178250a9d28228dad7d994bcdd2af8e07e708c82c7e325fa86b228c420",
+            "data/seed_functions.py": "074171eda067b4e4e60d6c63c51090423e407a3d0451dc89e0461679d26454c9",
+            "data/anchor_tasks.py": "849297181aa6eb919eb98c543e1b392a119915aee7bace5e71a953555fc61ace",
+            "data/heldout_eval.py": "5e33abe6a92606f06b87e8999a4ed19608eb5a8d7d458a0f13e88e93bd8e15b7"
+          },
+          "initial_adapter": null,
+          "torch_version": "2.11.0+cu128"
+        },
+        "test_decoding": {
+          "temperature": 0.7,
+          "top_p": 1.0,
+          "top_k": 0,
+          "max_new_tokens": 24,
+          "sample_candidates": 4
+        },
+        "selected_step": 45,
+        "best_val_greedy_pass1": 0.8,
+        "test_greedy_pass1": 0.75,
+        "test_sample_pass4": 0.8,
+        "test_hit_rate": 0.525,
+        "pool_size": 0,
+        "trajectory": [
+          {
+            "protocol_version": "numeric-selfplay-v2",
+            "step": 0,
+            "round": 0,
+            "val_greedy_pass1": 0.55,
+            "val_sample_pass4": 0.65,
+            "val_hit_rate": 0.375,
+            "pool_size": 0
+          },
+          {
+            "step": 15,
+            "round": 1,
+            "is_warmup": false,
+            "mut_validity_rate": 0.0,
+            "mut_avg_reward": 0.0,
+            "mut_grad_norm": 0.0,
+            "brk_solve_rate": 0.25,
+            "brk_source": "StaticAnchor",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 2,
+            "brk_overall_hit_rate": 0.25,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.25,
+            "brk_grad_norm": 2.2129950523376465,
+            "cum_breaker_updates": 9,
+            "cum_breaker_candidates": 120,
+            "cum_mutator_updates": 0,
+            "cum_mutator_candidates": 0,
+            "pool_size": 0,
+            "val_greedy_pass1": 0.7,
+            "val_sample_pass4": 0.75,
+            "val_hit_rate": 0.45,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 2.0896241664886475
+          },
+          {
+            "step": 30,
+            "round": 2,
+            "is_warmup": false,
+            "mut_validity_rate": 0.0,
+            "mut_avg_reward": 0.0,
+            "mut_grad_norm": 0.0,
+            "brk_solve_rate": 0.125,
+            "brk_source": "StaticAnchor",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 1,
+            "brk_overall_hit_rate": 0.125,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.125,
+            "brk_grad_norm": 2.950784206390381,
+            "cum_breaker_updates": 20,
+            "cum_breaker_candidates": 240,
+            "cum_mutator_updates": 0,
+            "cum_mutator_candidates": 0,
+            "pool_size": 0,
+            "val_greedy_pass1": 0.7,
+            "val_sample_pass4": 0.8,
+            "val_hit_rate": 0.5125,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 1.9066612720489502
+          },
+          {
+            "step": 45,
+            "round": 3,
+            "is_warmup": false,
+            "mut_validity_rate": 0.0,
+            "mut_avg_reward": 0.0,
+            "mut_grad_norm": 0.0,
+            "brk_solve_rate": 0.25,
+            "brk_source": "StaticAnchor",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 2,
+            "brk_overall_hit_rate": 0.25,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.25,
+            "brk_grad_norm": 4.429715156555176,
+            "cum_breaker_updates": 30,
+            "cum_breaker_candidates": 360,
+            "cum_mutator_updates": 0,
+            "cum_mutator_candidates": 0,
+            "pool_size": 0,
+            "val_greedy_pass1": 0.8,
+            "val_sample_pass4": 0.9,
+            "val_hit_rate": 0.65,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 2.0729544162750244
+          },
+          {
+            "step": 60,
+            "round": 4,
+            "is_warmup": false,
+            "mut_validity_rate": 0.0,
+            "mut_avg_reward": 0.0,
+            "mut_grad_norm": 0.0,
+            "brk_solve_rate": 1.0,
+            "brk_source": "StaticAnchor",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 8,
+            "brk_overall_hit_rate": 1.0,
+            "brk_effective_update": false,
+            "brk_avg_reward": 1.0,
+            "brk_grad_norm": 0.0,
+            "cum_breaker_updates": 37,
+            "cum_breaker_candidates": 480,
+            "cum_mutator_updates": 0,
+            "cum_mutator_candidates": 0,
+            "pool_size": 0,
+            "val_greedy_pass1": 0.8,
+            "val_sample_pass4": 0.8,
+            "val_hit_rate": 0.625,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 1.1075773239135742
+          },
+          {
+            "step": 75,
+            "round": 5,
+            "is_warmup": false,
+            "mut_validity_rate": 0.0,
+            "mut_avg_reward": 0.0,
+            "mut_grad_norm": 0.0,
+            "brk_solve_rate": 1.0,
+            "brk_source": "StaticAnchor",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 8,
+            "brk_overall_hit_rate": 1.0,
+            "brk_effective_update": false,
+            "brk_avg_reward": 1.0,
+            "brk_grad_norm": 0.0,
+            "cum_breaker_updates": 43,
+            "cum_breaker_candidates": 600,
+            "cum_mutator_updates": 0,
+            "cum_mutator_candidates": 0,
+            "pool_size": 0,
+            "val_greedy_pass1": 0.8,
+            "val_sample_pass4": 0.9,
+            "val_hit_rate": 0.775,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 1.2440989017486572
+          }
+        ],
+        "training_telemetry": {
+          "actual_breaker_updates": 43,
+          "total_breaker_generations": 600,
+          "actual_mutator_updates": 0,
+          "total_mutator_generations": 0,
+          "total_training_walltime_sec": 255.7426619529724
+        },
+        "cost": {
+          "breaker_updates": 43,
+          "breaker_updates_best": 30,
+          "mutator_updates": 0,
+          "breaker_candidates": 600,
+          "mutator_candidates": 0,
+          "walltime_seconds": 255.7426619529724
+        }
+      }
+    },
+    "val_best": [
+      0.8000000000000002,
+      1.3597399555105182e-16
+    ],
+    "test_greedy_pass1": [
+      0.6333333333333333,
+      0.10408329997330662
+    ],
+    "test_sample_pass4": [
+      0.8000000000000002,
+      1.3597399555105182e-16
+    ],
+    "test_hit_rate": [
+      0.525,
+      0.04999999999999999
+    ],
+    "pool_size": [
+      0.0,
+      0.0
+    ],
+    "cost": {
+      "breaker_updates": [
+        43.0,
+        3.0
+      ],
+      "breaker_updates_best": [
+        30.666666666666668,
+        3.0550504633038935
+      ],
+      "mutator_updates": [
+        0.0,
+        0.0
+      ],
+      "breaker_candidates": [
+        600.0,
+        0.0
+      ],
+      "mutator_candidates": [
+        0.0,
+        0.0
+      ],
+      "walltime_seconds": [
+        312.6288954416911,
+        55.426895798055355
+      ]
+    }
+  },
+  "pure_selfplay": {
+    "seeds": [
+      42,
+      43,
+      44
+    ],
+    "num_seeds": 3,
+    "runs": {
+      "42": {
+        "seed": 42,
+        "source_report": "reports/runs/pure_selfplay/seed42.json",
+        "source_sha256": "1e324c87fd8a26536d056e79bad34e9812020312285aa597d2fce2a3247b8dcd",
+        "manifest": {
+          "protocol_version": "numeric-selfplay-v2",
+          "config": {
+            "model_name": "Qwen/Qwen2.5-1.5B",
+            "device": "cuda",
+            "seed": 42,
+            "mutator_warmup_steps": 5,
+            "eval_interval": 15,
+            "mut_rollouts": 4,
+            "breaker_rollouts": 8,
+            "lr": 2e-05,
+            "lr_mutator": 2e-05,
+            "lr_breaker": 2e-05,
+            "lr_breaker_min": 5e-06,
+            "cosine_decay_start": 25,
+            "curriculum_tighten_step": 30,
+            "anchor_ratio": 0.0,
+            "kl_coef": 0.01,
+            "temperature": 0.7
+          },
+          "source_sha256": {
+            "train_spin.py": "18079970953a73d55fac81dfa57d7a06b8a07dd6cae354c5a3c0fcac8e83e41c",
+            "core/experiment.py": "8a08fd9f0dcc30639f090903ecb4f23f202433672cc4435a2f5d52a28fdfe562",
+            "core/sandbox.py": "a31e7c8d7144cf281530ca2753759e467016dbe008a0db353726004c9c0f2b80",
+            "core/hard_buffer.py": "01890fbbc808277904e3fb316fde6ae70d43482cb34df66109ea678b9c47e6cf",
+            "core/grpo_engine.py": "c17961cee8119c9a7adeb2c4213e6db6c5d2d140032a5fcea346883082f8d9cd",
+            "roles/mutator.py": "fbae3786c101208fa05081100ce8c6d39cd84cc4cff0b0b1ae0d59b03fdc9942",
+            "roles/breaker.py": "0b80c5178250a9d28228dad7d994bcdd2af8e07e708c82c7e325fa86b228c420",
+            "data/seed_functions.py": "074171eda067b4e4e60d6c63c51090423e407a3d0451dc89e0461679d26454c9",
+            "data/anchor_tasks.py": "849297181aa6eb919eb98c543e1b392a119915aee7bace5e71a953555fc61ace",
+            "data/heldout_eval.py": "5e33abe6a92606f06b87e8999a4ed19608eb5a8d7d458a0f13e88e93bd8e15b7"
+          },
+          "initial_adapter": null,
+          "torch_version": "2.11.0+cu128"
+        },
+        "test_decoding": {
+          "temperature": 0.7,
+          "top_p": 1.0,
+          "top_k": 0,
+          "max_new_tokens": 24,
+          "sample_candidates": 4
+        },
+        "selected_step": 45,
+        "best_val_greedy_pass1": 0.8,
+        "test_greedy_pass1": 0.6,
+        "test_sample_pass4": 0.85,
+        "test_hit_rate": 0.6,
+        "pool_size": 67,
+        "trajectory": [
+          {
+            "protocol_version": "numeric-selfplay-v2",
+            "step": 0,
+            "round": 0,
+            "val_greedy_pass1": 0.55,
+            "val_sample_pass4": 0.55,
+            "val_hit_rate": 0.2625,
+            "pool_size": 0
+          },
+          {
+            "step": 15,
+            "round": 1,
+            "is_warmup": false,
+            "mut_validity_rate": 0.0,
+            "mut_avg_reward": 0.037500000000000006,
+            "mut_grad_norm": 1.0685744285583496,
+            "brk_solve_rate": 0.0,
+            "brk_source": "HardBuffer",
+            "brk_total_candidates": 16,
+            "brk_total_hits": 0,
+            "brk_overall_hit_rate": 0.0,
+            "brk_effective_update": false,
+            "brk_avg_reward": 0.0,
+            "brk_grad_norm": 0.0,
+            "pool_size": 21,
+            "val_greedy_pass1": 0.7,
+            "val_sample_pass4": 0.75,
+            "val_hit_rate": 0.35,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 6.431928873062134
+          },
+          {
+            "step": 30,
+            "round": 2,
+            "is_warmup": false,
+            "mut_validity_rate": 0.75,
+            "mut_avg_reward": 0.75,
+            "mut_grad_norm": 1.0313918590545654,
+            "brk_solve_rate": 0.75,
+            "brk_source": "HardBuffer",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 6,
+            "brk_overall_hit_rate": 0.75,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.75,
+            "brk_grad_norm": 2.740365982055664,
+            "pool_size": 39,
+            "val_greedy_pass1": 0.75,
+            "val_sample_pass4": 0.85,
+            "val_hit_rate": 0.625,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 7.880390644073486
+          },
+          {
+            "step": 45,
+            "round": 3,
+            "is_warmup": false,
+            "mut_validity_rate": 0.5,
+            "mut_avg_reward": 0.1375,
+            "mut_grad_norm": 1.0834403038024902,
+            "brk_solve_rate": 0.0,
+            "brk_source": "HardBuffer",
+            "brk_total_candidates": 16,
+            "brk_total_hits": 0,
+            "brk_overall_hit_rate": 0.0,
+            "brk_effective_update": false,
+            "brk_avg_reward": 0.0,
+            "brk_grad_norm": 0.0,
+            "pool_size": 45,
+            "val_greedy_pass1": 0.8,
+            "val_sample_pass4": 0.9,
+            "val_hit_rate": 0.75,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 9.751733303070068
+          },
+          {
+            "step": 60,
+            "round": 4,
+            "is_warmup": false,
+            "mut_validity_rate": 0.5,
+            "mut_avg_reward": 0.309625,
+            "mut_grad_norm": 0.8713134527206421,
+            "brk_solve_rate": 0.75,
+            "brk_source": "Rescue[Buffer]",
+            "brk_total_candidates": 16,
+            "brk_total_hits": 6,
+            "brk_overall_hit_rate": 0.375,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.75,
+            "brk_grad_norm": 3.30161452293396,
+            "pool_size": 63,
+            "val_greedy_pass1": 0.8,
+            "val_sample_pass4": 0.9,
+            "val_hit_rate": 0.8125,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 14.744959831237793
+          },
+          {
+            "step": 75,
+            "round": 5,
+            "is_warmup": false,
+            "mut_validity_rate": 0.0,
+            "mut_avg_reward": 0.0125,
+            "mut_grad_norm": 0.6922878623008728,
+            "brk_solve_rate": 0.125,
+            "brk_source": "HardBuffer",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 1,
+            "brk_overall_hit_rate": 0.125,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.125,
+            "brk_grad_norm": 1.465773344039917,
+            "pool_size": 67,
+            "val_greedy_pass1": 0.8,
+            "val_sample_pass4": 0.9,
+            "val_hit_rate": 0.8,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 7.673123121261597
+          }
+        ],
+        "training_telemetry": {},
+        "cost": {
+          "breaker_updates": 57,
+          "breaker_updates_best": 35,
+          "mutator_updates": 56,
+          "breaker_candidates": null,
+          "mutator_candidates": null,
+          "walltime_seconds": null
+        }
+      },
+      "43": {
+        "seed": 43,
+        "source_report": "reports/runs/pure_selfplay/seed43.json",
+        "source_sha256": "bb6e95d076e42a7d4a7c0513950f7186f7f7b79a8fc4bfbaff91696f3094c134",
+        "manifest": {
+          "protocol_version": "numeric-selfplay-v2",
+          "config": {
+            "model_name": "Qwen/Qwen2.5-1.5B",
+            "device": "cuda",
+            "seed": 43,
+            "mutator_warmup_steps": 5,
+            "eval_interval": 15,
+            "mut_rollouts": 4,
+            "breaker_rollouts": 8,
+            "lr": 2e-05,
+            "lr_mutator": 2e-05,
+            "lr_breaker": 2e-05,
+            "lr_breaker_min": 5e-06,
+            "cosine_decay_start": 25,
+            "curriculum_tighten_step": 30,
+            "anchor_ratio": 0.0,
+            "kl_coef": 0.01,
+            "temperature": 0.7
+          },
+          "source_sha256": {
+            "train_spin.py": "18079970953a73d55fac81dfa57d7a06b8a07dd6cae354c5a3c0fcac8e83e41c",
+            "core/experiment.py": "8a08fd9f0dcc30639f090903ecb4f23f202433672cc4435a2f5d52a28fdfe562",
+            "core/sandbox.py": "a31e7c8d7144cf281530ca2753759e467016dbe008a0db353726004c9c0f2b80",
+            "core/hard_buffer.py": "01890fbbc808277904e3fb316fde6ae70d43482cb34df66109ea678b9c47e6cf",
+            "core/grpo_engine.py": "c17961cee8119c9a7adeb2c4213e6db6c5d2d140032a5fcea346883082f8d9cd",
+            "roles/mutator.py": "fbae3786c101208fa05081100ce8c6d39cd84cc4cff0b0b1ae0d59b03fdc9942",
+            "roles/breaker.py": "0b80c5178250a9d28228dad7d994bcdd2af8e07e708c82c7e325fa86b228c420",
+            "data/seed_functions.py": "074171eda067b4e4e60d6c63c51090423e407a3d0451dc89e0461679d26454c9",
+            "data/anchor_tasks.py": "849297181aa6eb919eb98c543e1b392a119915aee7bace5e71a953555fc61ace",
+            "data/heldout_eval.py": "5e33abe6a92606f06b87e8999a4ed19608eb5a8d7d458a0f13e88e93bd8e15b7"
+          },
+          "initial_adapter": null,
+          "torch_version": "2.11.0+cu128"
+        },
+        "test_decoding": {
+          "temperature": 0.7,
+          "top_p": 1.0,
+          "top_k": 0,
+          "max_new_tokens": 24,
+          "sample_candidates": 4
+        },
+        "selected_step": 45,
+        "best_val_greedy_pass1": 0.8,
+        "test_greedy_pass1": 0.65,
+        "test_sample_pass4": 0.9,
+        "test_hit_rate": 0.575,
+        "pool_size": 68,
+        "trajectory": [
+          {
+            "protocol_version": "numeric-selfplay-v2",
+            "step": 0,
+            "round": 0,
+            "val_greedy_pass1": 0.55,
+            "val_sample_pass4": 0.6,
+            "val_hit_rate": 0.2875,
+            "pool_size": 0
+          },
+          {
+            "step": 15,
+            "round": 1,
+            "is_warmup": false,
+            "mut_validity_rate": 0.75,
+            "mut_avg_reward": 0.6625000000000001,
+            "mut_grad_norm": 0.6179199814796448,
+            "brk_solve_rate": 0.125,
+            "brk_source": "HardBuffer",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 1,
+            "brk_overall_hit_rate": 0.125,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.125,
+            "brk_grad_norm": 0.9647068381309509,
+            "pool_size": 24,
+            "val_greedy_pass1": 0.65,
+            "val_sample_pass4": 0.5,
+            "val_hit_rate": 0.35,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 9.48134708404541
+          },
+          {
+            "step": 30,
+            "round": 2,
+            "is_warmup": false,
+            "mut_validity_rate": 0.0,
+            "mut_avg_reward": 0.025,
+            "mut_grad_norm": 1.2139816284179688,
+            "brk_solve_rate": 0.25,
+            "brk_source": "HardBuffer",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 2,
+            "brk_overall_hit_rate": 0.25,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.25,
+            "brk_grad_norm": 3.6290981769561768,
+            "pool_size": 39,
+            "val_greedy_pass1": 0.65,
+            "val_sample_pass4": 0.8,
+            "val_hit_rate": 0.525,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 5.932764530181885
+          },
+          {
+            "step": 45,
+            "round": 3,
+            "is_warmup": false,
+            "mut_validity_rate": 0.75,
+            "mut_avg_reward": 0.3875,
+            "mut_grad_norm": 1.0069657564163208,
+            "brk_solve_rate": 0.625,
+            "brk_source": "Rescue[Buffer]",
+            "brk_total_candidates": 16,
+            "brk_total_hits": 5,
+            "brk_overall_hit_rate": 0.3125,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.625,
+            "brk_grad_norm": 3.554222822189331,
+            "pool_size": 43,
+            "val_greedy_pass1": 0.8,
+            "val_sample_pass4": 0.85,
+            "val_hit_rate": 0.7,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 8.56382703781128
+          },
+          {
+            "step": 60,
+            "round": 4,
+            "is_warmup": false,
+            "mut_validity_rate": 0.75,
+            "mut_avg_reward": 0.45675,
+            "mut_grad_norm": 0.5234075784683228,
+            "brk_solve_rate": 0.75,
+            "brk_source": "Rescue[Buffer]",
+            "brk_total_candidates": 16,
+            "brk_total_hits": 6,
+            "brk_overall_hit_rate": 0.375,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.75,
+            "brk_grad_norm": 2.787367105484009,
+            "pool_size": 59,
+            "val_greedy_pass1": 0.8,
+            "val_sample_pass4": 0.85,
+            "val_hit_rate": 0.7,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 10.75118613243103
+          },
+          {
+            "step": 75,
+            "round": 5,
+            "is_warmup": false,
+            "mut_validity_rate": 0.0,
+            "mut_avg_reward": 0.0,
+            "mut_grad_norm": 0.0,
+            "brk_solve_rate": 0.25,
+            "brk_source": "HardBuffer",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 2,
+            "brk_overall_hit_rate": 0.25,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.25,
+            "brk_grad_norm": 2.3036623001098633,
+            "pool_size": 68,
+            "val_greedy_pass1": 0.8,
+            "val_sample_pass4": 0.8,
+            "val_hit_rate": 0.7,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 8.188339948654175
+          }
+        ],
+        "training_telemetry": {},
+        "cost": {
+          "breaker_updates": 55,
+          "breaker_updates_best": 35,
+          "mutator_updates": 50,
+          "breaker_candidates": null,
+          "mutator_candidates": null,
+          "walltime_seconds": null
+        }
+      },
+      "44": {
+        "seed": 44,
+        "source_report": "reports/runs/pure_selfplay/seed44.json",
+        "source_sha256": "264a63995e2d0c1bc7551328b82c6d0f432f9efb28d4f88775c533cd04090ae1",
+        "manifest": {
+          "protocol_version": "numeric-selfplay-v2",
+          "config": {
+            "model_name": "Qwen/Qwen2.5-1.5B",
+            "device": "cuda",
+            "seed": 44,
+            "mutator_warmup_steps": 5,
+            "eval_interval": 15,
+            "mut_rollouts": 4,
+            "breaker_rollouts": 8,
+            "lr": 2e-05,
+            "lr_mutator": 2e-05,
+            "lr_breaker": 2e-05,
+            "lr_breaker_min": 5e-06,
+            "cosine_decay_start": 25,
+            "curriculum_tighten_step": 30,
+            "anchor_ratio": 0.0,
+            "kl_coef": 0.01,
+            "temperature": 0.7
+          },
+          "source_sha256": {
+            "train_spin.py": "18079970953a73d55fac81dfa57d7a06b8a07dd6cae354c5a3c0fcac8e83e41c",
+            "core/experiment.py": "8a08fd9f0dcc30639f090903ecb4f23f202433672cc4435a2f5d52a28fdfe562",
+            "core/sandbox.py": "a31e7c8d7144cf281530ca2753759e467016dbe008a0db353726004c9c0f2b80",
+            "core/hard_buffer.py": "01890fbbc808277904e3fb316fde6ae70d43482cb34df66109ea678b9c47e6cf",
+            "core/grpo_engine.py": "c17961cee8119c9a7adeb2c4213e6db6c5d2d140032a5fcea346883082f8d9cd",
+            "roles/mutator.py": "fbae3786c101208fa05081100ce8c6d39cd84cc4cff0b0b1ae0d59b03fdc9942",
+            "roles/breaker.py": "0b80c5178250a9d28228dad7d994bcdd2af8e07e708c82c7e325fa86b228c420",
+            "data/seed_functions.py": "074171eda067b4e4e60d6c63c51090423e407a3d0451dc89e0461679d26454c9",
+            "data/anchor_tasks.py": "849297181aa6eb919eb98c543e1b392a119915aee7bace5e71a953555fc61ace",
+            "data/heldout_eval.py": "5e33abe6a92606f06b87e8999a4ed19608eb5a8d7d458a0f13e88e93bd8e15b7"
+          },
+          "initial_adapter": null,
+          "torch_version": "2.11.0+cu128"
+        },
+        "test_decoding": {
+          "temperature": 0.7,
+          "top_p": 1.0,
+          "top_k": 0,
+          "max_new_tokens": 24,
+          "sample_candidates": 4
+        },
+        "selected_step": 45,
+        "best_val_greedy_pass1": 0.8,
+        "test_greedy_pass1": 0.55,
+        "test_sample_pass4": 0.65,
+        "test_hit_rate": 0.45,
+        "pool_size": 50,
+        "trajectory": [
+          {
+            "protocol_version": "numeric-selfplay-v2",
+            "step": 0,
+            "round": 0,
+            "val_greedy_pass1": 0.55,
+            "val_sample_pass4": 0.65,
+            "val_hit_rate": 0.375,
+            "pool_size": 0
+          },
+          {
+            "step": 15,
+            "round": 1,
+            "is_warmup": false,
+            "mut_validity_rate": 0.25,
+            "mut_avg_reward": 0.28750000000000003,
+            "mut_grad_norm": 0.7417388558387756,
+            "brk_solve_rate": 0.375,
+            "brk_source": "HardBuffer",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 3,
+            "brk_overall_hit_rate": 0.375,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.375,
+            "brk_grad_norm": 2.031189441680908,
+            "pool_size": 21,
+            "val_greedy_pass1": 0.7,
+            "val_sample_pass4": 0.65,
+            "val_hit_rate": 0.375,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 5.177682161331177
+          },
+          {
+            "step": 30,
+            "round": 2,
+            "is_warmup": false,
+            "mut_validity_rate": 0.0,
+            "mut_avg_reward": 0.0,
+            "mut_grad_norm": 0.0,
+            "brk_solve_rate": 0.625,
+            "brk_source": "HardBuffer",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 5,
+            "brk_overall_hit_rate": 0.625,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.625,
+            "brk_grad_norm": 2.772780656814575,
+            "pool_size": 29,
+            "val_greedy_pass1": 0.75,
+            "val_sample_pass4": 0.85,
+            "val_hit_rate": 0.6625,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 4.962639093399048
+          },
+          {
+            "step": 45,
+            "round": 3,
+            "is_warmup": false,
+            "mut_validity_rate": 0.75,
+            "mut_avg_reward": 0.2,
+            "mut_grad_norm": 0.7777527570724487,
+            "brk_solve_rate": 0.875,
+            "brk_source": "HardBuffer",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 7,
+            "brk_overall_hit_rate": 0.875,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.875,
+            "brk_grad_norm": 4.554475784301758,
+            "pool_size": 33,
+            "val_greedy_pass1": 0.8,
+            "val_sample_pass4": 0.9,
+            "val_hit_rate": 0.7125,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 9.774939775466919
+          },
+          {
+            "step": 60,
+            "round": 4,
+            "is_warmup": false,
+            "mut_validity_rate": 0.25,
+            "mut_avg_reward": 0.244225,
+            "mut_grad_norm": 0.8102261424064636,
+            "brk_solve_rate": 0.0,
+            "brk_source": "HardBuffer",
+            "brk_total_candidates": 16,
+            "brk_total_hits": 8,
+            "brk_overall_hit_rate": 0.5,
+            "brk_effective_update": false,
+            "brk_avg_reward": 0.0,
+            "brk_grad_norm": 0.0,
+            "pool_size": 46,
+            "val_greedy_pass1": 0.8,
+            "val_sample_pass4": 0.85,
+            "val_hit_rate": 0.7,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 6.1742026805877686
+          },
+          {
+            "step": 75,
+            "round": 5,
+            "is_warmup": false,
+            "mut_validity_rate": 0.0,
+            "mut_avg_reward": 0.0,
+            "mut_grad_norm": 0.0,
+            "brk_solve_rate": 0.25,
+            "brk_source": "HardBuffer",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 2,
+            "brk_overall_hit_rate": 0.25,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.25,
+            "brk_grad_norm": 4.589496612548828,
+            "pool_size": 50,
+            "val_greedy_pass1": 0.8,
+            "val_sample_pass4": 0.8,
+            "val_hit_rate": 0.725,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 6.259420871734619
+          }
+        ],
+        "training_telemetry": {},
+        "cost": {
+          "breaker_updates": 50,
+          "breaker_updates_best": 33,
+          "mutator_updates": 53,
+          "breaker_candidates": null,
+          "mutator_candidates": null,
+          "walltime_seconds": null
+        }
+      }
+    },
+    "val_best": [
+      0.8000000000000002,
+      1.3597399555105182e-16
+    ],
+    "test_greedy_pass1": [
+      0.6,
+      0.04999999999999999
+    ],
+    "test_sample_pass4": [
+      0.7999999999999999,
+      0.1322875655532295
+    ],
+    "test_hit_rate": [
+      0.5416666666666666,
+      0.08036375634160793
+    ],
+    "pool_size": [
+      61.666666666666664,
+      10.115993936995679
+    ],
+    "cost": {
+      "breaker_updates": [
+        54.0,
+        3.605551275463989
+      ],
+      "breaker_updates_best": [
+        34.333333333333336,
+        1.1547005383792517
+      ],
+      "mutator_updates": [
+        53.0,
+        3.0
+      ],
+      "breaker_candidates": [
+        null,
+        null
+      ],
+      "mutator_candidates": [
+        null,
+        null
+      ],
+      "walltime_seconds": [
+        null,
+        null
+      ]
+    }
+  },
+  "mixed_replay": {
+    "seeds": [
+      42,
+      43,
+      44
+    ],
+    "num_seeds": 3,
+    "runs": {
+      "42": {
+        "seed": 42,
+        "source_report": "reports/runs/mixed_replay/seed42.json",
+        "source_sha256": "b2665dc69e3f1619a41a14243fed96058426c015d8c2923981e80406489564a6",
+        "manifest": {
+          "protocol_version": "numeric-selfplay-v2",
+          "config": {
+            "model_name": "Qwen/Qwen2.5-1.5B",
+            "device": "cuda",
+            "seed": 42,
+            "mutator_warmup_steps": 5,
+            "eval_interval": 15,
+            "mut_rollouts": 4,
+            "breaker_rollouts": 8,
+            "lr": 2e-05,
+            "lr_mutator": 2e-05,
+            "lr_breaker": 2e-05,
+            "lr_breaker_min": 5e-06,
+            "cosine_decay_start": 25,
+            "curriculum_tighten_step": 30,
+            "anchor_ratio": 0.1,
+            "kl_coef": 0.01,
+            "temperature": 0.7
+          },
+          "source_sha256": {
+            "train_spin.py": "18079970953a73d55fac81dfa57d7a06b8a07dd6cae354c5a3c0fcac8e83e41c",
+            "core/experiment.py": "8a08fd9f0dcc30639f090903ecb4f23f202433672cc4435a2f5d52a28fdfe562",
+            "core/sandbox.py": "a31e7c8d7144cf281530ca2753759e467016dbe008a0db353726004c9c0f2b80",
+            "core/hard_buffer.py": "01890fbbc808277904e3fb316fde6ae70d43482cb34df66109ea678b9c47e6cf",
+            "core/grpo_engine.py": "c17961cee8119c9a7adeb2c4213e6db6c5d2d140032a5fcea346883082f8d9cd",
+            "roles/mutator.py": "fbae3786c101208fa05081100ce8c6d39cd84cc4cff0b0b1ae0d59b03fdc9942",
+            "roles/breaker.py": "0b80c5178250a9d28228dad7d994bcdd2af8e07e708c82c7e325fa86b228c420",
+            "data/seed_functions.py": "074171eda067b4e4e60d6c63c51090423e407a3d0451dc89e0461679d26454c9",
+            "data/anchor_tasks.py": "849297181aa6eb919eb98c543e1b392a119915aee7bace5e71a953555fc61ace",
+            "data/heldout_eval.py": "5e33abe6a92606f06b87e8999a4ed19608eb5a8d7d458a0f13e88e93bd8e15b7"
+          },
+          "initial_adapter": null,
+          "torch_version": "2.11.0+cu128"
+        },
+        "test_decoding": {
+          "temperature": 0.7,
+          "top_p": 1.0,
+          "top_k": 0,
+          "max_new_tokens": 24,
+          "sample_candidates": 4
+        },
+        "selected_step": 60,
+        "best_val_greedy_pass1": 0.85,
+        "test_greedy_pass1": 0.55,
+        "test_sample_pass4": 0.9,
+        "test_hit_rate": 0.65,
+        "pool_size": 56,
+        "trajectory": [
+          {
+            "protocol_version": "numeric-selfplay-v2",
+            "step": 0,
+            "round": 0,
+            "val_greedy_pass1": 0.55,
+            "val_sample_pass4": 0.55,
+            "val_hit_rate": 0.2625,
+            "pool_size": 0
+          },
+          {
+            "step": 15,
+            "round": 1,
+            "is_warmup": false,
+            "mut_validity_rate": 0.5,
+            "mut_avg_reward": 0.40625,
+            "mut_grad_norm": 0.8291142582893372,
+            "brk_solve_rate": 0.25,
+            "brk_source": "HardBuffer",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 2,
+            "brk_overall_hit_rate": 0.25,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.25,
+            "brk_grad_norm": 1.757257103919983,
+            "pool_size": 25,
+            "val_greedy_pass1": 0.7,
+            "val_sample_pass4": 0.55,
+            "val_hit_rate": 0.3,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 6.8848090171813965
+          },
+          {
+            "step": 30,
+            "round": 2,
+            "is_warmup": false,
+            "mut_validity_rate": 0.0,
+            "mut_avg_reward": 0.05,
+            "mut_grad_norm": 0.0,
+            "brk_solve_rate": 0.25,
+            "brk_source": "HardBuffer",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 2,
+            "brk_overall_hit_rate": 0.25,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.25,
+            "brk_grad_norm": 2.737555980682373,
+            "pool_size": 41,
+            "val_greedy_pass1": 0.75,
+            "val_sample_pass4": 0.75,
+            "val_hit_rate": 0.6125,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 4.769306898117065
+          },
+          {
+            "step": 45,
+            "round": 3,
+            "is_warmup": false,
+            "mut_validity_rate": 0.75,
+            "mut_avg_reward": 0.1875,
+            "mut_grad_norm": 0.8893119692802429,
+            "brk_solve_rate": 0.875,
+            "brk_source": "HardBuffer",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 7,
+            "brk_overall_hit_rate": 0.875,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.875,
+            "brk_grad_norm": 2.817535161972046,
+            "pool_size": 48,
+            "val_greedy_pass1": 0.8,
+            "val_sample_pass4": 0.9,
+            "val_hit_rate": 0.7125,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 13.331260442733765
+          },
+          {
+            "step": 60,
+            "round": 4,
+            "is_warmup": false,
+            "mut_validity_rate": 0.25,
+            "mut_avg_reward": 0.2125,
+            "mut_grad_norm": 0.46888265013694763,
+            "brk_solve_rate": 0.375,
+            "brk_source": "HardBuffer",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 3,
+            "brk_overall_hit_rate": 0.375,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.375,
+            "brk_grad_norm": 4.750921726226807,
+            "pool_size": 54,
+            "val_greedy_pass1": 0.85,
+            "val_sample_pass4": 0.95,
+            "val_hit_rate": 0.825,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 10.74068808555603
+          },
+          {
+            "step": 75,
+            "round": 5,
+            "is_warmup": false,
+            "mut_validity_rate": 0.0,
+            "mut_avg_reward": 0.0,
+            "mut_grad_norm": 0.0,
+            "brk_solve_rate": 1.0,
+            "brk_source": "HardBuffer",
+            "brk_total_candidates": 16,
+            "brk_total_hits": 8,
+            "brk_overall_hit_rate": 0.5,
+            "brk_effective_update": false,
+            "brk_avg_reward": 1.0,
+            "brk_grad_norm": 0.0,
+            "pool_size": 56,
+            "val_greedy_pass1": 0.85,
+            "val_sample_pass4": 0.85,
+            "val_hit_rate": 0.75,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 4.493815183639526
+          }
+        ],
+        "training_telemetry": {},
+        "cost": {
+          "breaker_updates": 59,
+          "breaker_updates_best": 51,
+          "mutator_updates": 54,
+          "breaker_candidates": null,
+          "mutator_candidates": null,
+          "walltime_seconds": null
+        }
+      },
+      "43": {
+        "seed": 43,
+        "source_report": "reports/runs/mixed_replay/seed43.json",
+        "source_sha256": "1f3646d7ea2ec445cd7dc1e14b17c62f503f1959e122653b804fb18343124b98",
+        "manifest": {
+          "protocol_version": "numeric-selfplay-v2",
+          "config": {
+            "model_name": "Qwen/Qwen2.5-1.5B",
+            "device": "cuda",
+            "seed": 43,
+            "mutator_warmup_steps": 5,
+            "eval_interval": 15,
+            "mut_rollouts": 4,
+            "breaker_rollouts": 8,
+            "lr": 2e-05,
+            "lr_mutator": 2e-05,
+            "lr_breaker": 2e-05,
+            "lr_breaker_min": 5e-06,
+            "cosine_decay_start": 25,
+            "curriculum_tighten_step": 30,
+            "anchor_ratio": 0.1,
+            "kl_coef": 0.01,
+            "temperature": 0.7
+          },
+          "source_sha256": {
+            "train_spin.py": "18079970953a73d55fac81dfa57d7a06b8a07dd6cae354c5a3c0fcac8e83e41c",
+            "core/experiment.py": "8a08fd9f0dcc30639f090903ecb4f23f202433672cc4435a2f5d52a28fdfe562",
+            "core/sandbox.py": "a31e7c8d7144cf281530ca2753759e467016dbe008a0db353726004c9c0f2b80",
+            "core/hard_buffer.py": "01890fbbc808277904e3fb316fde6ae70d43482cb34df66109ea678b9c47e6cf",
+            "core/grpo_engine.py": "c17961cee8119c9a7adeb2c4213e6db6c5d2d140032a5fcea346883082f8d9cd",
+            "roles/mutator.py": "fbae3786c101208fa05081100ce8c6d39cd84cc4cff0b0b1ae0d59b03fdc9942",
+            "roles/breaker.py": "0b80c5178250a9d28228dad7d994bcdd2af8e07e708c82c7e325fa86b228c420",
+            "data/seed_functions.py": "074171eda067b4e4e60d6c63c51090423e407a3d0451dc89e0461679d26454c9",
+            "data/anchor_tasks.py": "849297181aa6eb919eb98c543e1b392a119915aee7bace5e71a953555fc61ace",
+            "data/heldout_eval.py": "5e33abe6a92606f06b87e8999a4ed19608eb5a8d7d458a0f13e88e93bd8e15b7"
+          },
+          "initial_adapter": null,
+          "torch_version": "2.11.0+cu128"
+        },
+        "test_decoding": {
+          "temperature": 0.7,
+          "top_p": 1.0,
+          "top_k": 0,
+          "max_new_tokens": 24,
+          "sample_candidates": 4
+        },
+        "selected_step": 60,
+        "best_val_greedy_pass1": 0.8,
+        "test_greedy_pass1": 0.6,
+        "test_sample_pass4": 0.75,
+        "test_hit_rate": 0.6125,
+        "pool_size": 60,
+        "trajectory": [
+          {
+            "protocol_version": "numeric-selfplay-v2",
+            "step": 0,
+            "round": 0,
+            "val_greedy_pass1": 0.55,
+            "val_sample_pass4": 0.6,
+            "val_hit_rate": 0.2875,
+            "pool_size": 0
+          },
+          {
+            "step": 15,
+            "round": 1,
+            "is_warmup": false,
+            "mut_validity_rate": 0.75,
+            "mut_avg_reward": 0.69375,
+            "mut_grad_norm": 0.5147455334663391,
+            "brk_solve_rate": 0.25,
+            "brk_source": "HardBuffer",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 2,
+            "brk_overall_hit_rate": 0.25,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.25,
+            "brk_grad_norm": 1.3356729745864868,
+            "pool_size": 23,
+            "val_greedy_pass1": 0.65,
+            "val_sample_pass4": 0.65,
+            "val_hit_rate": 0.3375,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 8.648647785186768
+          },
+          {
+            "step": 30,
+            "round": 2,
+            "is_warmup": false,
+            "mut_validity_rate": 0.25,
+            "mut_avg_reward": 0.275,
+            "mut_grad_norm": 1.0437071323394775,
+            "brk_solve_rate": 1.0,
+            "brk_source": "Anchor",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 8,
+            "brk_overall_hit_rate": 1.0,
+            "brk_effective_update": false,
+            "brk_avg_reward": 1.0,
+            "brk_grad_norm": 0.0,
+            "pool_size": 39,
+            "val_greedy_pass1": 0.65,
+            "val_sample_pass4": 0.8,
+            "val_hit_rate": 0.6,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 6.722032785415649
+          },
+          {
+            "step": 45,
+            "round": 3,
+            "is_warmup": false,
+            "mut_validity_rate": 0.5,
+            "mut_avg_reward": 0.2625,
+            "mut_grad_norm": 1.1874029636383057,
+            "brk_solve_rate": 0.0,
+            "brk_source": "HardBuffer",
+            "brk_total_candidates": 16,
+            "brk_total_hits": 8,
+            "brk_overall_hit_rate": 0.5,
+            "brk_effective_update": false,
+            "brk_avg_reward": 0.0,
+            "brk_grad_norm": 0.0,
+            "pool_size": 44,
+            "val_greedy_pass1": 0.75,
+            "val_sample_pass4": 0.85,
+            "val_hit_rate": 0.725,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 7.326155424118042
+          },
+          {
+            "step": 60,
+            "round": 4,
+            "is_warmup": false,
+            "mut_validity_rate": 0.0,
+            "mut_avg_reward": 0.025,
+            "mut_grad_norm": 0.49974483251571655,
+            "brk_solve_rate": 0.0,
+            "brk_source": "HardBuffer",
+            "brk_total_candidates": 16,
+            "brk_total_hits": 0,
+            "brk_overall_hit_rate": 0.0,
+            "brk_effective_update": false,
+            "brk_avg_reward": 0.0,
+            "brk_grad_norm": 0.0,
+            "pool_size": 53,
+            "val_greedy_pass1": 0.8,
+            "val_sample_pass4": 0.85,
+            "val_hit_rate": 0.6875,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 4.990161895751953
+          },
+          {
+            "step": 75,
+            "round": 5,
+            "is_warmup": false,
+            "mut_validity_rate": 0.0,
+            "mut_avg_reward": 0.0,
+            "mut_grad_norm": 0.0,
+            "brk_solve_rate": 0.75,
+            "brk_source": "Rescue[Anchor]",
+            "brk_total_candidates": 16,
+            "brk_total_hits": 6,
+            "brk_overall_hit_rate": 0.375,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.75,
+            "brk_grad_norm": 4.209537506103516,
+            "pool_size": 60,
+            "val_greedy_pass1": 0.8,
+            "val_sample_pass4": 0.85,
+            "val_hit_rate": 0.725,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 5.74614405632019
+          }
+        ],
+        "training_telemetry": {},
+        "cost": {
+          "breaker_updates": 53,
+          "breaker_updates_best": 43,
+          "mutator_updates": 53,
+          "breaker_candidates": null,
+          "mutator_candidates": null,
+          "walltime_seconds": null
+        }
+      },
+      "44": {
+        "seed": 44,
+        "source_report": "reports/runs/mixed_replay/seed44.json",
+        "source_sha256": "28c571a7efe515f6272e54a483319712e174b0edb783ed4c127151f8055c8b30",
+        "manifest": {
+          "protocol_version": "numeric-selfplay-v2",
+          "config": {
+            "model_name": "Qwen/Qwen2.5-1.5B",
+            "device": "cuda",
+            "seed": 44,
+            "mutator_warmup_steps": 5,
+            "eval_interval": 15,
+            "mut_rollouts": 4,
+            "breaker_rollouts": 8,
+            "lr": 2e-05,
+            "lr_mutator": 2e-05,
+            "lr_breaker": 2e-05,
+            "lr_breaker_min": 5e-06,
+            "cosine_decay_start": 25,
+            "curriculum_tighten_step": 30,
+            "anchor_ratio": 0.1,
+            "kl_coef": 0.01,
+            "temperature": 0.7
+          },
+          "source_sha256": {
+            "train_spin.py": "18079970953a73d55fac81dfa57d7a06b8a07dd6cae354c5a3c0fcac8e83e41c",
+            "core/experiment.py": "8a08fd9f0dcc30639f090903ecb4f23f202433672cc4435a2f5d52a28fdfe562",
+            "core/sandbox.py": "a31e7c8d7144cf281530ca2753759e467016dbe008a0db353726004c9c0f2b80",
+            "core/hard_buffer.py": "01890fbbc808277904e3fb316fde6ae70d43482cb34df66109ea678b9c47e6cf",
+            "core/grpo_engine.py": "c17961cee8119c9a7adeb2c4213e6db6c5d2d140032a5fcea346883082f8d9cd",
+            "roles/mutator.py": "fbae3786c101208fa05081100ce8c6d39cd84cc4cff0b0b1ae0d59b03fdc9942",
+            "roles/breaker.py": "0b80c5178250a9d28228dad7d994bcdd2af8e07e708c82c7e325fa86b228c420",
+            "data/seed_functions.py": "074171eda067b4e4e60d6c63c51090423e407a3d0451dc89e0461679d26454c9",
+            "data/anchor_tasks.py": "849297181aa6eb919eb98c543e1b392a119915aee7bace5e71a953555fc61ace",
+            "data/heldout_eval.py": "5e33abe6a92606f06b87e8999a4ed19608eb5a8d7d458a0f13e88e93bd8e15b7"
+          },
+          "initial_adapter": null,
+          "torch_version": "2.11.0+cu128"
+        },
+        "test_decoding": {
+          "temperature": 0.7,
+          "top_p": 1.0,
+          "top_k": 0,
+          "max_new_tokens": 24,
+          "sample_candidates": 4
+        },
+        "selected_step": 45,
+        "best_val_greedy_pass1": 0.85,
+        "test_greedy_pass1": 0.6,
+        "test_sample_pass4": 0.75,
+        "test_hit_rate": 0.5125,
+        "pool_size": 62,
+        "trajectory": [
+          {
+            "protocol_version": "numeric-selfplay-v2",
+            "step": 0,
+            "round": 0,
+            "val_greedy_pass1": 0.55,
+            "val_sample_pass4": 0.65,
+            "val_hit_rate": 0.375,
+            "pool_size": 0
+          },
+          {
+            "step": 15,
+            "round": 1,
+            "is_warmup": false,
+            "mut_validity_rate": 0.25,
+            "mut_avg_reward": 0.28750000000000003,
+            "mut_grad_norm": 0.6029059886932373,
+            "brk_solve_rate": 0.0,
+            "brk_source": "HardBuffer",
+            "brk_total_candidates": 16,
+            "brk_total_hits": 8,
+            "brk_overall_hit_rate": 0.5,
+            "brk_effective_update": false,
+            "brk_avg_reward": 0.0,
+            "brk_grad_norm": 0.0,
+            "pool_size": 19,
+            "val_greedy_pass1": 0.7,
+            "val_sample_pass4": 0.7,
+            "val_hit_rate": 0.3375,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 5.918397665023804
+          },
+          {
+            "step": 30,
+            "round": 2,
+            "is_warmup": false,
+            "mut_validity_rate": 0.5,
+            "mut_avg_reward": 0.39375,
+            "mut_grad_norm": 1.066216230392456,
+            "brk_solve_rate": 1.0,
+            "brk_source": "HardBuffer",
+            "brk_total_candidates": 16,
+            "brk_total_hits": 8,
+            "brk_overall_hit_rate": 0.5,
+            "brk_effective_update": false,
+            "brk_avg_reward": 1.0,
+            "brk_grad_norm": 0.0,
+            "pool_size": 38,
+            "val_greedy_pass1": 0.8,
+            "val_sample_pass4": 0.8,
+            "val_hit_rate": 0.575,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 10.85767412185669
+          },
+          {
+            "step": 45,
+            "round": 3,
+            "is_warmup": false,
+            "mut_validity_rate": 0.75,
+            "mut_avg_reward": 0.2,
+            "mut_grad_norm": 1.346869945526123,
+            "brk_solve_rate": 0.5,
+            "brk_source": "HardBuffer",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 4,
+            "brk_overall_hit_rate": 0.5,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.5,
+            "brk_grad_norm": 3.4489965438842773,
+            "pool_size": 45,
+            "val_greedy_pass1": 0.85,
+            "val_sample_pass4": 1.0,
+            "val_hit_rate": 0.7875,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 12.416780233383179
+          },
+          {
+            "step": 60,
+            "round": 4,
+            "is_warmup": false,
+            "mut_validity_rate": 0.0,
+            "mut_avg_reward": 0.0125,
+            "mut_grad_norm": 0.5360342264175415,
+            "brk_solve_rate": 0.625,
+            "brk_source": "HardBuffer",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 5,
+            "brk_overall_hit_rate": 0.625,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.625,
+            "brk_grad_norm": 2.6051783561706543,
+            "pool_size": 55,
+            "val_greedy_pass1": 0.85,
+            "val_sample_pass4": 0.85,
+            "val_hit_rate": 0.8,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 13.516594648361206
+          },
+          {
+            "step": 75,
+            "round": 5,
+            "is_warmup": false,
+            "mut_validity_rate": 0.0,
+            "mut_avg_reward": 0.0,
+            "mut_grad_norm": 0.0,
+            "brk_solve_rate": 0.125,
+            "brk_source": "HardBuffer",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 1,
+            "brk_overall_hit_rate": 0.125,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.125,
+            "brk_grad_norm": 3.6487762928009033,
+            "pool_size": 62,
+            "val_greedy_pass1": 0.85,
+            "val_sample_pass4": 0.85,
+            "val_hit_rate": 0.8125,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 6.968238353729248
+          }
+        ],
+        "training_telemetry": {},
+        "cost": {
+          "breaker_updates": 49,
+          "breaker_updates_best": 31,
+          "mutator_updates": 56,
+          "breaker_candidates": null,
+          "mutator_candidates": null,
+          "walltime_seconds": null
+        }
+      }
+    },
+    "val_best": [
+      0.8333333333333334,
+      0.02886751345948125
+    ],
+    "test_greedy_pass1": [
+      0.5833333333333334,
+      0.02886751345948125
+    ],
+    "test_sample_pass4": [
+      0.7999999999999999,
+      0.08660254037844388
+    ],
+    "test_hit_rate": [
+      0.5916666666666667,
+      0.07107800878846662
+    ],
+    "pool_size": [
+      59.333333333333336,
+      3.0550504633038935
+    ],
+    "cost": {
+      "breaker_updates": [
+        53.666666666666664,
+        5.033222956847167
+      ],
+      "breaker_updates_best": [
+        41.666666666666664,
+        10.066445913694333
+      ],
+      "mutator_updates": [
+        54.333333333333336,
+        1.5275252316519465
+      ],
+      "breaker_candidates": [
+        null,
+        null
+      ],
+      "mutator_candidates": [
+        null,
+        null
+      ],
+      "walltime_seconds": [
+        null,
+        null
+      ]
+    }
+  },
+  "frozen_mutator_ablation": {
+    "seeds": [
+      42,
+      43,
+      44
+    ],
+    "num_seeds": 3,
+    "runs": {
+      "42": {
+        "seed": 42,
+        "source_report": "reports/runs/frozen_mutator_ablation/seed42.json",
+        "source_sha256": "7770f990dc0f84fe27799ec6e98c9cd5e7819b78350e9ffddbed28eaf83e33c0",
+        "manifest": {
+          "protocol_version": "numeric-selfplay-v2",
+          "config": {
+            "model_name": "Qwen/Qwen2.5-1.5B",
+            "device": "cuda",
+            "seed": 42,
+            "mutator_warmup_steps": 5,
+            "eval_interval": 15,
+            "mut_rollouts": 4,
+            "breaker_rollouts": 8,
+            "lr": 2e-05,
+            "lr_mutator": 2e-05,
+            "lr_breaker": 2e-05,
+            "lr_breaker_min": 5e-06,
+            "cosine_decay_start": 25,
+            "curriculum_tighten_step": 30,
+            "anchor_ratio": 0.0,
+            "kl_coef": 0.01,
+            "temperature": 0.7,
+            "freeze_mutator_after_warmup": true
+          },
+          "source_sha256": {
+            "train_spin.py": "f068808dd81d3670f1267499c36f5dc120aa455bb06d838befe4c19d996c662d",
+            "core/experiment.py": "3c635eabfbe508b8c1aa09dfc87fdceffee76b2df96bf41d5f6cc924eda5c11d",
+            "core/sandbox.py": "a31e7c8d7144cf281530ca2753759e467016dbe008a0db353726004c9c0f2b80",
+            "core/hard_buffer.py": "01890fbbc808277904e3fb316fde6ae70d43482cb34df66109ea678b9c47e6cf",
+            "core/grpo_engine.py": "c17961cee8119c9a7adeb2c4213e6db6c5d2d140032a5fcea346883082f8d9cd",
+            "roles/mutator.py": "fbae3786c101208fa05081100ce8c6d39cd84cc4cff0b0b1ae0d59b03fdc9942",
+            "roles/breaker.py": "0b80c5178250a9d28228dad7d994bcdd2af8e07e708c82c7e325fa86b228c420",
+            "data/seed_functions.py": "074171eda067b4e4e60d6c63c51090423e407a3d0451dc89e0461679d26454c9",
+            "data/anchor_tasks.py": "849297181aa6eb919eb98c543e1b392a119915aee7bace5e71a953555fc61ace",
+            "data/heldout_eval.py": "5e33abe6a92606f06b87e8999a4ed19608eb5a8d7d458a0f13e88e93bd8e15b7"
+          },
+          "initial_adapter": null,
+          "torch_version": "2.11.0+cu128"
+        },
+        "test_decoding": {
+          "temperature": 0.7,
+          "top_p": 1.0,
+          "top_k": 0,
+          "max_new_tokens": 24,
+          "sample_candidates": 4
+        },
+        "selected_step": 45,
+        "best_val_greedy_pass1": 0.85,
+        "test_greedy_pass1": 0.55,
+        "test_sample_pass4": 0.85,
+        "test_hit_rate": 0.5625,
+        "pool_size": 61,
+        "trajectory": [
+          {
+            "protocol_version": "numeric-selfplay-v2",
+            "step": 0,
+            "round": 0,
+            "val_greedy_pass1": 0.55,
+            "val_sample_pass4": 0.55,
+            "val_hit_rate": 0.2625,
+            "pool_size": 0
+          },
+          {
+            "step": 15,
+            "round": 1,
+            "is_warmup": false,
+            "mut_validity_rate": 0.5,
+            "mut_avg_reward": 0.42500000000000004,
+            "mut_grad_norm": 0.0,
+            "brk_solve_rate": 0.0,
+            "brk_source": "HardBuffer",
+            "brk_total_candidates": 16,
+            "brk_total_hits": 0,
+            "brk_overall_hit_rate": 0.0,
+            "brk_effective_update": false,
+            "brk_avg_reward": 0.0,
+            "brk_grad_norm": 0.0,
+            "pool_size": 25,
+            "val_greedy_pass1": 0.7,
+            "val_sample_pass4": 0.75,
+            "val_hit_rate": 0.3625,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 5.410940170288086
+          },
+          {
+            "step": 30,
+            "round": 2,
+            "is_warmup": false,
+            "mut_validity_rate": 0.0,
+            "mut_avg_reward": 0.037500000000000006,
+            "mut_grad_norm": 0.0,
+            "brk_solve_rate": 0.25,
+            "brk_source": "HardBuffer",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 2,
+            "brk_overall_hit_rate": 0.25,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.25,
+            "brk_grad_norm": 3.4981486797332764,
+            "pool_size": 40,
+            "val_greedy_pass1": 0.8,
+            "val_sample_pass4": 0.85,
+            "val_hit_rate": 0.725,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 4.276984453201294
+          },
+          {
+            "step": 45,
+            "round": 3,
+            "is_warmup": false,
+            "mut_validity_rate": 0.75,
+            "mut_avg_reward": 0.3875,
+            "mut_grad_norm": 0.0,
+            "brk_solve_rate": 0.875,
+            "brk_source": "HardBuffer",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 7,
+            "brk_overall_hit_rate": 0.875,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.875,
+            "brk_grad_norm": 2.2954399585723877,
+            "pool_size": 47,
+            "val_greedy_pass1": 0.85,
+            "val_sample_pass4": 0.85,
+            "val_hit_rate": 0.7375,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 9.554084300994873
+          },
+          {
+            "step": 60,
+            "round": 4,
+            "is_warmup": false,
+            "mut_validity_rate": 0.25,
+            "mut_avg_reward": 0.147125,
+            "mut_grad_norm": 0.0,
+            "brk_solve_rate": 0.125,
+            "brk_source": "HardBuffer",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 1,
+            "brk_overall_hit_rate": 0.125,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.125,
+            "brk_grad_norm": 4.219205379486084,
+            "pool_size": 54,
+            "val_greedy_pass1": 0.8,
+            "val_sample_pass4": 0.9,
+            "val_hit_rate": 0.8,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 9.054410457611084
+          },
+          {
+            "step": 75,
+            "round": 5,
+            "is_warmup": false,
+            "mut_validity_rate": 0.0,
+            "mut_avg_reward": 0.0,
+            "mut_grad_norm": 0.0,
+            "brk_solve_rate": 0.5,
+            "brk_source": "Rescue[Buffer]",
+            "brk_total_candidates": 16,
+            "brk_total_hits": 4,
+            "brk_overall_hit_rate": 0.25,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.5,
+            "brk_grad_norm": 4.687281608581543,
+            "pool_size": 61,
+            "val_greedy_pass1": 0.85,
+            "val_sample_pass4": 0.8,
+            "val_hit_rate": 0.75,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 10.269789695739746
+          }
+        ],
+        "training_telemetry": {},
+        "cost": {
+          "breaker_updates": 61,
+          "breaker_updates_best": 37,
+          "mutator_updates": 5,
+          "breaker_candidates": null,
+          "mutator_candidates": null,
+          "walltime_seconds": null
+        }
+      },
+      "43": {
+        "seed": 43,
+        "source_report": "reports/runs/frozen_mutator_ablation/seed43.json",
+        "source_sha256": "79662567f2f489fcee1aad18d2490c2c0c0644bef29b895e5d3798abe7f4c671",
+        "manifest": {
+          "protocol_version": "numeric-selfplay-v2",
+          "config": {
+            "model_name": "Qwen/Qwen2.5-1.5B",
+            "device": "cuda",
+            "seed": 43,
+            "mutator_warmup_steps": 5,
+            "eval_interval": 15,
+            "mut_rollouts": 4,
+            "breaker_rollouts": 8,
+            "lr": 2e-05,
+            "lr_mutator": 2e-05,
+            "lr_breaker": 2e-05,
+            "lr_breaker_min": 5e-06,
+            "cosine_decay_start": 25,
+            "curriculum_tighten_step": 30,
+            "anchor_ratio": 0.0,
+            "kl_coef": 0.01,
+            "temperature": 0.7,
+            "freeze_mutator_after_warmup": true
+          },
+          "source_sha256": {
+            "train_spin.py": "f068808dd81d3670f1267499c36f5dc120aa455bb06d838befe4c19d996c662d",
+            "core/experiment.py": "3c635eabfbe508b8c1aa09dfc87fdceffee76b2df96bf41d5f6cc924eda5c11d",
+            "core/sandbox.py": "a31e7c8d7144cf281530ca2753759e467016dbe008a0db353726004c9c0f2b80",
+            "core/hard_buffer.py": "01890fbbc808277904e3fb316fde6ae70d43482cb34df66109ea678b9c47e6cf",
+            "core/grpo_engine.py": "c17961cee8119c9a7adeb2c4213e6db6c5d2d140032a5fcea346883082f8d9cd",
+            "roles/mutator.py": "fbae3786c101208fa05081100ce8c6d39cd84cc4cff0b0b1ae0d59b03fdc9942",
+            "roles/breaker.py": "0b80c5178250a9d28228dad7d994bcdd2af8e07e708c82c7e325fa86b228c420",
+            "data/seed_functions.py": "074171eda067b4e4e60d6c63c51090423e407a3d0451dc89e0461679d26454c9",
+            "data/anchor_tasks.py": "849297181aa6eb919eb98c543e1b392a119915aee7bace5e71a953555fc61ace",
+            "data/heldout_eval.py": "5e33abe6a92606f06b87e8999a4ed19608eb5a8d7d458a0f13e88e93bd8e15b7"
+          },
+          "initial_adapter": null,
+          "torch_version": "2.11.0+cu128"
+        },
+        "test_decoding": {
+          "temperature": 0.7,
+          "top_p": 1.0,
+          "top_k": 0,
+          "max_new_tokens": 24,
+          "sample_candidates": 4
+        },
+        "selected_step": 30,
+        "best_val_greedy_pass1": 0.7,
+        "test_greedy_pass1": 0.5,
+        "test_sample_pass4": 0.7,
+        "test_hit_rate": 0.45,
+        "pool_size": 63,
+        "trajectory": [
+          {
+            "protocol_version": "numeric-selfplay-v2",
+            "step": 0,
+            "round": 0,
+            "val_greedy_pass1": 0.55,
+            "val_sample_pass4": 0.6,
+            "val_hit_rate": 0.2875,
+            "pool_size": 0
+          },
+          {
+            "step": 15,
+            "round": 1,
+            "is_warmup": false,
+            "mut_validity_rate": 0.5,
+            "mut_avg_reward": 0.45625,
+            "mut_grad_norm": 0.0,
+            "brk_solve_rate": 0.375,
+            "brk_source": "HardBuffer",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 3,
+            "brk_overall_hit_rate": 0.375,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.375,
+            "brk_grad_norm": 2.0971262454986572,
+            "pool_size": 23,
+            "val_greedy_pass1": 0.65,
+            "val_sample_pass4": 0.7,
+            "val_hit_rate": 0.3,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 6.67303729057312
+          },
+          {
+            "step": 30,
+            "round": 2,
+            "is_warmup": false,
+            "mut_validity_rate": 0.25,
+            "mut_avg_reward": 0.2,
+            "mut_grad_norm": 0.0,
+            "brk_solve_rate": 0.0,
+            "brk_source": "HardBuffer",
+            "brk_total_candidates": 16,
+            "brk_total_hits": 0,
+            "brk_overall_hit_rate": 0.0,
+            "brk_effective_update": false,
+            "brk_avg_reward": 0.0,
+            "brk_grad_norm": 0.0,
+            "pool_size": 38,
+            "val_greedy_pass1": 0.7,
+            "val_sample_pass4": 0.75,
+            "val_hit_rate": 0.5,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 6.196950674057007
+          },
+          {
+            "step": 45,
+            "round": 3,
+            "is_warmup": false,
+            "mut_validity_rate": 0.25,
+            "mut_avg_reward": 0.09999999999999999,
+            "mut_grad_norm": 0.0,
+            "brk_solve_rate": 0.0,
+            "brk_source": "HardBuffer",
+            "brk_total_candidates": 16,
+            "brk_total_hits": 8,
+            "brk_overall_hit_rate": 0.5,
+            "brk_effective_update": false,
+            "brk_avg_reward": 0.0,
+            "brk_grad_norm": 0.0,
+            "pool_size": 43,
+            "val_greedy_pass1": 0.7,
+            "val_sample_pass4": 0.85,
+            "val_hit_rate": 0.7,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 5.047796010971069
+          },
+          {
+            "step": 60,
+            "round": 4,
+            "is_warmup": false,
+            "mut_validity_rate": 0.5,
+            "mut_avg_reward": 0.394225,
+            "mut_grad_norm": 0.0,
+            "brk_solve_rate": 0.0,
+            "brk_source": "HardBuffer",
+            "brk_total_candidates": 16,
+            "brk_total_hits": 0,
+            "brk_overall_hit_rate": 0.0,
+            "brk_effective_update": false,
+            "brk_avg_reward": 0.0,
+            "brk_grad_norm": 0.0,
+            "pool_size": 58,
+            "val_greedy_pass1": 0.7,
+            "val_sample_pass4": 0.85,
+            "val_hit_rate": 0.7125,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 6.512156963348389
+          },
+          {
+            "step": 75,
+            "round": 5,
+            "is_warmup": false,
+            "mut_validity_rate": 0.0,
+            "mut_avg_reward": 0.0125,
+            "mut_grad_norm": 0.0,
+            "brk_solve_rate": 0.375,
+            "brk_source": "HardBuffer",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 3,
+            "brk_overall_hit_rate": 0.375,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.375,
+            "brk_grad_norm": 5.694586277008057,
+            "pool_size": 63,
+            "val_greedy_pass1": 0.7,
+            "val_sample_pass4": 0.75,
+            "val_hit_rate": 0.675,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 4.209134817123413
+          }
+        ],
+        "training_telemetry": {},
+        "cost": {
+          "breaker_updates": 59,
+          "breaker_updates_best": 24,
+          "mutator_updates": 4,
+          "breaker_candidates": null,
+          "mutator_candidates": null,
+          "walltime_seconds": null
+        }
+      },
+      "44": {
+        "seed": 44,
+        "source_report": "reports/runs/frozen_mutator_ablation/seed44.json",
+        "source_sha256": "540ef8f5795d9ae45c5a9f6cc09fb10bf55e09bffe8d44e2ae5b515b7ffbff1b",
+        "manifest": {
+          "protocol_version": "numeric-selfplay-v2",
+          "config": {
+            "model_name": "Qwen/Qwen2.5-1.5B",
+            "device": "cuda",
+            "seed": 44,
+            "mutator_warmup_steps": 5,
+            "eval_interval": 15,
+            "mut_rollouts": 4,
+            "breaker_rollouts": 8,
+            "lr": 2e-05,
+            "lr_mutator": 2e-05,
+            "lr_breaker": 2e-05,
+            "lr_breaker_min": 5e-06,
+            "cosine_decay_start": 25,
+            "curriculum_tighten_step": 30,
+            "anchor_ratio": 0.0,
+            "kl_coef": 0.01,
+            "temperature": 0.7,
+            "freeze_mutator_after_warmup": true
+          },
+          "source_sha256": {
+            "train_spin.py": "f068808dd81d3670f1267499c36f5dc120aa455bb06d838befe4c19d996c662d",
+            "core/experiment.py": "3c635eabfbe508b8c1aa09dfc87fdceffee76b2df96bf41d5f6cc924eda5c11d",
+            "core/sandbox.py": "a31e7c8d7144cf281530ca2753759e467016dbe008a0db353726004c9c0f2b80",
+            "core/hard_buffer.py": "01890fbbc808277904e3fb316fde6ae70d43482cb34df66109ea678b9c47e6cf",
+            "core/grpo_engine.py": "c17961cee8119c9a7adeb2c4213e6db6c5d2d140032a5fcea346883082f8d9cd",
+            "roles/mutator.py": "fbae3786c101208fa05081100ce8c6d39cd84cc4cff0b0b1ae0d59b03fdc9942",
+            "roles/breaker.py": "0b80c5178250a9d28228dad7d994bcdd2af8e07e708c82c7e325fa86b228c420",
+            "data/seed_functions.py": "074171eda067b4e4e60d6c63c51090423e407a3d0451dc89e0461679d26454c9",
+            "data/anchor_tasks.py": "849297181aa6eb919eb98c543e1b392a119915aee7bace5e71a953555fc61ace",
+            "data/heldout_eval.py": "5e33abe6a92606f06b87e8999a4ed19608eb5a8d7d458a0f13e88e93bd8e15b7"
+          },
+          "initial_adapter": null,
+          "torch_version": "2.11.0+cu128"
+        },
+        "test_decoding": {
+          "temperature": 0.7,
+          "top_p": 1.0,
+          "top_k": 0,
+          "max_new_tokens": 24,
+          "sample_candidates": 4
+        },
+        "selected_step": 45,
+        "best_val_greedy_pass1": 0.85,
+        "test_greedy_pass1": 0.7,
+        "test_sample_pass4": 0.75,
+        "test_hit_rate": 0.5375,
+        "pool_size": 59,
+        "trajectory": [
+          {
+            "protocol_version": "numeric-selfplay-v2",
+            "step": 0,
+            "round": 0,
+            "val_greedy_pass1": 0.55,
+            "val_sample_pass4": 0.65,
+            "val_hit_rate": 0.375,
+            "pool_size": 0
+          },
+          {
+            "step": 15,
+            "round": 1,
+            "is_warmup": false,
+            "mut_validity_rate": 0.75,
+            "mut_avg_reward": 0.69375,
+            "mut_grad_norm": 0.0,
+            "brk_solve_rate": 0.875,
+            "brk_source": "Rescue[Buffer]",
+            "brk_total_candidates": 16,
+            "brk_total_hits": 7,
+            "brk_overall_hit_rate": 0.4375,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.875,
+            "brk_grad_norm": 2.616024971008301,
+            "pool_size": 24,
+            "val_greedy_pass1": 0.7,
+            "val_sample_pass4": 0.65,
+            "val_hit_rate": 0.4125,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 7.654636383056641
+          },
+          {
+            "step": 30,
+            "round": 2,
+            "is_warmup": false,
+            "mut_validity_rate": 0.25,
+            "mut_avg_reward": 0.125,
+            "mut_grad_norm": 0.0,
+            "brk_solve_rate": 0.875,
+            "brk_source": "HardBuffer",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 7,
+            "brk_overall_hit_rate": 0.875,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.875,
+            "brk_grad_norm": 2.7601115703582764,
+            "pool_size": 40,
+            "val_greedy_pass1": 0.75,
+            "val_sample_pass4": 0.9,
+            "val_hit_rate": 0.625,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 4.753884553909302
+          },
+          {
+            "step": 45,
+            "round": 3,
+            "is_warmup": false,
+            "mut_validity_rate": 0.0,
+            "mut_avg_reward": 0.05,
+            "mut_grad_norm": 0.0,
+            "brk_solve_rate": 0.875,
+            "brk_source": "Rescue[Buffer]",
+            "brk_total_candidates": 16,
+            "brk_total_hits": 7,
+            "brk_overall_hit_rate": 0.4375,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.875,
+            "brk_grad_norm": 3.1535916328430176,
+            "pool_size": 45,
+            "val_greedy_pass1": 0.85,
+            "val_sample_pass4": 0.9,
+            "val_hit_rate": 0.8125,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 6.682986259460449
+          },
+          {
+            "step": 60,
+            "round": 4,
+            "is_warmup": false,
+            "mut_validity_rate": 0.0,
+            "mut_avg_reward": 0.037500000000000006,
+            "mut_grad_norm": 0.0,
+            "brk_solve_rate": 0.875,
+            "brk_source": "HardBuffer",
+            "brk_total_candidates": 8,
+            "brk_total_hits": 7,
+            "brk_overall_hit_rate": 0.875,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.875,
+            "brk_grad_norm": 5.468448638916016,
+            "pool_size": 53,
+            "val_greedy_pass1": 0.85,
+            "val_sample_pass4": 0.85,
+            "val_hit_rate": 0.8,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 4.324633836746216
+          },
+          {
+            "step": 75,
+            "round": 5,
+            "is_warmup": false,
+            "mut_validity_rate": 0.0,
+            "mut_avg_reward": 0.0125,
+            "mut_grad_norm": 0.0,
+            "brk_solve_rate": 0.375,
+            "brk_source": "Rescue[Buffer]",
+            "brk_total_candidates": 16,
+            "brk_total_hits": 11,
+            "brk_overall_hit_rate": 0.6875,
+            "brk_effective_update": true,
+            "brk_avg_reward": 0.375,
+            "brk_grad_norm": 10.289468765258789,
+            "pool_size": 59,
+            "val_greedy_pass1": 0.85,
+            "val_sample_pass4": 0.85,
+            "val_hit_rate": 0.75,
+            "protocol_version": "numeric-selfplay-v2",
+            "duration_sec": 4.930062294006348
+          }
+        ],
+        "training_telemetry": {},
+        "cost": {
+          "breaker_updates": 58,
+          "breaker_updates_best": 35,
+          "mutator_updates": 5,
+          "breaker_candidates": null,
+          "mutator_candidates": null,
+          "walltime_seconds": null
+        }
+      }
+    },
+    "val_best": [
+      0.7999999999999999,
+      0.08660254037844388
+    ],
+    "test_greedy_pass1": [
+      0.5833333333333334,
+      0.1040832999733066
+    ],
+    "test_sample_pass4": [
+      0.7666666666666666,
+      0.07637626158259735
+    ],
+    "test_hit_rate": [
+      0.5166666666666667,
+      0.05907269532815759
+    ],
+    "pool_size": [
+      61.0,
+      2.0
+    ],
+    "cost": {
+      "breaker_updates": [
+        59.333333333333336,
+        1.5275252316519465
+      ],
+      "breaker_updates_best": [
+        32.0,
+        7.0
+      ],
+      "mutator_updates": [
+        4.666666666666667,
+        0.5773502691896258
+      ],
+      "breaker_candidates": [
+        null,
+        null
+      ],
+      "mutator_candidates": [
+        null,
+        null
+      ],
+      "walltime_seconds": [
+        null,
+        null
+      ]
+    }
+  }
+}

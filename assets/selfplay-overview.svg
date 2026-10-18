@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="420" viewBox="0 0 1120 420" role="img" aria-labelledby="title desc">
+  <title id="title">nano-CodeSelfPlay: one backbone, two roles, executable rewards</title>
+  <desc id="desc">An illustrative round: Mutator changes x less than 30 to x less than or equal to 30. A verifier checks the mutation, HardBuffer stores replay tasks, and Breaker proposes input 30. Both roles use independent LoRA adapters on a shared frozen backbone.</desc>
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1">
+      <stop stop-color="#101c31"/>
+      <stop offset="1" stop-color="#17273b"/>
+    </linearGradient>
+    <linearGradient id="mutator" x2="1" y2="1">
+      <stop stop-color="#193c49"/>
+      <stop offset="1" stop-color="#142d3d"/>
+    </linearGradient>
+    <linearGradient id="breaker" x2="1" y2="1">
+      <stop stop-color="#3c3041"/>
+      <stop offset="1" stop-color="#292c40"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#96aec9"/>
+    </marker>
+  </defs>
+  <rect width="1120" height="420" rx="24" fill="url(#bg)"/>
+  <g fill="none" stroke="#fff" stroke-opacity=".035">
+    <path d="M0 60H1120M0 120H1120M0 180H1120M0 240H1120M0 300H1120M0 360H1120"/>
+    <path d="M80 0V420M160 0V420M240 0V420M320 0V420M400 0V420M480 0V420M560 0V420M640 0V420M720 0V420M800 0V420M880 0V420M960 0V420M1040 0V420"/>
+  </g>
+  <g font-family="DejaVu Sans, Arial, sans-serif">
+    <text x="56" y="43" fill="#a9bed7" font-size="16" letter-spacing="2.5">A SMALL ARENA FOR SELF-PLAY</text>
+    <text x="1064" y="43" fill="#7d99b5" font-size="14" text-anchor="end">CODE MUTATION × COUNTEREXAMPLE DISCOVERY</text>
+
+    <rect x="56" y="80" width="388" height="150" rx="16" fill="url(#mutator)" stroke="#367c84"/>
+    <rect x="76" y="99" width="6" height="29" rx="3" fill="#68d9c3"/>
+    <text x="96" y="122" fill="#e5fff8" font-size="28" font-weight="bold">Mutator</text>
+    <text x="420" y="120" fill="#8cd8cc" font-size="14" text-anchor="end">LoRA A</text>
+    <text x="80" y="151" fill="#a3c6cb" font-size="17">Introduce a subtle boundary bug.</text>
+    <g font-family="DejaVu Sans Mono, monospace" font-size="21">
+      <text x="80" y="184" fill="#9bafbd">OLD: return x &lt; 30</text>
+      <text x="80" y="213" fill="#8febd6">NEW: return x &lt;= 30</text>
+    </g>
+
+    <rect x="676" y="80" width="388" height="150" rx="16" fill="url(#breaker)" stroke="#82627b"/>
+    <rect x="696" y="99" width="6" height="29" rx="3" fill="#eab196"/>
+    <text x="716" y="122" fill="#fff0e8" font-size="28" font-weight="bold">Breaker</text>
+    <text x="1040" y="120" fill="#d9b1ac" font-size="14" text-anchor="end">LoRA B</text>
+    <text x="700" y="151" fill="#c5b4c7" font-size="17">Find an input that exposes it.</text>
+    <text x="700" y="198" fill="#f3c4a9" font-size="25" font-family="DejaVu Sans Mono, monospace">&lt;input&gt;30&lt;/input&gt;</text>
+
+    <path d="M444 160H482" stroke="#96aec9" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+    <path d="M638 160H674" stroke="#96aec9" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+    <rect x="484" y="110" width="152" height="100" rx="14" fill="#23354b" stroke="#627b98"/>
+    <text x="560" y="143" text-anchor="middle" fill="#e2ecfa" font-size="20" font-weight="bold">VERIFIER</text>
+    <text x="560" y="169" text-anchor="middle" fill="#b3c4d9" font-size="14">sanity + full domain</text>
+    <text x="560" y="192" text-anchor="middle" fill="#b3c4d9" font-size="14">execute to check</text>
+
+    <path d="M560 210V237" stroke="#96aec9" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+    <path d="M640 259H870V232" stroke="#96aec9" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+    <rect x="480" y="240" width="160" height="38" rx="10" fill="#23354b" stroke="#627b98"/>
+    <text x="560" y="265" text-anchor="middle" fill="#cfdded" font-size="17">HardBuffer</text>
+    <text x="752" y="249" text-anchor="middle" fill="#a5b9d0" font-size="13">replay</text>
+
+    <path d="M148 230V328H264M972 230V328H856" stroke="#68819e" stroke-width="2" stroke-dasharray="5 6" fill="none"/>
+    <rect x="264" y="300" width="592" height="58" rx="14" fill="#1d2e43" stroke="#526d8a"/>
+    <text x="560" y="325" text-anchor="middle" fill="#d8e5f5" font-size="18" font-weight="bold">ONE FROZEN BACKBONE</text>
+    <text x="560" y="347" text-anchor="middle" fill="#9eb5cf" font-size="14">Qwen2.5-1.5B · independent adapters &amp; optimizers</text>
+    <text x="560" y="396" text-anchor="middle" fill="#a9bed7" font-size="15" letter-spacing="3">GENERATE · VERIFY · REPLAY · UPDATE</text>
+  </g>
+</svg>

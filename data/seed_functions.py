@@ -1,5 +1,5 @@
 """
-data/seed_functions.py - nano-SPIN 种子函数库 (Seed Reference Functions)
+data/seed_functions.py - nano-CodeSelfPlay 种子函数库 (Seed Reference Functions)
 
 包含 40 个逻辑清晰、类型多样的标准 Python 参考函数 f_ref。
 每个种子条目提供:

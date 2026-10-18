@@ -1,0 +1,1669 @@
+{
+  "protocol_version": "numeric-selfplay-v2",
+  "base_model": "Qwen/Qwen2.5-1.5B",
+  "device": "cuda",
+  "validation_benchmark": {
+    "greedy_pass1": 0.55,
+    "sample_pass4": 0.55,
+    "hit_density": 0.2625,
+    "details": [
+      {
+        "id": "cmp_lte_lt_prev_5",
+        "spec": "Upper bound comparison at 39.",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "39</input>",
+          "parsed": 39,
+          "reward": 1.0,
+          "hit": true
+        },
+        "sample_pass4": true,
+        "candidates": [
+          {
+            "raw": "39</input>",
+            "parsed": 39,
+            "reward": 1.0,
+            "hit": true
+          },
+          {
+            "raw": "40</input>",
+            "parsed": 40,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "14</input>",
+            "parsed": 14,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "39</input>",
+            "parsed": 39,
+            "reward": 1.0,
+            "hit": true
+          }
+        ]
+      },
+      {
+        "id": "cmp_gt_gte_3",
+        "spec": "Check if x is strictly greater than 10 vs at least 10.",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "15</input>",
+          "parsed": 15,
+          "reward": 0.0,
+          "hit": false
+        },
+        "sample_pass4": false,
+        "candidates": [
+          {
+            "raw": "13</input>",
+            "parsed": 13,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "15</input>",
+            "parsed": 15,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "12</input>",
+            "parsed": 12,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "5</input>",
+            "parsed": 5,
+            "reward": 0.0,
+            "hit": false
+          }
+        ]
+      },
+      {
+        "id": "cmp_lte_lt_prev_18",
+        "spec": "Upper bound comparison at 7.",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "7</input>",
+          "parsed": 7,
+          "reward": 1.0,
+          "hit": true
+        },
+        "sample_pass4": false,
+        "candidates": [
+          {
+            "raw": "12</input>",
+            "parsed": 12,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "21</input>",
+            "parsed": 21,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "50</input>",
+            "parsed": 50,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "29</input>",
+            "parsed": 29,
+            "reward": 0.0,
+            "hit": false
+          }
+        ]
+      },
+      {
+        "id": "cmp_gte_gt_next_25",
+        "spec": "Boundary check at threshold 42.",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "42</input>",
+          "parsed": 42,
+          "reward": 1.0,
+          "hit": true
+        },
+        "sample_pass4": true,
+        "candidates": [
+          {
+            "raw": "42</input>",
+            "parsed": 42,
+            "reward": 1.0,
+            "hit": true
+          },
+          {
+            "raw": "42</input>",
+            "parsed": 42,
+            "reward": 1.0,
+            "hit": true
+          },
+          {
+            "raw": "43</input>",
+            "parsed": 43,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "42</input>",
+            "parsed": 42,
+            "reward": 1.0,
+            "hit": true
+          }
+        ]
+      },
+      {
+        "id": "cmp_lt_lte_28",
+        "spec": "Check if x is strictly less than 4 vs at most 4.",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "3</input>",
+          "parsed": 3,
+          "reward": 0.0,
+          "hit": false
+        },
+        "sample_pass4": false,
+        "candidates": [
+          {
+            "raw": "3</input>",
+            "parsed": 3,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "5</input>",
+            "parsed": 5,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "13</input>",
+            "parsed": 13,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "3</input>",
+            "parsed": 3,
+            "reward": 0.0,
+            "hit": false
+          }
+        ]
+      },
+      {
+        "id": "piecewise_scale_branch_9",
+        "spec": "Multiplier activation at threshold 23.",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "23</input>",
+          "parsed": 23,
+          "reward": 1.0,
+          "hit": true
+        },
+        "sample_pass4": false,
+        "candidates": [
+          {
+            "raw": "40</input>",
+            "parsed": 40,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "22</input>",
+            "parsed": 22,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "3</input>",
+            "parsed": 3,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "22</input>",
+            "parsed": 22,
+            "reward": 0.0,
+            "hit": false
+          }
+        ]
+      },
+      {
+        "id": "cmp_gt_gte_30",
+        "spec": "Check if x is strictly greater than 16 vs at least 16.",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "17</input>",
+          "parsed": 17,
+          "reward": 0.0,
+          "hit": false
+        },
+        "sample_pass4": false,
+        "candidates": [
+          {
+            "raw": "17</input>",
+            "parsed": 17,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "42</input>",
+            "parsed": 42,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "45</input>",
+            "parsed": 45,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "17</input>",
+            "parsed": 17,
+            "reward": 0.0,
+            "hit": false
+          }
+        ]
+      },
+      {
+        "id": "piecewise_scale_branch_3",
+        "spec": "Multiplier activation at threshold 24.",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "25</input>",
+          "parsed": 25,
+          "reward": 0.0,
+          "hit": false
+        },
+        "sample_pass4": true,
+        "candidates": [
+          {
+            "raw": "24</input>",
+            "parsed": 24,
+            "reward": 1.0,
+            "hit": true
+          },
+          {
+            "raw": "9</input>",
+            "parsed": 9,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "2</input>",
+            "parsed": 2,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "45</input>",
+            "parsed": 45,
+            "reward": 0.0,
+            "hit": false
+          }
+        ]
+      },
+      {
+        "id": "piecewise_scale_branch_20",
+        "spec": "Multiplier activation at threshold 10.",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "15</input>",
+          "parsed": 15,
+          "reward": 0.0,
+          "hit": false
+        },
+        "sample_pass4": false,
+        "candidates": [
+          {
+            "raw": "0</input>",
+            "parsed": 0,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "40</input>",
+            "parsed": 40,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "5</input>",
+            "parsed": 5,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "3</input>\nThe input for which the return values of f_a(x) and f_b(x) differ is x",
+            "parsed": 3,
+            "reward": 0.0,
+            "hit": false
+          }
+        ]
+      },
+      {
+        "id": "cmp_lte_lt_prev_10",
+        "spec": "Upper bound comparison at 47.",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "47</input>",
+          "parsed": 47,
+          "reward": 1.0,
+          "hit": true
+        },
+        "sample_pass4": true,
+        "candidates": [
+          {
+            "raw": "47</input>",
+            "parsed": 47,
+            "reward": 1.0,
+            "hit": true
+          },
+          {
+            "raw": "50</input>",
+            "parsed": 50,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "37</input>",
+            "parsed": 37,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "46</input>",
+            "parsed": 46,
+            "reward": 0.0,
+            "hit": false
+          }
+        ]
+      },
+      {
+        "id": "cmp_lte_lt_prev_21",
+        "spec": "Upper bound comparison at 4.",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "4</input>",
+          "parsed": 4,
+          "reward": 1.0,
+          "hit": true
+        },
+        "sample_pass4": true,
+        "candidates": [
+          {
+            "raw": "4</input>",
+            "parsed": 4,
+            "reward": 1.0,
+            "hit": true
+          },
+          {
+            "raw": "4</input>",
+            "parsed": 4,
+            "reward": 1.0,
+            "hit": true
+          },
+          {
+            "raw": "3</input>",
+            "parsed": 3,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "4</input>",
+            "parsed": 4,
+            "reward": 1.0,
+            "hit": true
+          }
+        ]
+      },
+      {
+        "id": "interval_both_open_20",
+        "spec": "Strict interior (29, 44) vs closed [29, 44].",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "29</input>",
+          "parsed": 29,
+          "reward": 1.0,
+          "hit": true
+        },
+        "sample_pass4": true,
+        "candidates": [
+          {
+            "raw": "29</input>",
+            "parsed": 29,
+            "reward": 1.0,
+            "hit": true
+          },
+          {
+            "raw": "29</input>",
+            "parsed": 29,
+            "reward": 1.0,
+            "hit": true
+          },
+          {
+            "raw": "36</input>",
+            "parsed": 36,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "29</input>",
+            "parsed": 29,
+            "reward": 1.0,
+            "hit": true
+          }
+        ]
+      },
+      {
+        "id": "piecewise_mod_shift_12",
+        "spec": "Divisibility by 4 with phase shift.",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "12</input>",
+          "parsed": 12,
+          "reward": 1.0,
+          "hit": true
+        },
+        "sample_pass4": true,
+        "candidates": [
+          {
+            "raw": "25</input>",
+            "parsed": 25,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "15</input>",
+            "parsed": 15,
+            "reward": 1.0,
+            "hit": true
+          },
+          {
+            "raw": "37</input>",
+            "parsed": 37,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "37</input>",
+            "parsed": 37,
+            "reward": 0.0,
+            "hit": false
+          }
+        ]
+      },
+      {
+        "id": "piecewise_sign_branch_22",
+        "spec": "Three-way sign split around 13 vs two-way split.",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "13</input>",
+          "parsed": 13,
+          "reward": 1.0,
+          "hit": true
+        },
+        "sample_pass4": true,
+        "candidates": [
+          {
+            "raw": "13</input>",
+            "parsed": 13,
+            "reward": 1.0,
+            "hit": true
+          },
+          {
+            "raw": "36</input>",
+            "parsed": 36,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "14</input>",
+            "parsed": 14,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "22</input>",
+            "parsed": 22,
+            "reward": 0.0,
+            "hit": false
+          }
+        ]
+      },
+      {
+        "id": "interval_extended_right_16",
+        "spec": "Interval endpoint comparison [24, 30] vs [24, 31].",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "24</input>",
+          "parsed": 24,
+          "reward": 0.0,
+          "hit": false
+        },
+        "sample_pass4": false,
+        "candidates": [
+          {
+            "raw": "24</input>",
+            "parsed": 24,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "17</input>",
+            "parsed": 17,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "30</input>",
+            "parsed": 30,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "30</input>\n\nThe output indicates that the function f_a returns True for input x = 30, while",
+            "parsed": 30,
+            "reward": 0.0,
+            "hit": false
+          }
+        ]
+      },
+      {
+        "id": "interval_both_open_19",
+        "spec": "Strict interior (26, 32) vs closed [26, 32].",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "26</input>",
+          "parsed": 26,
+          "reward": 1.0,
+          "hit": true
+        },
+        "sample_pass4": false,
+        "candidates": [
+          {
+            "raw": "30</input>",
+            "parsed": 30,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "27</input>",
+            "parsed": 27,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "31</input>",
+            "parsed": 31,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "27</input>",
+            "parsed": 27,
+            "reward": 0.0,
+            "hit": false
+          }
+        ]
+      },
+      {
+        "id": "clamp_abs_min_clip_36",
+        "spec": "Upper bound clamp using min(x, 16) vs min(x, 17).",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "16</input>",
+          "parsed": 16,
+          "reward": 0.0,
+          "hit": false
+        },
+        "sample_pass4": true,
+        "candidates": [
+          {
+            "raw": "18</input>",
+            "parsed": 18,
+            "reward": 1.0,
+            "hit": true
+          },
+          {
+            "raw": "12</input>",
+            "parsed": 12,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "12</input>",
+            "parsed": 12,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "10</input>",
+            "parsed": 10,
+            "reward": 0.0,
+            "hit": false
+          }
+        ]
+      },
+      {
+        "id": "interval_right_open_37",
+        "spec": "Interval inclusion: [35, 43] vs [35, 43).",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "35</input>",
+          "parsed": 35,
+          "reward": 0.0,
+          "hit": false
+        },
+        "sample_pass4": false,
+        "candidates": [
+          {
+            "raw": "42</input>",
+            "parsed": 42,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "35</input>",
+            "parsed": 35,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "37</input>",
+            "parsed": 37,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "35</input>",
+            "parsed": 35,
+            "reward": 0.0,
+            "hit": false
+          }
+        ]
+      },
+      {
+        "id": "interval_extended_right_34",
+        "spec": "Interval endpoint comparison [9, 24] vs [9, 25].",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "9</input>",
+          "parsed": 9,
+          "reward": 0.0,
+          "hit": false
+        },
+        "sample_pass4": true,
+        "candidates": [
+          {
+            "raw": "9</input>",
+            "parsed": 9,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "9</input>",
+            "parsed": 9,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "24</input>",
+            "parsed": 24,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "25</input>",
+            "parsed": 25,
+            "reward": 1.0,
+            "hit": true
+          }
+        ]
+      },
+      {
+        "id": "piecewise_sign_branch_5",
+        "spec": "Three-way sign split around 44 vs two-way split.",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "44</input>",
+          "parsed": 44,
+          "reward": 1.0,
+          "hit": true
+        },
+        "sample_pass4": true,
+        "candidates": [
+          {
+            "raw": "44</input>",
+            "parsed": 44,
+            "reward": 1.0,
+            "hit": true
+          },
+          {
+            "raw": "44</input>",
+            "parsed": 44,
+            "reward": 1.0,
+            "hit": true
+          },
+          {
+            "raw": "44</input>",
+            "parsed": 44,
+            "reward": 1.0,
+            "hit": true
+          },
+          {
+            "raw": "44</input>",
+            "parsed": 44,
+            "reward": 1.0,
+            "hit": true
+          }
+        ]
+      }
+    ]
+  },
+  "test_benchmark": {
+    "greedy_pass1": 0.4,
+    "sample_pass4_by_seed": {
+      "42": 0.55,
+      "43": 0.5,
+      "44": 0.6
+    },
+    "hit_density_by_seed": {
+      "42": 0.325,
+      "43": 0.2625,
+      "44": 0.3125
+    },
+    "mean_sample_pass4": 0.5499999999999999,
+    "mean_hit_density": 0.3,
+    "seed_42_details": [
+      {
+        "id": "cmp_lt_lte_26",
+        "spec": "Check if x is strictly less than 38 vs at most 38.",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "39</input>",
+          "parsed": 39,
+          "reward": 0.0,
+          "hit": false
+        },
+        "sample_pass4": false,
+        "candidates": [
+          {
+            "raw": "35</input>",
+            "parsed": 35,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "42</input>",
+            "parsed": 42,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "14</input>",
+            "parsed": 14,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "10</input>",
+            "parsed": 10,
+            "reward": 0.0,
+            "hit": false
+          }
+        ]
+      },
+      {
+        "id": "cmp_gt_gte_36",
+        "spec": "Check if x is strictly greater than 46 vs at least 46.",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "47</input>",
+          "parsed": 47,
+          "reward": 0.0,
+          "hit": false
+        },
+        "sample_pass4": false,
+        "candidates": [
+          {
+            "raw": "47</input>",
+            "parsed": 47,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "47</input>",
+            "parsed": 47,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "47</input>",
+            "parsed": 47,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "50</input>",
+            "parsed": 50,
+            "reward": 0.0,
+            "hit": false
+          }
+        ]
+      },
+      {
+        "id": "clamp_abs_max_clip_24",
+        "spec": "Lower bound clamp using max(x, 10) vs max(x, 9).",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "15</input>",
+          "parsed": 15,
+          "reward": 0.0,
+          "hit": false
+        },
+        "sample_pass4": false,
+        "candidates": [
+          {
+            "raw": "15</input>",
+            "parsed": 15,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "21</input>",
+            "parsed": 21,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "10</input>",
+            "parsed": 10,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "20</input>",
+            "parsed": 20,
+            "reward": 0.0,
+            "hit": false
+          }
+        ]
+      },
+      {
+        "id": "clamp_abs_abs_dist_diff_27",
+        "spec": "Special point perturbation at 8.",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "8</input>",
+          "parsed": 8,
+          "reward": 1.0,
+          "hit": true
+        },
+        "sample_pass4": true,
+        "candidates": [
+          {
+            "raw": "8</input>\n\nExplanation: Function A returns 9 when x is 8, while Function B returns 8.",
+            "parsed": 8,
+            "reward": 1.0,
+            "hit": true
+          },
+          {
+            "raw": "8</input>",
+            "parsed": 8,
+            "reward": 1.0,
+            "hit": true
+          },
+          {
+            "raw": "8</input>",
+            "parsed": 8,
+            "reward": 1.0,
+            "hit": true
+          },
+          {
+            "raw": "8</input>",
+            "parsed": 8,
+            "reward": 1.0,
+            "hit": true
+          }
+        ]
+      },
+      {
+        "id": "clamp_abs_min_clip_33",
+        "spec": "Upper bound clamp using min(x, 25) vs min(x, 26).",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "25</input>",
+          "parsed": 25,
+          "reward": 0.0,
+          "hit": false
+        },
+        "sample_pass4": true,
+        "candidates": [
+          {
+            "raw": "24</input>",
+            "parsed": 24,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "9</input>",
+            "parsed": 9,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "4</input>",
+            "parsed": 4,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "42</input>",
+            "parsed": 42,
+            "reward": 1.0,
+            "hit": true
+          }
+        ]
+      },
+      {
+        "id": "interval_left_open_32",
+        "spec": "Interval inclusion: [7, 19] vs (7, 19].",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "7</input>",
+          "parsed": 7,
+          "reward": 1.0,
+          "hit": true
+        },
+        "sample_pass4": true,
+        "candidates": [
+          {
+            "raw": "7</input>",
+            "parsed": 7,
+            "reward": 1.0,
+            "hit": true
+          },
+          {
+            "raw": "7</input>",
+            "parsed": 7,
+            "reward": 1.0,
+            "hit": true
+          },
+          {
+            "raw": "7</input>",
+            "parsed": 7,
+            "reward": 1.0,
+            "hit": true
+          },
+          {
+            "raw": "15</input>",
+            "parsed": 15,
+            "reward": 0.0,
+            "hit": false
+          }
+        ]
+      },
+      {
+        "id": "interval_extended_right_38",
+        "spec": "Interval endpoint comparison [27, 36] vs [27, 37].",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "36</input>",
+          "parsed": 36,
+          "reward": 0.0,
+          "hit": false
+        },
+        "sample_pass4": false,
+        "candidates": [
+          {
+            "raw": "36</input>",
+            "parsed": 36,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "34</input>",
+            "parsed": 34,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "27</input>",
+            "parsed": 27,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "27</input>",
+            "parsed": 27,
+            "reward": 0.0,
+            "hit": false
+          }
+        ]
+      },
+      {
+        "id": "cmp_gt_gte_22",
+        "spec": "Check if x is strictly greater than 36 vs at least 36.",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "37</input>",
+          "parsed": 37,
+          "reward": 0.0,
+          "hit": false
+        },
+        "sample_pass4": false,
+        "candidates": [
+          {
+            "raw": "37</input>",
+            "parsed": 37,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "47</input>",
+            "parsed": 47,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "40</input>",
+            "parsed": 40,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "47</input>",
+            "parsed": 47,
+            "reward": 0.0,
+            "hit": false
+          }
+        ]
+      },
+      {
+        "id": "clamp_abs_min_clip_6",
+        "spec": "Upper bound clamp using min(x, 19) vs min(x, 20).",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "19</input>",
+          "parsed": 19,
+          "reward": 0.0,
+          "hit": false
+        },
+        "sample_pass4": true,
+        "candidates": [
+          {
+            "raw": "25</input>",
+            "parsed": 25,
+            "reward": 1.0,
+            "hit": true
+          },
+          {
+            "raw": "19</input>",
+            "parsed": 19,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "22</input>",
+            "parsed": 22,
+            "reward": 1.0,
+            "hit": true
+          },
+          {
+            "raw": "20</input>",
+            "parsed": 20,
+            "reward": 1.0,
+            "hit": true
+          }
+        ]
+      },
+      {
+        "id": "piecewise_scale_branch_13",
+        "spec": "Multiplier activation at threshold 11.",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "11</input>",
+          "parsed": 11,
+          "reward": 1.0,
+          "hit": true
+        },
+        "sample_pass4": false,
+        "candidates": [
+          {
+            "raw": "12</input>",
+            "parsed": 12,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "5</input>",
+            "parsed": 5,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "37</input>",
+            "parsed": 37,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "16</input>",
+            "parsed": 16,
+            "reward": 0.0,
+            "hit": false
+          }
+        ]
+      },
+      {
+        "id": "clamp_abs_abs_dist_diff_30",
+        "spec": "Special point perturbation at 40.",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "40</input>",
+          "parsed": 40,
+          "reward": 1.0,
+          "hit": true
+        },
+        "sample_pass4": true,
+        "candidates": [
+          {
+            "raw": "40</input>",
+            "parsed": 40,
+            "reward": 1.0,
+            "hit": true
+          },
+          {
+            "raw": "40</input>",
+            "parsed": 40,
+            "reward": 1.0,
+            "hit": true
+          },
+          {
+            "raw": "40</input>",
+            "parsed": 40,
+            "reward": 1.0,
+            "hit": true
+          },
+          {
+            "raw": "40</input>",
+            "parsed": 40,
+            "reward": 1.0,
+            "hit": true
+          }
+        ]
+      },
+      {
+        "id": "interval_left_open_13",
+        "spec": "Interval inclusion: [29, 34] vs (29, 34].",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "30</input>",
+          "parsed": 30,
+          "reward": 0.0,
+          "hit": false
+        },
+        "sample_pass4": true,
+        "candidates": [
+          {
+            "raw": "29</input>",
+            "parsed": 29,
+            "reward": 1.0,
+            "hit": true
+          },
+          {
+            "raw": "30</input>",
+            "parsed": 30,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "29</input>",
+            "parsed": 29,
+            "reward": 1.0,
+            "hit": true
+          },
+          {
+            "raw": "29</input>",
+            "parsed": 29,
+            "reward": 1.0,
+            "hit": true
+          }
+        ]
+      },
+      {
+        "id": "cmp_gte_gt_next_24",
+        "spec": "Boundary check at threshold 37.",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "37</input>",
+          "parsed": 37,
+          "reward": 1.0,
+          "hit": true
+        },
+        "sample_pass4": true,
+        "candidates": [
+          {
+            "raw": "37</input>",
+            "parsed": 37,
+            "reward": 1.0,
+            "hit": true
+          },
+          {
+            "raw": "37</input>",
+            "parsed": 37,
+            "reward": 1.0,
+            "hit": true
+          },
+          {
+            "raw": "37</input>",
+            "parsed": 37,
+            "reward": 1.0,
+            "hit": true
+          },
+          {
+            "raw": "36</input>",
+            "parsed": 36,
+            "reward": 0.0,
+            "hit": false
+          }
+        ]
+      },
+      {
+        "id": "cmp_lt_lte_16",
+        "spec": "Check if x is strictly less than 11 vs at most 11.",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "10</input>",
+          "parsed": 10,
+          "reward": 0.0,
+          "hit": false
+        },
+        "sample_pass4": false,
+        "candidates": [
+          {
+            "raw": "3</input>\n\nIn this case, the integer input x = 3 satisfies the condition x < 11,",
+            "parsed": 3,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "6</input>",
+            "parsed": 6,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "4</input>",
+            "parsed": 4,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "2</input>",
+            "parsed": 2,
+            "reward": 0.0,
+            "hit": false
+          }
+        ]
+      },
+      {
+        "id": "interval_right_open_30",
+        "spec": "Interval inclusion: [33, 42] vs [33, 42).",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "33</input>",
+          "parsed": 33,
+          "reward": 0.0,
+          "hit": false
+        },
+        "sample_pass4": true,
+        "candidates": [
+          {
+            "raw": "33</input>",
+            "parsed": 33,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "33</input>",
+            "parsed": 33,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "42</input>",
+            "parsed": 42,
+            "reward": 1.0,
+            "hit": true
+          },
+          {
+            "raw": "34</input>",
+            "parsed": 34,
+            "reward": 0.0,
+            "hit": false
+          }
+        ]
+      },
+      {
+        "id": "cmp_lt_lte_37",
+        "spec": "Check if x is strictly less than 40 vs at most 40.",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "41</input>",
+          "parsed": 41,
+          "reward": 0.0,
+          "hit": false
+        },
+        "sample_pass4": false,
+        "candidates": [
+          {
+            "raw": "39</input>",
+            "parsed": 39,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "4</input>",
+            "parsed": 4,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "45</input>",
+            "parsed": 45,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "39</input>",
+            "parsed": 39,
+            "reward": 0.0,
+            "hit": false
+          }
+        ]
+      },
+      {
+        "id": "interval_right_open_11",
+        "spec": "Interval inclusion: [16, 24] vs [16, 24).",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "16</input>",
+          "parsed": 16,
+          "reward": 0.0,
+          "hit": false
+        },
+        "sample_pass4": false,
+        "candidates": [
+          {
+            "raw": "25</input>",
+            "parsed": 25,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "22</input>",
+            "parsed": 22,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "17</input>",
+            "parsed": 17,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "16</input>",
+            "parsed": 16,
+            "reward": 0.0,
+            "hit": false
+          }
+        ]
+      },
+      {
+        "id": "interval_left_open_1",
+        "spec": "Interval inclusion: [26, 36] vs (26, 36].",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "26</input>",
+          "parsed": 26,
+          "reward": 1.0,
+          "hit": true
+        },
+        "sample_pass4": true,
+        "candidates": [
+          {
+            "raw": "26</input>",
+            "parsed": 26,
+            "reward": 1.0,
+            "hit": true
+          },
+          {
+            "raw": "27</input>",
+            "parsed": 27,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "27</input>",
+            "parsed": 27,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "26</input>",
+            "parsed": 26,
+            "reward": 1.0,
+            "hit": true
+          }
+        ]
+      },
+      {
+        "id": "interval_left_open_12",
+        "spec": "Interval inclusion: [21, 33] vs (21, 33].",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "21</input>",
+          "parsed": 21,
+          "reward": 1.0,
+          "hit": true
+        },
+        "sample_pass4": true,
+        "candidates": [
+          {
+            "raw": "22</input>",
+            "parsed": 22,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "22</input>",
+            "parsed": 22,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "23</input>",
+            "parsed": 23,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "21</input>",
+            "parsed": 21,
+            "reward": 1.0,
+            "hit": true
+          }
+        ]
+      },
+      {
+        "id": "piecewise_sign_branch_2",
+        "spec": "Three-way sign split around 21 vs two-way split.",
+        "domain": [
+          0,
+          50
+        ],
+        "greedy": {
+          "raw": "21</input>",
+          "parsed": 21,
+          "reward": 1.0,
+          "hit": true
+        },
+        "sample_pass4": true,
+        "candidates": [
+          {
+            "raw": "14</input>",
+            "parsed": 14,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "27</input>",
+            "parsed": 27,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "29</input>",
+            "parsed": 29,
+            "reward": 0.0,
+            "hit": false
+          },
+          {
+            "raw": "21</input>",
+            "parsed": 21,
+            "reward": 1.0,
+            "hit": true
+          }
+        ]
+      }
+    ]
+  }
+}

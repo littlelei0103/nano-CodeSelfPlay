@@ -1,5 +1,5 @@
 """
-tests/test_spin_e2e.py - nano-SPIN 端到端自博弈微闭环逻辑集成测试
+tests/test_selfplay_e2e.py - nano-CodeSelfPlay 端到端自博弈微闭环逻辑集成测试
 """
 
 import unittest
@@ -9,7 +9,7 @@ from roles.mutator import compute_mutator_reward
 from roles.breaker import compute_breaker_reward
 
 
-class TestSPINEndToEnd(unittest.TestCase):
+class TestSelfPlayEndToEnd(unittest.TestCase):
 
     def test_adversarial_self_play_round_flow(self):
         # 1. 出题阶段 (Mutator Phase)

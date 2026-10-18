@@ -1,5 +1,5 @@
 """
-core/grpo_engine.py - nano-SPIN 共享权重双角色对抗 GRPO 训练引擎
+core/grpo_engine.py - nano-CodeSelfPlay 共享权重双角色对抗 GRPO 训练引擎
 
 核心设计:
   1. 单模型共享权重: 基于 Qwen2.5-1.5B-Base (bfloat16 + LoRA + 梯度检查点)，显存占用约 3.0 GB。
@@ -213,6 +213,12 @@ def setup_lora_and_model(
     - breaker: 可加载 nano-GRPO 最佳权重热启动 (或全新初始化)
     - mutator: 从干净的 Base 模型全新初始化 (保留完整代码先验，避免短数字参数污染)
     """
+    if resume_checkpoint:
+        for role in ("mutator", "breaker"):
+            if not os.path.isfile(os.path.join(resume_checkpoint, role, "adapter_config.json")):
+                raise FileNotFoundError(f"Missing {role} adapter in {resume_checkpoint}")
+    if init_adapter and not os.path.isdir(init_adapter):
+        raise FileNotFoundError(init_adapter)
     print(f"[Model Setup] Loading tokenizer & model: {model_name} on {device}...", flush=True)
     tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
     if tokenizer.pad_token is None:
@@ -276,9 +282,9 @@ def setup_lora_and_model(
     return tokenizer, model
 
 
-class SPINGRPOTrainer:
+class SelfPlayGRPOTrainer:
     """
-    nano-SPIN 双角色隔离自博弈训练器。
+    nano-CodeSelfPlay 双角色隔离自博弈训练器。
     管理双适配器参数更新、优势估计与零方差保护。
     """
 

@@ -26,3 +26,9 @@ venv/
 .vscode/
 .idea/
 .DS_Store
+
+# Generated reports / plots (publish selected, audited artifacts explicitly)
+eval_outputs/
+
+# Local evaluation runs; audited release reports belong in reports/
+eval_outputs*/

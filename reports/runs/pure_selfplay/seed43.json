@@ -1,0 +1,53 @@
+{
+  "protocol_version": "numeric-selfplay-v2",
+  "manifest": {
+    "protocol_version": "numeric-selfplay-v2",
+    "config": {
+      "model_name": "Qwen/Qwen2.5-1.5B",
+      "device": "cuda",
+      "seed": 43,
+      "mutator_warmup_steps": 5,
+      "eval_interval": 15,
+      "mut_rollouts": 4,
+      "breaker_rollouts": 8,
+      "lr": 2e-05,
+      "lr_mutator": 2e-05,
+      "lr_breaker": 2e-05,
+      "lr_breaker_min": 5e-06,
+      "cosine_decay_start": 25,
+      "curriculum_tighten_step": 30,
+      "anchor_ratio": 0.0,
+      "kl_coef": 0.01,
+      "temperature": 0.7
+    },
+    "source_sha256": {
+      "train_spin.py": "18079970953a73d55fac81dfa57d7a06b8a07dd6cae354c5a3c0fcac8e83e41c",
+      "core/experiment.py": "8a08fd9f0dcc30639f090903ecb4f23f202433672cc4435a2f5d52a28fdfe562",
+      "core/sandbox.py": "a31e7c8d7144cf281530ca2753759e467016dbe008a0db353726004c9c0f2b80",
+      "core/hard_buffer.py": "01890fbbc808277904e3fb316fde6ae70d43482cb34df66109ea678b9c47e6cf",
+      "core/grpo_engine.py": "c17961cee8119c9a7adeb2c4213e6db6c5d2d140032a5fcea346883082f8d9cd",
+      "roles/mutator.py": "fbae3786c101208fa05081100ce8c6d39cd84cc4cff0b0b1ae0d59b03fdc9942",
+      "roles/breaker.py": "0b80c5178250a9d28228dad7d994bcdd2af8e07e708c82c7e325fa86b228c420",
+      "data/seed_functions.py": "074171eda067b4e4e60d6c63c51090423e407a3d0451dc89e0461679d26454c9",
+      "data/anchor_tasks.py": "849297181aa6eb919eb98c543e1b392a119915aee7bace5e71a953555fc61ace",
+      "data/heldout_eval.py": "5e33abe6a92606f06b87e8999a4ed19608eb5a8d7d458a0f13e88e93bd8e15b7"
+    },
+    "initial_adapter": null,
+    "torch_version": "2.11.0+cu128"
+  },
+  "selection_split": "validation",
+  "selected_step": 45,
+  "selected_checkpoint": "checkpoints_v2_pure/20261018T083841Z-seed43/checkpoint-best",
+  "best_val_greedy_pass1": 0.8,
+  "test_size": 20,
+  "test_greedy_pass1": 0.65,
+  "test_sample_pass4": 0.9,
+  "test_hit_rate": 0.575,
+  "test_decoding": {
+    "temperature": 0.7,
+    "top_p": 1.0,
+    "top_k": 0,
+    "max_new_tokens": 24,
+    "sample_candidates": 4
+  }
+}

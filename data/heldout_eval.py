@@ -1,235 +1,36 @@
-"""
-data/heldout_eval.py - nano-SPIN 独立外部基准评测集 (Held-out Benchmark Suite)
+"""Fixed numeric benchmarks: 20 validation problems for selection, 20 for final audit.
 
-包含 20 道严格隔离的外部差分测试基准题目，与 nano-GRPO 官方测试集严格 100% 对齐。
-在对抗自博弈训练期间，该测试集仅用于客观评估 Breaker 的跨步泛化能力（Pass@1 与 Pass@4），
-零参与训练与样本生成，确保评估指标无污染与跨框架精确可比性。
+IDs are disjoint; templates remain related. The test benchmark was inspected in
+historical experiments and must not be described as a newly unseen blind set.
 """
 
 from typing import Any, Dict, List, Tuple
 
-HELDOUT_PROBLEMS: List[Dict[str, Any]] = [
-    {
-        "id": 'cmp_lt_lte_26',
-        "level": 'level_1',
-        "family": 'comparison',
-        "domain": (0, 50),
-        "spec": 'Check if x is strictly less than 38 vs at most 38.',
-        "f_ref_src": 'def f_ref(x: int) -> bool:\n    return x < 38',
-        "f_mut_src": 'def f_mut(x: int) -> bool:\n    return x <= 38',
-        "counterexamples": [38],
-        "sparsity": 0.0196,
-    },
-    {
-        "id": 'cmp_gt_gte_36',
-        "level": 'level_1',
-        "family": 'comparison',
-        "domain": (0, 50),
-        "spec": 'Check if x is strictly greater than 46 vs at least 46.',
-        "f_ref_src": 'def f_ref(x: int) -> bool:\n    return x > 46',
-        "f_mut_src": 'def f_mut(x: int) -> bool:\n    return x >= 46',
-        "counterexamples": [46],
-        "sparsity": 0.0196,
-    },
-    {
-        "id": 'clamp_abs_max_clip_24',
-        "level": 'level_2',
-        "family": 'clamping_abs',
-        "domain": (0, 50),
-        "spec": 'Lower bound clamp using max(x, 10) vs max(x, 9).',
-        "f_ref_src": 'def f_ref(x: int) -> int:\n    return max(x, 10)',
-        "f_mut_src": 'def f_mut(x: int) -> int:\n    return max(x, 9)',
-        "counterexamples": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-        "sparsity": 0.1961,
-    },
-    {
-        "id": 'clamp_abs_abs_dist_diff_27',
-        "level": 'level_2',
-        "family": 'clamping_abs',
-        "domain": (0, 50),
-        "spec": 'Special point perturbation at 8.',
-        "f_ref_src": 'def f_ref(x: int) -> int:\n    return abs(x) if x != 8 else 9',
-        "f_mut_src": 'def f_mut(x: int) -> int:\n    return abs(x)',
-        "counterexamples": [8],
-        "sparsity": 0.0196,
-    },
-    {
-        "id": 'clamp_abs_min_clip_33',
-        "level": 'level_2',
-        "family": 'clamping_abs',
-        "domain": (0, 50),
-        "spec": 'Upper bound clamp using min(x, 25) vs min(x, 26).',
-        "f_ref_src": 'def f_ref(x: int) -> int:\n    return min(x, 25)',
-        "f_mut_src": 'def f_mut(x: int) -> int:\n    return min(x, 26)',
-        "counterexamples": [26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50],
-        "sparsity": 0.4902,
-    },
-    {
-        "id": 'interval_left_open_32',
-        "level": 'level_2',
-        "family": 'interval',
-        "domain": (0, 50),
-        "spec": 'Interval inclusion: [7, 19] vs (7, 19].',
-        "f_ref_src": 'def f_ref(x: int) -> bool:\n    return 7 <= x <= 19',
-        "f_mut_src": 'def f_mut(x: int) -> bool:\n    return 7 < x <= 19',
-        "counterexamples": [7],
-        "sparsity": 0.0196,
-    },
-    {
-        "id": 'interval_extended_right_38',
-        "level": 'level_2',
-        "family": 'interval',
-        "domain": (0, 50),
-        "spec": 'Interval endpoint comparison [27, 36] vs [27, 37].',
-        "f_ref_src": 'def f_ref(x: int) -> bool:\n    return 27 <= x <= 36',
-        "f_mut_src": 'def f_mut(x: int) -> bool:\n    return 27 <= x <= 37',
-        "counterexamples": [37],
-        "sparsity": 0.0196,
-    },
-    {
-        "id": 'cmp_gt_gte_22',
-        "level": 'level_1',
-        "family": 'comparison',
-        "domain": (0, 50),
-        "spec": 'Check if x is strictly greater than 36 vs at least 36.',
-        "f_ref_src": 'def f_ref(x: int) -> bool:\n    return x > 36',
-        "f_mut_src": 'def f_mut(x: int) -> bool:\n    return x >= 36',
-        "counterexamples": [36],
-        "sparsity": 0.0196,
-    },
-    {
-        "id": 'clamp_abs_min_clip_6',
-        "level": 'level_2',
-        "family": 'clamping_abs',
-        "domain": (0, 50),
-        "spec": 'Upper bound clamp using min(x, 19) vs min(x, 20).',
-        "f_ref_src": 'def f_ref(x: int) -> int:\n    return min(x, 19)',
-        "f_mut_src": 'def f_mut(x: int) -> int:\n    return min(x, 20)',
-        "counterexamples": [20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50],
-        "sparsity": 0.6078,
-    },
-    {
-        "id": 'piecewise_scale_branch_13',
-        "level": 'level_3',
-        "family": 'piecewise_arithmetic',
-        "domain": (0, 50),
-        "spec": 'Multiplier activation at threshold 11.',
-        "f_ref_src": 'def f_ref(x: int) -> int:\n    return x * 2 if x > 11 else x',
-        "f_mut_src": 'def f_mut(x: int) -> int:\n    return x * 2 if x >= 11 else x',
-        "counterexamples": [11],
-        "sparsity": 0.0196,
-    },
-    {
-        "id": 'clamp_abs_abs_dist_diff_30',
-        "level": 'level_2',
-        "family": 'clamping_abs',
-        "domain": (0, 50),
-        "spec": 'Special point perturbation at 40.',
-        "f_ref_src": 'def f_ref(x: int) -> int:\n    return abs(x) if x != 40 else 41',
-        "f_mut_src": 'def f_mut(x: int) -> int:\n    return abs(x)',
-        "counterexamples": [40],
-        "sparsity": 0.0196,
-    },
-    {
-        "id": 'interval_left_open_13',
-        "level": 'level_2',
-        "family": 'interval',
-        "domain": (0, 50),
-        "spec": 'Interval inclusion: [29, 34] vs (29, 34].',
-        "f_ref_src": 'def f_ref(x: int) -> bool:\n    return 29 <= x <= 34',
-        "f_mut_src": 'def f_mut(x: int) -> bool:\n    return 29 < x <= 34',
-        "counterexamples": [29],
-        "sparsity": 0.0196,
-    },
-    {
-        "id": 'cmp_gte_gt_next_24',
-        "level": 'level_1',
-        "family": 'comparison',
-        "domain": (0, 50),
-        "spec": 'Boundary check at threshold 37.',
-        "f_ref_src": 'def f_ref(x: int) -> bool:\n    return x >= 37',
-        "f_mut_src": 'def f_mut(x: int) -> bool:\n    return x > 37',
-        "counterexamples": [37],
-        "sparsity": 0.0196,
-    },
-    {
-        "id": 'cmp_lt_lte_16',
-        "level": 'level_1',
-        "family": 'comparison',
-        "domain": (0, 50),
-        "spec": 'Check if x is strictly less than 11 vs at most 11.',
-        "f_ref_src": 'def f_ref(x: int) -> bool:\n    return x < 11',
-        "f_mut_src": 'def f_mut(x: int) -> bool:\n    return x <= 11',
-        "counterexamples": [11],
-        "sparsity": 0.0196,
-    },
-    {
-        "id": 'interval_right_open_30',
-        "level": 'level_2',
-        "family": 'interval',
-        "domain": (0, 50),
-        "spec": 'Interval inclusion: [33, 42] vs [33, 42).',
-        "f_ref_src": 'def f_ref(x: int) -> bool:\n    return 33 <= x <= 42',
-        "f_mut_src": 'def f_mut(x: int) -> bool:\n    return 33 <= x < 42',
-        "counterexamples": [42],
-        "sparsity": 0.0196,
-    },
-    {
-        "id": 'cmp_lt_lte_37',
-        "level": 'level_1',
-        "family": 'comparison',
-        "domain": (0, 50),
-        "spec": 'Check if x is strictly less than 40 vs at most 40.',
-        "f_ref_src": 'def f_ref(x: int) -> bool:\n    return x < 40',
-        "f_mut_src": 'def f_mut(x: int) -> bool:\n    return x <= 40',
-        "counterexamples": [40],
-        "sparsity": 0.0196,
-    },
-    {
-        "id": 'interval_right_open_11',
-        "level": 'level_2',
-        "family": 'interval',
-        "domain": (0, 50),
-        "spec": 'Interval inclusion: [16, 24] vs [16, 24).',
-        "f_ref_src": 'def f_ref(x: int) -> bool:\n    return 16 <= x <= 24',
-        "f_mut_src": 'def f_mut(x: int) -> bool:\n    return 16 <= x < 24',
-        "counterexamples": [24],
-        "sparsity": 0.0196,
-    },
-    {
-        "id": 'interval_left_open_1',
-        "level": 'level_2',
-        "family": 'interval',
-        "domain": (0, 50),
-        "spec": 'Interval inclusion: [26, 36] vs (26, 36].',
-        "f_ref_src": 'def f_ref(x: int) -> bool:\n    return 26 <= x <= 36',
-        "f_mut_src": 'def f_mut(x: int) -> bool:\n    return 26 < x <= 36',
-        "counterexamples": [26],
-        "sparsity": 0.0196,
-    },
-    {
-        "id": 'interval_left_open_12',
-        "level": 'level_2',
-        "family": 'interval',
-        "domain": (0, 50),
-        "spec": 'Interval inclusion: [21, 33] vs (21, 33].',
-        "f_ref_src": 'def f_ref(x: int) -> bool:\n    return 21 <= x <= 33',
-        "f_mut_src": 'def f_mut(x: int) -> bool:\n    return 21 < x <= 33',
-        "counterexamples": [21],
-        "sparsity": 0.0196,
-    },
-    {
-        "id": 'piecewise_sign_branch_2',
-        "level": 'level_3',
-        "family": 'piecewise_arithmetic',
-        "domain": (0, 50),
-        "spec": 'Three-way sign split around 21 vs two-way split.',
-        "f_ref_src": 'def f_ref(x: int) -> int:\n    return 1 if x > 21 else (-1 if x < 21 else 0)',
-        "f_mut_src": 'def f_mut(x: int) -> int:\n    return 1 if x >= 21 else -1',
-        "counterexamples": [21],
-        "sparsity": 0.0196,
-    },
-]
+# 20 道模型选择与训练期审计专用验证集 (Validation Set)
+VALIDATION_PROBLEMS: List[Dict[str, Any]] = [{'id': 'cmp_lte_lt_prev_5', 'level': 'level_1', 'family': 'comparison', 'domain': (0, 50), 'spec': 'Upper bound comparison at 39.', 'f_ref_src': 'def f_ref(x: int) -> bool:\n    return x <= 39', 'f_mut_src': 'def f_mut(x: int) -> bool:\n    return x < 39', 'counterexamples': [39], 'sparsity': 0.0196}, {'id': 'cmp_gt_gte_3', 'level': 'level_1', 'family': 'comparison', 'domain': (0, 50), 'spec': 'Check if x is strictly greater than 10 vs at least 10.', 'f_ref_src': 'def f_ref(x: int) -> bool:\n    return x > 10', 'f_mut_src': 'def f_mut(x: int) -> bool:\n    return x >= 10', 'counterexamples': [10], 'sparsity': 0.0196}, {'id': 'cmp_lte_lt_prev_18', 'level': 'level_1', 'family': 'comparison', 'domain': (0, 50), 'spec': 'Upper bound comparison at 7.', 'f_ref_src': 'def f_ref(x: int) -> bool:\n    return x <= 7', 'f_mut_src': 'def f_mut(x: int) -> bool:\n    return x < 7', 'counterexamples': [7], 'sparsity': 0.0196}, {'id': 'cmp_gte_gt_next_25', 'level': 'level_1', 'family': 'comparison', 'domain': (0, 50), 'spec': 'Boundary check at threshold 42.', 'f_ref_src': 'def f_ref(x: int) -> bool:\n    return x >= 42', 'f_mut_src': 'def f_mut(x: int) -> bool:\n    return x > 42', 'counterexamples': [42], 'sparsity': 0.0196}, {'id': 'cmp_lt_lte_28', 'level': 'level_1', 'family': 'comparison', 'domain': (0, 50), 'spec': 'Check if x is strictly less than 4 vs at most 4.', 'f_ref_src': 'def f_ref(x: int) -> bool:\n    return x < 4', 'f_mut_src': 'def f_mut(x: int) -> bool:\n    return x <= 4', 'counterexamples': [4], 'sparsity': 0.0196}, {'id': 'piecewise_scale_branch_9', 'level': 'level_3', 'family': 'piecewise_arithmetic', 'domain': (0, 50), 'spec': 'Multiplier activation at threshold 23.', 'f_ref_src': 'def f_ref(x: int) -> int:\n    return x * 2 if x > 23 else x', 'f_mut_src': 'def f_mut(x: int) -> int:\n    return x * 2 if x >= 23 else x', 'counterexamples': [23], 'sparsity': 0.0196}, {'id': 'cmp_gt_gte_30', 'level': 'level_1', 'family': 'comparison', 'domain': (0, 50), 'spec': 'Check if x is strictly greater than 16 vs at least 16.', 'f_ref_src': 'def f_ref(x: int) -> bool:\n    return x > 16', 'f_mut_src': 'def f_mut(x: int) -> bool:\n    return x >= 16', 'counterexamples': [16], 'sparsity': 0.0196}, {'id': 'piecewise_scale_branch_3', 'level': 'level_3', 'family': 'piecewise_arithmetic', 'domain': (0, 50), 'spec': 'Multiplier activation at threshold 24.', 'f_ref_src': 'def f_ref(x: int) -> int:\n    return x * 2 if x > 24 else x', 'f_mut_src': 'def f_mut(x: int) -> int:\n    return x * 2 if x >= 24 else x', 'counterexamples': [24], 'sparsity': 0.0196}, {'id': 'piecewise_scale_branch_20', 'level': 'level_3', 'family': 'piecewise_arithmetic', 'domain': (0, 50), 'spec': 'Multiplier activation at threshold 10.', 'f_ref_src': 'def f_ref(x: int) -> int:\n    return x * 2 if x > 10 else x', 'f_mut_src': 'def f_mut(x: int) -> int:\n    return x * 2 if x >= 10 else x', 'counterexamples': [10], 'sparsity': 0.0196}, {'id': 'cmp_lte_lt_prev_10', 'level': 'level_1', 'family': 'comparison', 'domain': (0, 50), 'spec': 'Upper bound comparison at 47.', 'f_ref_src': 'def f_ref(x: int) -> bool:\n    return x <= 47', 'f_mut_src': 'def f_mut(x: int) -> bool:\n    return x < 47', 'counterexamples': [47], 'sparsity': 0.0196}, {'id': 'cmp_lte_lt_prev_21', 'level': 'level_1', 'family': 'comparison', 'domain': (0, 50), 'spec': 'Upper bound comparison at 4.', 'f_ref_src': 'def f_ref(x: int) -> bool:\n    return x <= 4', 'f_mut_src': 'def f_mut(x: int) -> bool:\n    return x < 4', 'counterexamples': [4], 'sparsity': 0.0196}, {'id': 'interval_both_open_20', 'level': 'level_2', 'family': 'interval', 'domain': (0, 50), 'spec': 'Strict interior (29, 44) vs closed [29, 44].', 'f_ref_src': 'def f_ref(x: int) -> bool:\n    return 29 < x < 44', 'f_mut_src': 'def f_mut(x: int) -> bool:\n    return 29 <= x <= 44', 'counterexamples': [29, 44], 'sparsity': 0.0392}, {'id': 'piecewise_mod_shift_12', 'level': 'level_3', 'family': 'piecewise_arithmetic', 'domain': (0, 50), 'spec': 'Divisibility by 4 with phase shift.', 'f_ref_src': 'def f_ref(x: int) -> bool:\n    return (x % 4) == 0', 'f_mut_src': 'def f_mut(x: int) -> bool:\n    return ((x + 1) % 4) == 0', 'counterexamples': [0, 3, 4, 7, 8, 11, 12, 15, 16, 19, 20, 23, 24, 27, 28, 31, 32, 35, 36, 39, 40, 43, 44, 47, 48], 'sparsity': 0.4902}, {'id': 'piecewise_sign_branch_22', 'level': 'level_3', 'family': 'piecewise_arithmetic', 'domain': (0, 50), 'spec': 'Three-way sign split around 13 vs two-way split.', 'f_ref_src': 'def f_ref(x: int) -> int:\n    return 1 if x > 13 else (-1 if x < 13 else 0)', 'f_mut_src': 'def f_mut(x: int) -> int:\n    return 1 if x >= 13 else -1', 'counterexamples': [13], 'sparsity': 0.0196}, {'id': 'interval_extended_right_16', 'level': 'level_2', 'family': 'interval', 'domain': (0, 50), 'spec': 'Interval endpoint comparison [24, 30] vs [24, 31].', 'f_ref_src': 'def f_ref(x: int) -> bool:\n    return 24 <= x <= 30', 'f_mut_src': 'def f_mut(x: int) -> bool:\n    return 24 <= x <= 31', 'counterexamples': [31], 'sparsity': 0.0196}, {'id': 'interval_both_open_19', 'level': 'level_2', 'family': 'interval', 'domain': (0, 50), 'spec': 'Strict interior (26, 32) vs closed [26, 32].', 'f_ref_src': 'def f_ref(x: int) -> bool:\n    return 26 < x < 32', 'f_mut_src': 'def f_mut(x: int) -> bool:\n    return 26 <= x <= 32', 'counterexamples': [26, 32], 'sparsity': 0.0392}, {'id': 'clamp_abs_min_clip_36', 'level': 'level_2', 'family': 'clamping_abs', 'domain': (0, 50), 'spec': 'Upper bound clamp using min(x, 16) vs min(x, 17).', 'f_ref_src': 'def f_ref(x: int) -> int:\n    return min(x, 16)', 'f_mut_src': 'def f_mut(x: int) -> int:\n    return min(x, 17)', 'counterexamples': [17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50], 'sparsity': 0.6667}, {'id': 'interval_right_open_37', 'level': 'level_2', 'family': 'interval', 'domain': (0, 50), 'spec': 'Interval inclusion: [35, 43] vs [35, 43).', 'f_ref_src': 'def f_ref(x: int) -> bool:\n    return 35 <= x <= 43', 'f_mut_src': 'def f_mut(x: int) -> bool:\n    return 35 <= x < 43', 'counterexamples': [43], 'sparsity': 0.0196}, {'id': 'interval_extended_right_34', 'level': 'level_2', 'family': 'interval', 'domain': (0, 50), 'spec': 'Interval endpoint comparison [9, 24] vs [9, 25].', 'f_ref_src': 'def f_ref(x: int) -> bool:\n    return 9 <= x <= 24', 'f_mut_src': 'def f_mut(x: int) -> bool:\n    return 9 <= x <= 25', 'counterexamples': [25], 'sparsity': 0.0196}, {'id': 'piecewise_sign_branch_5', 'level': 'level_3', 'family': 'piecewise_arithmetic', 'domain': (0, 50), 'spec': 'Three-way sign split around 44 vs two-way split.', 'f_ref_src': 'def f_ref(x: int) -> int:\n    return 1 if x > 44 else (-1 if x < 44 else 0)', 'f_mut_src': 'def f_mut(x: int) -> int:\n    return 1 if x >= 44 else -1', 'counterexamples': [44], 'sparsity': 0.0196}]
 
-def get_heldout_benchmark() -> List[Dict[str, Any]]:
-    return [dict(p) for p in HELDOUT_PROBLEMS]
+# 20 道最终客观评测专用独立测试集 (Held-out Test Set)
+TEST_PROBLEMS: List[Dict[str, Any]] = [{'id': 'cmp_lt_lte_26', 'level': 'level_1', 'family': 'comparison', 'domain': (0, 50), 'spec': 'Check if x is strictly less than 38 vs at most 38.', 'f_ref_src': 'def f_ref(x: int) -> bool:\n    return x < 38', 'f_mut_src': 'def f_mut(x: int) -> bool:\n    return x <= 38', 'counterexamples': [38], 'sparsity': 0.0196}, {'id': 'cmp_gt_gte_36', 'level': 'level_1', 'family': 'comparison', 'domain': (0, 50), 'spec': 'Check if x is strictly greater than 46 vs at least 46.', 'f_ref_src': 'def f_ref(x: int) -> bool:\n    return x > 46', 'f_mut_src': 'def f_mut(x: int) -> bool:\n    return x >= 46', 'counterexamples': [46], 'sparsity': 0.0196}, {'id': 'clamp_abs_max_clip_24', 'level': 'level_2', 'family': 'clamping_abs', 'domain': (0, 50), 'spec': 'Lower bound clamp using max(x, 10) vs max(x, 9).', 'f_ref_src': 'def f_ref(x: int) -> int:\n    return max(x, 10)', 'f_mut_src': 'def f_mut(x: int) -> int:\n    return max(x, 9)', 'counterexamples': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 'sparsity': 0.1961}, {'id': 'clamp_abs_abs_dist_diff_27', 'level': 'level_2', 'family': 'clamping_abs', 'domain': (0, 50), 'spec': 'Special point perturbation at 8.', 'f_ref_src': 'def f_ref(x: int) -> int:\n    return abs(x) if x != 8 else 9', 'f_mut_src': 'def f_mut(x: int) -> int:\n    return abs(x)', 'counterexamples': [8], 'sparsity': 0.0196}, {'id': 'clamp_abs_min_clip_33', 'level': 'level_2', 'family': 'clamping_abs', 'domain': (0, 50), 'spec': 'Upper bound clamp using min(x, 25) vs min(x, 26).', 'f_ref_src': 'def f_ref(x: int) -> int:\n    return min(x, 25)', 'f_mut_src': 'def f_mut(x: int) -> int:\n    return min(x, 26)', 'counterexamples': [26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50], 'sparsity': 0.4902}, {'id': 'interval_left_open_32', 'level': 'level_2', 'family': 'interval', 'domain': (0, 50), 'spec': 'Interval inclusion: [7, 19] vs (7, 19].', 'f_ref_src': 'def f_ref(x: int) -> bool:\n    return 7 <= x <= 19', 'f_mut_src': 'def f_mut(x: int) -> bool:\n    return 7 < x <= 19', 'counterexamples': [7], 'sparsity': 0.0196}, {'id': 'interval_extended_right_38', 'level': 'level_2', 'family': 'interval', 'domain': (0, 50), 'spec': 'Interval endpoint comparison [27, 36] vs [27, 37].', 'f_ref_src': 'def f_ref(x: int) -> bool:\n    return 27 <= x <= 36', 'f_mut_src': 'def f_mut(x: int) -> bool:\n    return 27 <= x <= 37', 'counterexamples': [37], 'sparsity': 0.0196}, {'id': 'cmp_gt_gte_22', 'level': 'level_1', 'family': 'comparison', 'domain': (0, 50), 'spec': 'Check if x is strictly greater than 36 vs at least 36.', 'f_ref_src': 'def f_ref(x: int) -> bool:\n    return x > 36', 'f_mut_src': 'def f_mut(x: int) -> bool:\n    return x >= 36', 'counterexamples': [36], 'sparsity': 0.0196}, {'id': 'clamp_abs_min_clip_6', 'level': 'level_2', 'family': 'clamping_abs', 'domain': (0, 50), 'spec': 'Upper bound clamp using min(x, 19) vs min(x, 20).', 'f_ref_src': 'def f_ref(x: int) -> int:\n    return min(x, 19)', 'f_mut_src': 'def f_mut(x: int) -> int:\n    return min(x, 20)', 'counterexamples': [20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50], 'sparsity': 0.6078}, {'id': 'piecewise_scale_branch_13', 'level': 'level_3', 'family': 'piecewise_arithmetic', 'domain': (0, 50), 'spec': 'Multiplier activation at threshold 11.', 'f_ref_src': 'def f_ref(x: int) -> int:\n    return x * 2 if x > 11 else x', 'f_mut_src': 'def f_mut(x: int) -> int:\n    return x * 2 if x >= 11 else x', 'counterexamples': [11], 'sparsity': 0.0196}, {'id': 'clamp_abs_abs_dist_diff_30', 'level': 'level_2', 'family': 'clamping_abs', 'domain': (0, 50), 'spec': 'Special point perturbation at 40.', 'f_ref_src': 'def f_ref(x: int) -> int:\n    return abs(x) if x != 40 else 41', 'f_mut_src': 'def f_mut(x: int) -> int:\n    return abs(x)', 'counterexamples': [40], 'sparsity': 0.0196}, {'id': 'interval_left_open_13', 'level': 'level_2', 'family': 'interval', 'domain': (0, 50), 'spec': 'Interval inclusion: [29, 34] vs (29, 34].', 'f_ref_src': 'def f_ref(x: int) -> bool:\n    return 29 <= x <= 34', 'f_mut_src': 'def f_mut(x: int) -> bool:\n    return 29 < x <= 34', 'counterexamples': [29], 'sparsity': 0.0196}, {'id': 'cmp_gte_gt_next_24', 'level': 'level_1', 'family': 'comparison', 'domain': (0, 50), 'spec': 'Boundary check at threshold 37.', 'f_ref_src': 'def f_ref(x: int) -> bool:\n    return x >= 37', 'f_mut_src': 'def f_mut(x: int) -> bool:\n    return x > 37', 'counterexamples': [37], 'sparsity': 0.0196}, {'id': 'cmp_lt_lte_16', 'level': 'level_1', 'family': 'comparison', 'domain': (0, 50), 'spec': 'Check if x is strictly less than 11 vs at most 11.', 'f_ref_src': 'def f_ref(x: int) -> bool:\n    return x < 11', 'f_mut_src': 'def f_mut(x: int) -> bool:\n    return x <= 11', 'counterexamples': [11], 'sparsity': 0.0196}, {'id': 'interval_right_open_30', 'level': 'level_2', 'family': 'interval', 'domain': (0, 50), 'spec': 'Interval inclusion: [33, 42] vs [33, 42).', 'f_ref_src': 'def f_ref(x: int) -> bool:\n    return 33 <= x <= 42', 'f_mut_src': 'def f_mut(x: int) -> bool:\n    return 33 <= x < 42', 'counterexamples': [42], 'sparsity': 0.0196}, {'id': 'cmp_lt_lte_37', 'level': 'level_1', 'family': 'comparison', 'domain': (0, 50), 'spec': 'Check if x is strictly less than 40 vs at most 40.', 'f_ref_src': 'def f_ref(x: int) -> bool:\n    return x < 40', 'f_mut_src': 'def f_mut(x: int) -> bool:\n    return x <= 40', 'counterexamples': [40], 'sparsity': 0.0196}, {'id': 'interval_right_open_11', 'level': 'level_2', 'family': 'interval', 'domain': (0, 50), 'spec': 'Interval inclusion: [16, 24] vs [16, 24).', 'f_ref_src': 'def f_ref(x: int) -> bool:\n    return 16 <= x <= 24', 'f_mut_src': 'def f_mut(x: int) -> bool:\n    return 16 <= x < 24', 'counterexamples': [24], 'sparsity': 0.0196}, {'id': 'interval_left_open_1', 'level': 'level_2', 'family': 'interval', 'domain': (0, 50), 'spec': 'Interval inclusion: [26, 36] vs (26, 36].', 'f_ref_src': 'def f_ref(x: int) -> bool:\n    return 26 <= x <= 36', 'f_mut_src': 'def f_mut(x: int) -> bool:\n    return 26 < x <= 36', 'counterexamples': [26], 'sparsity': 0.0196}, {'id': 'interval_left_open_12', 'level': 'level_2', 'family': 'interval', 'domain': (0, 50), 'spec': 'Interval inclusion: [21, 33] vs (21, 33].', 'f_ref_src': 'def f_ref(x: int) -> bool:\n    return 21 <= x <= 33', 'f_mut_src': 'def f_mut(x: int) -> bool:\n    return 21 < x <= 33', 'counterexamples': [21], 'sparsity': 0.0196}, {'id': 'piecewise_sign_branch_2', 'level': 'level_3', 'family': 'piecewise_arithmetic', 'domain': (0, 50), 'spec': 'Three-way sign split around 21 vs two-way split.', 'f_ref_src': 'def f_ref(x: int) -> int:\n    return 1 if x > 21 else (-1 if x < 21 else 0)', 'f_mut_src': 'def f_mut(x: int) -> int:\n    return 1 if x >= 21 else -1', 'counterexamples': [21], 'sparsity': 0.0196}]
+
+# 向后兼容别名 (默认指向独立测试集)
+HELDOUT_PROBLEMS: List[Dict[str, Any]] = TEST_PROBLEMS
+
+
+def get_validation_benchmark() -> List[Dict[str, Any]]:
+    """获取 20 道用于训练监控与选模的验证集题目副本。"""
+    return [dict(p) for p in VALIDATION_PROBLEMS]
+
+
+def get_test_benchmark() -> List[Dict[str, Any]]:
+    """获取 20 道用于最终审计的固定历史测试题副本。"""
+    return [dict(p) for p in TEST_PROBLEMS]
+
+
+def get_heldout_benchmark(split: str = 'test') -> List[Dict[str, Any]]:
+    """
+    获取外部基准题目。
+    split: 'test' (默认, 独立测试集) 或 'val' / 'validation' (验证集)。
+    """
+    if split in ('val', 'validation'):
+        return get_validation_benchmark()
+    return get_test_benchmark()

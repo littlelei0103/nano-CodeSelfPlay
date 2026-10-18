@@ -1,0 +1,6628 @@
+{
+  "evaluation_protocol": "numeric-selfplay-v2",
+  "evaluation_source_sha256": {
+    "eval_spin.py": "9c9e0720c16b3ee1009e39a2c2c4124eab8fa24caab26d96228d85d00d30573c",
+    "core/experiment.py": "3c635eabfbe508b8c1aa09dfc87fdceffee76b2df96bf41d5f6cc924eda5c11d",
+    "core/sandbox.py": "a31e7c8d7144cf281530ca2753759e467016dbe008a0db353726004c9c0f2b80",
+    "core/grpo_engine.py": "c17961cee8119c9a7adeb2c4213e6db6c5d2d140032a5fcea346883082f8d9cd",
+    "roles/mutator.py": "fbae3786c101208fa05081100ce8c6d39cd84cc4cff0b0b1ae0d59b03fdc9942",
+    "roles/breaker.py": "0b80c5178250a9d28228dad7d994bcdd2af8e07e708c82c7e325fa86b228c420",
+    "data/heldout_eval.py": "5e33abe6a92606f06b87e8999a4ed19608eb5a8d7d458a0f13e88e93bd8e15b7",
+    "data/seed_functions.py": "074171eda067b4e4e60d6c63c51090423e407a3d0451dc89e0461679d26454c9"
+  },
+  "training_manifest": {
+    "protocol_version": "numeric-selfplay-v2",
+    "config": {
+      "model_name": "Qwen/Qwen2.5-1.5B",
+      "device": "cuda",
+      "seed": 42,
+      "mutator_warmup_steps": 5,
+      "eval_interval": 15,
+      "mut_rollouts": 4,
+      "breaker_rollouts": 8,
+      "lr": 2e-05,
+      "lr_mutator": 2e-05,
+      "lr_breaker": 2e-05,
+      "lr_breaker_min": 5e-06,
+      "cosine_decay_start": 25,
+      "curriculum_tighten_step": 30,
+      "anchor_ratio": 0.0,
+      "kl_coef": 0.01,
+      "temperature": 0.7
+    },
+    "source_sha256": {
+      "train_spin.py": "18079970953a73d55fac81dfa57d7a06b8a07dd6cae354c5a3c0fcac8e83e41c",
+      "core/experiment.py": "8a08fd9f0dcc30639f090903ecb4f23f202433672cc4435a2f5d52a28fdfe562",
+      "core/sandbox.py": "a31e7c8d7144cf281530ca2753759e467016dbe008a0db353726004c9c0f2b80",
+      "core/hard_buffer.py": "01890fbbc808277904e3fb316fde6ae70d43482cb34df66109ea678b9c47e6cf",
+      "core/grpo_engine.py": "c17961cee8119c9a7adeb2c4213e6db6c5d2d140032a5fcea346883082f8d9cd",
+      "roles/mutator.py": "fbae3786c101208fa05081100ce8c6d39cd84cc4cff0b0b1ae0d59b03fdc9942",
+      "roles/breaker.py": "0b80c5178250a9d28228dad7d994bcdd2af8e07e708c82c7e325fa86b228c420",
+      "data/seed_functions.py": "074171eda067b4e4e60d6c63c51090423e407a3d0451dc89e0461679d26454c9",
+      "data/anchor_tasks.py": "849297181aa6eb919eb98c543e1b392a119915aee7bace5e71a953555fc61ace",
+      "data/heldout_eval.py": "5e33abe6a92606f06b87e8999a4ed19608eb5a8d7d458a0f13e88e93bd8e15b7"
+    },
+    "initial_adapter": null,
+    "torch_version": "2.11.0+cu128"
+  },
+  "seed": 42,
+  "base_model": "Qwen/Qwen2.5-1.5B",
+  "decoding": {
+    "temperature": 0.7,
+    "top_p": 1.0,
+    "top_k": 0,
+    "sample_candidates": 4,
+    "mutator_max_new_tokens": 32,
+    "breaker_max_new_tokens": 24
+  },
+  "crossplay_audit": {
+    "seed_scope": "training_seed_functions",
+    "seed_ids": [
+      "cmp_lt_30",
+      "cmp_lte_25",
+      "cmp_gt_20",
+      "cmp_gte_35",
+      "cmp_eq_15",
+      "cmp_neq_0",
+      "cmp_lt_neg5",
+      "cmp_gte_neg10",
+      "interval_closed_15_35",
+      "interval_open_10_40",
+      "interval_left_open_20_45",
+      "interval_right_open_5_30"
+    ],
+    "seed_sha256": "c86d6b1c4b6b701c6a9eeee70e7a59c815508d795cf7e442cd8f5a33e760a22d",
+    "suite_sizes": {
+      "0": 11,
+      "1": 12,
+      "2": 12,
+      "3": 11,
+      "4": 12,
+      "5": 12
+    },
+    "valid_candidates": {
+      "0": 30,
+      "1": 37,
+      "2": 32,
+      "3": 33,
+      "4": 38,
+      "5": 30
+    },
+    "total_candidates": {
+      "0": 48,
+      "1": 48,
+      "2": 48,
+      "3": 48,
+      "4": 48,
+      "5": 48
+    },
+    "suites": {
+      "0": [
+        {
+          "seed_id": "cmp_lt_30",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x < 30\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x <= 30\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            30
+          ]
+        },
+        {
+          "seed_id": "cmp_lte_25",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x <= 25\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x < 25\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            25
+          ]
+        },
+        {
+          "seed_id": "cmp_gt_20",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x > 20\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x >= 20\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            20
+          ]
+        },
+        {
+          "seed_id": "cmp_gte_35",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x >= 35\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x >= 36\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            35
+          ]
+        },
+        {
+          "seed_id": "cmp_eq_15",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x == 15\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x == 15 or x == 16\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            16
+          ]
+        },
+        {
+          "seed_id": "cmp_neq_0",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x != 0\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x != 1\n",
+          "domain": [
+            -20,
+            20
+          ],
+          "witnesses": [
+            0,
+            1
+          ]
+        },
+        {
+          "seed_id": "cmp_lt_neg5",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x < -5\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x <= -5\n",
+          "domain": [
+            -25,
+            25
+          ],
+          "witnesses": [
+            -5
+          ]
+        },
+        {
+          "seed_id": "cmp_gte_neg10",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x >= -10\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x > -10\n",
+          "domain": [
+            -30,
+            20
+          ],
+          "witnesses": [
+            -10
+          ]
+        },
+        {
+          "seed_id": "interval_closed_15_35",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return 15 <= x <= 35\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return 10 <= x <= 30\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            10,
+            11,
+            12,
+            13,
+            14,
+            31,
+            32,
+            33,
+            34,
+            35
+          ]
+        },
+        {
+          "seed_id": "interval_left_open_20_45",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return 20 < x <= 45\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return 20 < x < 45\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            45
+          ]
+        },
+        {
+          "seed_id": "interval_right_open_5_30",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return 5 <= x < 30\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return 5 <= x <= 30\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            30
+          ]
+        }
+      ],
+      "1": [
+        {
+          "seed_id": "cmp_lt_30",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x < 30\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x <= 30\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            30
+          ]
+        },
+        {
+          "seed_id": "cmp_lte_25",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x <= 25\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x < 25\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            25
+          ]
+        },
+        {
+          "seed_id": "cmp_gt_20",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x > 20\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x >= 20\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            20
+          ]
+        },
+        {
+          "seed_id": "cmp_gte_35",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x >= 35\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x >= 36\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            35
+          ]
+        },
+        {
+          "seed_id": "cmp_eq_15",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x == 15\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x == 16\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            15,
+            16
+          ]
+        },
+        {
+          "seed_id": "cmp_neq_0",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x != 0\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x != 1\n",
+          "domain": [
+            -20,
+            20
+          ],
+          "witnesses": [
+            0,
+            1
+          ]
+        },
+        {
+          "seed_id": "cmp_lt_neg5",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x < -5\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x <= -5\n",
+          "domain": [
+            -25,
+            25
+          ],
+          "witnesses": [
+            -5
+          ]
+        },
+        {
+          "seed_id": "cmp_gte_neg10",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x >= -10\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x >= -20\n",
+          "domain": [
+            -30,
+            20
+          ],
+          "witnesses": [
+            -20,
+            -19,
+            -18,
+            -17,
+            -16,
+            -15,
+            -14,
+            -13,
+            -12,
+            -11
+          ]
+        },
+        {
+          "seed_id": "interval_closed_15_35",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return 15 <= x <= 35\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return 15 <= x <= 36\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            36
+          ]
+        },
+        {
+          "seed_id": "interval_open_10_40",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return 10 < x < 40\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return 10 < x < 45\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            40,
+            41,
+            42,
+            43,
+            44
+          ]
+        },
+        {
+          "seed_id": "interval_left_open_20_45",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return 20 < x <= 45\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return 20 < x < 45\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            45
+          ]
+        },
+        {
+          "seed_id": "interval_right_open_5_30",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return 5 <= x < 30\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return 7 <= x < 30\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            5,
+            6
+          ]
+        }
+      ],
+      "2": [
+        {
+          "seed_id": "cmp_lt_30",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x < 30\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x <= 30\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            30
+          ]
+        },
+        {
+          "seed_id": "cmp_lte_25",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x <= 25\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x < 25\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            25
+          ]
+        },
+        {
+          "seed_id": "cmp_gt_20",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x > 20\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x >= 20\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            20
+          ]
+        },
+        {
+          "seed_id": "cmp_gte_35",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x >= 35\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x >= 36\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            35
+          ]
+        },
+        {
+          "seed_id": "cmp_eq_15",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x == 15\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x == 16\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            15,
+            16
+          ]
+        },
+        {
+          "seed_id": "cmp_neq_0",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x != 0\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x != 1\n",
+          "domain": [
+            -20,
+            20
+          ],
+          "witnesses": [
+            0,
+            1
+          ]
+        },
+        {
+          "seed_id": "cmp_lt_neg5",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x < -5\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x <= -5\n",
+          "domain": [
+            -25,
+            25
+          ],
+          "witnesses": [
+            -5
+          ]
+        },
+        {
+          "seed_id": "cmp_gte_neg10",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x >= -10\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x > -10\n",
+          "domain": [
+            -30,
+            20
+          ],
+          "witnesses": [
+            -10
+          ]
+        },
+        {
+          "seed_id": "interval_closed_15_35",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return 15 <= x <= 35\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return 15 <= x < 45\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            36,
+            37,
+            38,
+            39,
+            40,
+            41,
+            42,
+            43,
+            44
+          ]
+        },
+        {
+          "seed_id": "interval_open_10_40",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return 10 < x < 40\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return 10 < x <= 40\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            40
+          ]
+        },
+        {
+          "seed_id": "interval_left_open_20_45",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return 20 < x <= 45\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return 20 <= x <= 45\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            20
+          ]
+        },
+        {
+          "seed_id": "interval_right_open_5_30",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return 5 <= x < 30\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return 5 <= x <= 30\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            30
+          ]
+        }
+      ],
+      "3": [
+        {
+          "seed_id": "cmp_lt_30",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x < 30\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x <= 30\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            30
+          ]
+        },
+        {
+          "seed_id": "cmp_lte_25",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x <= 25\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x < 25\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            25
+          ]
+        },
+        {
+          "seed_id": "cmp_gt_20",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x > 20\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x >= 20\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            20
+          ]
+        },
+        {
+          "seed_id": "cmp_gte_35",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x >= 35\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x >= 34\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            34
+          ]
+        },
+        {
+          "seed_id": "cmp_eq_15",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x == 15\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x == 10\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            10,
+            15
+          ]
+        },
+        {
+          "seed_id": "cmp_neq_0",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x != 0\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x != 1\n",
+          "domain": [
+            -20,
+            20
+          ],
+          "witnesses": [
+            0,
+            1
+          ]
+        },
+        {
+          "seed_id": "cmp_lt_neg5",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x < -5\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x <= -5\n",
+          "domain": [
+            -25,
+            25
+          ],
+          "witnesses": [
+            -5
+          ]
+        },
+        {
+          "seed_id": "cmp_gte_neg10",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x >= -10\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x > -10\n",
+          "domain": [
+            -30,
+            20
+          ],
+          "witnesses": [
+            -10
+          ]
+        },
+        {
+          "seed_id": "interval_closed_15_35",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return 15 <= x <= 35\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return 15 <= x <= 32\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            33,
+            34,
+            35
+          ]
+        },
+        {
+          "seed_id": "interval_open_10_40",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return 10 < x < 40\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return 10 < x < 45\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            40,
+            41,
+            42,
+            43,
+            44
+          ]
+        },
+        {
+          "seed_id": "interval_left_open_20_45",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return 20 < x <= 45\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return 20 < x <= 46\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            46
+          ]
+        }
+      ],
+      "4": [
+        {
+          "seed_id": "cmp_lt_30",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x < 30\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x <= 30\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            30
+          ]
+        },
+        {
+          "seed_id": "cmp_lte_25",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x <= 25\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x < 25\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            25
+          ]
+        },
+        {
+          "seed_id": "cmp_gt_20",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x > 20\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x >= 20\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            20
+          ]
+        },
+        {
+          "seed_id": "cmp_gte_35",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x >= 35\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x >= 30\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            30,
+            31,
+            32,
+            33,
+            34
+          ]
+        },
+        {
+          "seed_id": "cmp_eq_15",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x == 15\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x == 20\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            15,
+            20
+          ]
+        },
+        {
+          "seed_id": "cmp_neq_0",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x != 0\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x != 1\n",
+          "domain": [
+            -20,
+            20
+          ],
+          "witnesses": [
+            0,
+            1
+          ]
+        },
+        {
+          "seed_id": "cmp_lt_neg5",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x < -5\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x <= -5\n",
+          "domain": [
+            -25,
+            25
+          ],
+          "witnesses": [
+            -5
+          ]
+        },
+        {
+          "seed_id": "cmp_gte_neg10",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x >= -10\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x > -10\n",
+          "domain": [
+            -30,
+            20
+          ],
+          "witnesses": [
+            -10
+          ]
+        },
+        {
+          "seed_id": "interval_closed_15_35",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return 15 <= x <= 35\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return 14 <= x <= 35\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            14
+          ]
+        },
+        {
+          "seed_id": "interval_open_10_40",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return 10 < x < 40\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return 10 < x < 41\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            40
+          ]
+        },
+        {
+          "seed_id": "interval_left_open_20_45",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return 20 < x <= 45\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return 20 < x <= 46\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            46
+          ]
+        },
+        {
+          "seed_id": "interval_right_open_5_30",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return 5 <= x < 30\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return 5 < x < 30\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            5
+          ]
+        }
+      ],
+      "5": [
+        {
+          "seed_id": "cmp_lt_30",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x < 30\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x <= 30\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            30
+          ]
+        },
+        {
+          "seed_id": "cmp_lte_25",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x <= 25\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x < 30\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            26,
+            27,
+            28,
+            29
+          ]
+        },
+        {
+          "seed_id": "cmp_gt_20",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x > 20\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x >= 20\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            20
+          ]
+        },
+        {
+          "seed_id": "cmp_gte_35",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x >= 35\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x > 35\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            35
+          ]
+        },
+        {
+          "seed_id": "cmp_eq_15",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x == 15\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x == 14\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            14,
+            15
+          ]
+        },
+        {
+          "seed_id": "cmp_neq_0",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x != 0\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x != 1\n",
+          "domain": [
+            -20,
+            20
+          ],
+          "witnesses": [
+            0,
+            1
+          ]
+        },
+        {
+          "seed_id": "cmp_lt_neg5",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x < -5\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x <= -5\n",
+          "domain": [
+            -25,
+            25
+          ],
+          "witnesses": [
+            -5
+          ]
+        },
+        {
+          "seed_id": "cmp_gte_neg10",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return x >= -10\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x > -10\n",
+          "domain": [
+            -30,
+            20
+          ],
+          "witnesses": [
+            -10
+          ]
+        },
+        {
+          "seed_id": "interval_closed_15_35",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return 15 <= x <= 35\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return 15 <= x < 35\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            35
+          ]
+        },
+        {
+          "seed_id": "interval_open_10_40",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return 10 < x < 40\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return 10 < x <= 40\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            40
+          ]
+        },
+        {
+          "seed_id": "interval_left_open_20_45",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return 20 < x <= 45\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return 20 < x <= 40\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            41,
+            42,
+            43,
+            44,
+            45
+          ]
+        },
+        {
+          "seed_id": "interval_right_open_5_30",
+          "f_ref_src": "def f_ref(x: int) -> bool:\n    return 5 <= x < 30\n",
+          "f_mut_src": "def f_ref(x: int) -> bool:\n    return x > 5 and x < 30\n",
+          "domain": [
+            0,
+            50
+          ],
+          "witnesses": [
+            5
+          ]
+        }
+      ]
+    },
+    "mutation_trials": [
+      {
+        "mutator_round": 0,
+        "seed_id": "cmp_lt_30",
+        "completion": "return x < 30\nNEW: return x <= 30\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "cmp_lt_30",
+        "completion": "return x < 30\nNEW: return x <= 30\n</answer>\n\n\ndef f(x: int) -> bool:\n    return x <",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "cmp_lt_30",
+        "completion": "return x < 30\nNEW: return x <= 30\n</answer>\n\n\ndef f_ref(x: int) -> bool:\n    return x",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "cmp_lt_30",
+        "completion": "return x < 30\nNEW: return x <= 30\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "cmp_lte_25",
+        "completion": "return x <= 25\nNEW: return x < 25\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "cmp_lte_25",
+        "completion": "return x <= 25\nNEW: return x < 25\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "cmp_lte_25",
+        "completion": "return x <= 25\nNEW: return x <= 20\n</answer>\n\n# Reference:\ndef f_ref(x: int) -> bool:",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "cmp_lte_25",
+        "completion": "return x <= 25\nNEW: return x < 25\n</answer>\n\n# Reference:\ndef f_ref(x: int) -> bool:",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "cmp_gt_20",
+        "completion": "return x > 20\nNEW: return x <= 20\n</answer>\n\n# Reference:\ndef f_ref(x: int) -> bool:",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=5, f_ref=False but f_mut=True. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "cmp_gt_20",
+        "completion": "return x > 20\nNEW: return x >= 20\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "cmp_gt_20",
+        "completion": "return x > 20\nNEW: return x >= 20\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "cmp_gt_20",
+        "completion": "return x > 20\nNEW: return x >= 20\n</answer>\n\ndef f_mut(x: int) -> bool:\n    # Int",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "cmp_gte_35",
+        "completion": "return x >= 35\nNEW: return x >= 36\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "cmp_gte_35",
+        "completion": "return x >= 35\nNEW: return x >= 40\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "cmp_gte_35",
+        "completion": "return x >= 35\nNEW: return x >= 30\n</answer>\n\ndef f_ref(x: int) -> bool:\n    return x",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "cmp_gte_35",
+        "completion": "return x >= 35\nNEW: return x >= 30\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "cmp_eq_15",
+        "completion": "x == 15\nNEW: x <= 15\n</answer>",
+        "valid": false,
+        "reason": "Mutated function crashed on sanity input 0: Unsupported or non-finite return value"
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "cmp_eq_15",
+        "completion": "return x == 15\nNEW: return x > 10\n</answer>",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=25, f_ref=False but f_mut=True. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "cmp_eq_15",
+        "completion": "return x == 15\nNEW: return x == 15 or x == 16\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "cmp_eq_15",
+        "completion": "return x == 15\nNEW: return x > 15\n</answer>",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=25, f_ref=False but f_mut=True. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "cmp_neq_0",
+        "completion": "return x != 0\nNEW: return x > 0\n</answer>\n\ndef f_ref(x: int) -> bool:\n    return x >=",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=-10, f_ref=True but f_mut=False. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "cmp_neq_0",
+        "completion": "return x != 0\nNEW: return x != 1\n</answer>\n\ndef f(x: str) -> bool:\n    return x != ''",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "cmp_neq_0",
+        "completion": "return x != 0\nNEW: return x == 0\n</answer>",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=-10, f_ref=True but f_mut=False. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "cmp_neq_0",
+        "completion": "return x != 0\nNEW: return x != 1\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "return x < -5\nNEW: return x <= -5\n</answer>\n# Note that the mutated function should now produce different outputs on the boundary input",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "return x < -5\nNEW: return x <= -5\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "return x < -5\nNEW: return x <= -5\n</answer>\n\n# Reference:\ndef f_ref(x: str) -> int:\n    return",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "return x < -5\nNEW: return x <= -5\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "return x >= -10\nNEW: return x > -10\n</answer>\n\n# Reference:\ndef f_ref(x: int) -> bool:",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "return x >= -10\nNEW: return x <= -10\n</answer>",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=-25, f_ref=False but f_mut=True. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "return x >= -10\nNEW: return x >= -20\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "return x >= -10\nNEW: return x > -10\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "interval_closed_15_35",
+        "completion": "return 15 <= x <= 35\nNEW: return 10 <= x <= 30\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "interval_closed_15_35",
+        "completion": "15 <= x <= 35\nNEW: 15 <= x <= 30\n</answer>",
+        "valid": false,
+        "reason": "Mutated function crashed on sanity input 5: Unsupported or non-finite return value"
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "interval_closed_15_35",
+        "completion": "return 15 <= x <= 35\nNEW: return 15 <= x < 35\n</answer>\n\n# Note: It is",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "interval_closed_15_35",
+        "completion": "15 <= x <= 35\nNEW: 15 <= x < 35\n</answer>",
+        "valid": false,
+        "reason": "Mutated function crashed on sanity input 5: Unsupported or non-finite return value"
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "interval_open_10_40",
+        "completion": "10 < x < 40\nNEW: 10 < x < 41\n</answer>",
+        "valid": false,
+        "reason": "Mutated function crashed on sanity input 5: Unsupported or non-finite return value"
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "interval_open_10_40",
+        "completion": "return 10 < x < 40\nNEW: return x > 10\n</answer>\n\ndef f(x: int) -> bool:",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=45, f_ref=False but f_mut=True. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "interval_open_10_40",
+        "completion": "return 10 < x < 40\nNEW: return 10 < x < 50\n</answer>",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=45, f_ref=False but f_mut=True. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "interval_open_10_40",
+        "completion": "return 10 < x < 40\nNEW: return 10 < x < 40\n</answer>",
+        "valid": false,
+        "reason": "No edit"
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "return 20 < x <= 45\nNEW: return x <= 45\n</answer>",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=5, f_ref=False but f_mut=True. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "return 20 < x <= 45\nNEW: return 20 < x < 45\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "return 20 < x <= 45\nNEW: return 20 < x < 45\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "20 < x <= 45\nNEW: 20 < x <= 40\n</answer>",
+        "valid": false,
+        "reason": "Mutated function crashed on sanity input 5: Unsupported or non-finite return value"
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "5 <= x < 30\nNEW: 5 <= x < 35\n</answer>",
+        "valid": false,
+        "reason": "Mutated function crashed on sanity input 2: Unsupported or non-finite return value"
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "return 5 <= x < 30\nNEW: return 5 <= x <= 30\n</answer>\n\n# Reference:\ndef f_ref(x",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "5 <= x < 30\nNEW: 5 <= x < 35\n</answer>\n\n# Reference:\ndef f_ref(x: int",
+        "valid": false,
+        "reason": "Mutated function crashed on sanity input 2: Unsupported or non-finite return value"
+      },
+      {
+        "mutator_round": 0,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "return x < 30\nNEW: return x < 30\n</answer>\n\n# Example:\n# Reference:\n# def f_ref(x: int",
+        "valid": false,
+        "reason": "SyntaxError in code: invalid syntax (<unknown>, line 2)"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "cmp_lt_30",
+        "completion": "return x < 30\nNEW: return x <= 30\n</answer>\n\n# Reference:\ndef f_ref(x: int) -> int:",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "cmp_lt_30",
+        "completion": "return x < 30\nNEW: return x <= 30\n</answer>\n\n# Reference:\ndef f_ref(x: int) -> bool:",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "cmp_lt_30",
+        "completion": "return x < 30\nNEW: return x <= 30\n</answer>\n\n# Example:\ndef f_ref(x: int) -> bool:",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "cmp_lt_30",
+        "completion": "return x < 30\nNEW: return x <= 30\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "cmp_lte_25",
+        "completion": "return x <= 25\nNEW: return x < 25\n</answer>\n\n# Reference:\ndef f_ref(x: int) -> bool:",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "cmp_lte_25",
+        "completion": "return x <= 25\nNEW: return x >= 25\n</answer>\n\n# Reference:\ndef f_ref(x: int) -> bool:",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=5, f_ref=True but f_mut=False. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "cmp_lte_25",
+        "completion": "return x <= 25\nNEW: return x < 25\n</answer>\n\n# Reference:\ndef f_ref(x: int) -> bool:",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "cmp_lte_25",
+        "completion": "return x <= 25\nNEW: return x < 25\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "cmp_gt_20",
+        "completion": "return x > 20\nNEW: return x >= 20\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "cmp_gt_20",
+        "completion": "return x > 20\nNEW: return x >= 20\n</answer>\n\ndef f(x: int) -> bool:\n    if x >",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "cmp_gt_20",
+        "completion": "return x > 20\nNEW: return x >= 20\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "cmp_gt_20",
+        "completion": "<exact line from reference function to modify>\nNEW: <modified line with subtle bug>\n</answer>",
+        "valid": false,
+        "reason": "SyntaxError in code: invalid syntax (<unknown>, line 1)"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "cmp_gte_35",
+        "completion": "return x >= 35\nNEW: return x >= 36\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "cmp_gte_35",
+        "completion": "return x >= 35\nNEW: return x >= 36\n</answer>\n\n# Reference:\ndef f_ref(x: int) -> bool:",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "cmp_gte_35",
+        "completion": "return x >= 35\nNEW: return x >= 40\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "cmp_gte_35",
+        "completion": "return x >= 35\nNEW: return x > 35\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "cmp_eq_15",
+        "completion": "return x == 15\nNEW: return x == 25\n</answer>",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=25, f_ref=False but f_mut=True. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "cmp_eq_15",
+        "completion": "return x == 15\nNEW: return x >= 15\n</answer>",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=25, f_ref=False but f_mut=True. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "cmp_eq_15",
+        "completion": "return x == 15\nNEW: return x == 16\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "cmp_eq_15",
+        "completion": "return x == 15\nNEW: return x == 14\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "cmp_neq_0",
+        "completion": "return x != 0\nNEW: return x != 1\n</answer>\n\n# Reference:\ndef f_ref(x: int) -> bool:\n    return",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "cmp_neq_0",
+        "completion": "return x != 0\nNEW: return x != 1\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "cmp_neq_0",
+        "completion": "return x != 0\nNEW: return x != 1\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "cmp_neq_0",
+        "completion": "return x != 0\nNEW: return x != 1\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "return x < -5\nNEW: return x <= -5\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "return x < -5\nNEW: return x <= -5\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "return x < -5\nNEW: return x <= -5\n</answer>\n\n# Reference:\ndef f_ref(x: int) -> bool:\n    return",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "return x < -5\nNEW: return x <= -5\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "return x >= -10\nNEW: return x >= -20\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "return x >= -10\nNEW: return x >= 0\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "return x >= -10\nNEW: return x >= 0\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "return x >= -10\nNEW: return x >= 0\n</answer>\n\n\ndef f(x: int) -> bool:\n    return x >= -",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "interval_closed_15_35",
+        "completion": "return x <= 35\nNEW: return x <= 15\n</answer>",
+        "valid": false,
+        "reason": "SyntaxError in code: invalid syntax (<unknown>, line 2)"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "interval_closed_15_35",
+        "completion": "return 15 <= x <= 35\nNEW: return x < 15 or x > 35\n</answer>\n\n# Reference:",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=5, f_ref=False but f_mut=True. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "interval_closed_15_35",
+        "completion": "return 15 <= x <= 35\nNEW: return 15 <= x <= 36\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "interval_closed_15_35",
+        "completion": "15 <= x <= 35\nNEW: 15 <= x < 35\n</answer>\n\n# Reference:\ndef f_ref(x",
+        "valid": false,
+        "reason": "Mutated function crashed on sanity input 5: Unsupported or non-finite return value"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "interval_open_10_40",
+        "completion": "return 10 < x < 40\nNEW: return 10 < x < 45\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "interval_open_10_40",
+        "completion": "return 10 < x < 40\nNEW: return 10 < x <= 40\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "interval_open_10_40",
+        "completion": "return 10 < x < 40\nNEW: return 10 <= x <= 40\n</answer>\n\n# Reference:\ndef f",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "interval_open_10_40",
+        "completion": "return 10 < x < 40\nNEW: return 10 < x <= 40\n</answer>\n\n# Reference:\ndef f",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "20 < x <= 45\nNEW: 20 < x < 45\n</answer>\n\n# Reference:\ndef f_ref(x",
+        "valid": false,
+        "reason": "Mutated function crashed on sanity input 5: Unsupported or non-finite return value"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "return 20 < x <= 45\nNEW: return 20 < x < 45\n</answer>\n\n# Reference:\ndef f",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "20 < x <= 45\nNEW: 20 < x <= 48\n</answer>\n\n\ndef f(x: int) ->",
+        "valid": false,
+        "reason": "Mutated function crashed on sanity input 5: Unsupported or non-finite return value"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "return 20 < x <= 45\nNEW: return 20 < x < 45\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "5 <= x < 30\nNEW: 5 <= x < 31\n</answer>",
+        "valid": false,
+        "reason": "Mutated function crashed on sanity input 2: Unsupported or non-finite return value"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "return x < 30\nNEW: return x < 29 and x > 5\n</answer>",
+        "valid": false,
+        "reason": "SyntaxError in code: invalid syntax (<unknown>, line 2)"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "return 5 <= x < 30\nNEW: return 7 <= x < 30\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 1,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "return 5 <= x < 30\nNEW: return 5 <= x <= 30\n</answer>\n\n# Reference:\ndef f_ref(x",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "cmp_lt_30",
+        "completion": "return x < 30\nNEW: return x <= 30\n</answer>\n# Explanation: A subtle boundary defect occurs when x equals 3",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "cmp_lt_30",
+        "completion": "return x < 30\nNEW: return x <= 30\n</answer>\n\ndef f(x):\n    if x < 0:\n        return",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "cmp_lt_30",
+        "completion": "return x < 30\nNEW: return x > 15\n</answer>\n\n# Reference:\ndef f_ref(x: int) -> bool:",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=5, f_ref=True but f_mut=False. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "cmp_lt_30",
+        "completion": "return x < 30\nNEW: return x <= 29\n</answer>",
+        "valid": false,
+        "reason": "Equivalent function: f_mut behaves identically to f_ref across entire domain"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "cmp_lte_25",
+        "completion": "return x <= 25\nNEW: return x < 25\n</answer>\n\n\n# Reference:\ndef f_ref(x: int) -> bool:",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "cmp_lte_25",
+        "completion": "return x <= 25\nNEW: return x <= 50\n</answer>\n\ndef f(x: int) -> bool:\n    return x %",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=40, f_ref=False but f_mut=True. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "cmp_lte_25",
+        "completion": "return x <= 25\nNEW: return x < 25\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "cmp_lte_25",
+        "completion": "return x <= 25\nNEW: return x >= 25\n</answer>",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=5, f_ref=True but f_mut=False. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "cmp_gt_20",
+        "completion": "return x > 20\nNEW: return x >= 20\n</answer>\n\ndef f_ref(x: int) -> bool:\n    return x",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "cmp_gt_20",
+        "completion": "return x > 20\nNEW: return x >= 20\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "cmp_gt_20",
+        "completion": "return x > 20\nNEW: return x >= 20\n</answer>\n\n\ndef f(x):\n    if x < 5:\n        return",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "cmp_gt_20",
+        "completion": "return x > 20\n<NEW>\nNEW: return x >= 20\n</NEW>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "cmp_gte_35",
+        "completion": "return x >= 35\nNEW: return x >= 36\n</answer>\n\n# Reference:\ndef f_ref(x: int) -> bool:",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "cmp_gte_35",
+        "completion": "return x >= 35\nNEW: return x >= 30\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "cmp_gte_35",
+        "completion": "return x >= 35\nNEW: return x > 35\n</answer>\n\ndef f(x: int) -> bool:\n    return x >",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "cmp_gte_35",
+        "completion": "return x >= 35\nNEW: return x >= 36\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "cmp_eq_15",
+        "completion": "return x == 15\nNEW: return x >= 15\n</answer>",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=25, f_ref=False but f_mut=True. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "cmp_eq_15",
+        "completion": "return x == 15\nNEW: return x >= 15\n</answer>",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=25, f_ref=False but f_mut=True. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "cmp_eq_15",
+        "completion": "return x == 15\nNEW: return x == 16\n</answer>\n\n# Reference:\ndef f_ref(x: int) -> bool:",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "cmp_eq_15",
+        "completion": "return x == 15\n<NEW>\nNEW: return x >= 15\n</NEW>\n\n# Reference:\ndef f_ref(x: int)",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=25, f_ref=False but f_mut=True. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "cmp_neq_0",
+        "completion": "return x != 0\nNEW: return x != 1\n</answer>\n\n\n# Reference:\ndef f_ref(x: int) -> bool:\n    return",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "cmp_neq_0",
+        "completion": "return x != 0\nNEW: return x != 0 and x != -1\n</answer>\n\ndef f_ref(x: int) -> bool:",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "cmp_neq_0",
+        "completion": "return x != 0\nNEW: return x > 0\n</answer>",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=-10, f_ref=True but f_mut=False. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "cmp_neq_0",
+        "completion": "return x != 0\nNEW: return x != 1\n</answer>\n\ndef f_ref(x: int) -> bool:\n    return x !=",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "return x < -5\nNEW: return x <= -5\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "return x < -5\nNEW: return x <= -5\n</answer>\n\ndef f_ref(x: int) -> bool:\n    return x %",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "return x < -5\nNEW: return x <= -5\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "return x < -5\nNEW: return x <= -5\n</answer>\n\n# NOTE: The exact line to edit is replaced by \"<answer>\".",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "return x >= -10\nNEW: return x > -10\n</answer>\n\ndef f(x: int) -> bool:\n    # Add",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "return x >= -10\nNEW: return x > -10\n</answer>\n\n# These inputs are the only ones that will be passed to the",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "return x >= -10\nNEW: return x > -10\n</answer>\n\n# Reference:\ndef f_ref(x: int) -> bool:",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "return x >= -10\nNEW: return x >= 0\n</answer>\n\n# Reference:\ndef f_ref(x: int) -> bool:",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "interval_closed_15_35",
+        "completion": "15 <= x <= 35\nNEW: 15 <= x < 35\n</answer>\n\n# Reference:\ndef f_ref(x",
+        "valid": false,
+        "reason": "Mutated function crashed on sanity input 5: Unsupported or non-finite return value"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "interval_closed_15_35",
+        "completion": "return 15 <= x <= 35\nNEW: return 15 <= x < 45\n</answer>\n\ndef f(x: int",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "interval_closed_15_35",
+        "completion": "15 <= x <= 35\nNEW: <modified line with subtle bug>\n</answer>",
+        "valid": false,
+        "reason": "SyntaxError in code: invalid syntax (<unknown>, line 2)"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "interval_closed_15_35",
+        "completion": "15 <= x <= 35\nNEW: 15 <= x < 35\n</answer>\n\n# Reference:\ndef f_ref(x",
+        "valid": false,
+        "reason": "Mutated function crashed on sanity input 5: Unsupported or non-finite return value"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "interval_open_10_40",
+        "completion": "return 10 < x < 40\nNEW: return 10 < x <= 40\n</answer>\n\n# DO NOT EDIT BELOW",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "interval_open_10_40",
+        "completion": "return 10 < x < 40\nNEW: return 10 < x <= 40\n</answer>\n\n# Reference:\ndef f",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "interval_open_10_40",
+        "completion": "10 < x < 40\nNEW: 10 < x < 45\n</answer>\n\n# Reference:\ndef f_ref(x",
+        "valid": false,
+        "reason": "Mutated function crashed on sanity input 5: Unsupported or non-finite return value"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "interval_open_10_40",
+        "completion": "return 10 < x < 40\nNEW: return 10 < x < 45\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "return 20 < x <= 45\nNEW: return 20 <= x <= 45\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "return 20 < x <= 45\nNEW: return 20 < x >= 45\n</answer>\n\ndef f(x: int",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=30, f_ref=True but f_mut=False. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "return 20 < x <= 45\nNEW: return 20 < x and x <= 45\n</answer>",
+        "valid": false,
+        "reason": "Equivalent function: f_mut behaves identically to f_ref across entire domain"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "return 20 < x <= 45\nNEW: return 20 < x <= 30\n</answer>\n\n# Remember to use the",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "return 5 <= x < 30\nNEW: return 5 <= x <= 30\n</answer>\ndef f(x: int) ->",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "return 5 <= x < 30\nNEW: return 5 <= x and x < 30\n</answer>\n\n# Note: From a",
+        "valid": false,
+        "reason": "Equivalent function: f_mut behaves identically to f_ref across entire domain"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "5 <= x < 30\nNEW: 2 <= x < 30\n</answer>\n\ndef f(x: int) -> bool:",
+        "valid": false,
+        "reason": "Mutated function crashed on sanity input 2: Unsupported or non-finite return value"
+      },
+      {
+        "mutator_round": 2,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "return 5 <= x < 30\nNEW: return 5 <= x <= 30\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "cmp_lt_30",
+        "completion": "return x < 30\nNEW: return x <= 30\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "cmp_lt_30",
+        "completion": "return x < 30\nNEW: return x <= 30\n</answer>\n\n# Reference:\ndef f_ref(x: int) -> bool:",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "cmp_lt_30",
+        "completion": "return x < 30\nNEW: return x <= 30",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "cmp_lt_30",
+        "completion": "return x < 30\nNEW: return x <= 30\n</answer>\n\n\ndef f(x: int) -> int:\n    return x +",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "cmp_lte_25",
+        "completion": "return x <= 25\nNEW: return x < 25\n</answer>\n\ndef f(x: int) -> bool:\n    return x >=",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "cmp_lte_25",
+        "completion": "return x <= 25\nNEW: return x >= 25\n</answer>",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=5, f_ref=True but f_mut=False. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "cmp_lte_25",
+        "completion": "return x <= 25\nNEW: return x >= 25\n</answer>\n\n# Reference:\ndef f_ref(x: int) -> bool:",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=5, f_ref=True but f_mut=False. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "cmp_lte_25",
+        "completion": "return x <= 25\nNEW: return x <= 24\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "cmp_gt_20",
+        "completion": "return x > 20\nNEW: return x >= 20\n</answer>\n\n\n# Reference:\ndef f_ref(x: int) -> bool:",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "cmp_gt_20",
+        "completion": "return x > 20\nNEW: return x >= 20\n</answer>\n\n# Reference:\ndef f_ref(x: int) -> bool:",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "cmp_gt_20",
+        "completion": "return x > 20\nNEW: return x >= 20\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "cmp_gt_20",
+        "completion": "return x > 20\nNEW: return x >= 20\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "cmp_gte_35",
+        "completion": "return x >= 35\nNEW: return x >= 34\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "cmp_gte_35",
+        "completion": "return x >= 35\nNEW: return x > 35\n</answer>\n\n# Reference:\ndef f_ref(x: int) -> bool:",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "cmp_gte_35",
+        "completion": "return x >= 35\nNEW: return x >= 30\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "cmp_gte_35",
+        "completion": "return x >= 35\nNEW: return x >= 30\n</answer>\n\n\ndef f(x: int) -> bool:\n    return x >=",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "cmp_eq_15",
+        "completion": "return x == 15\nNEW: return x == 25\n</answer>\n\ndef f(x: int) -> bool:  # I've",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=25, f_ref=False but f_mut=True. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "cmp_eq_15",
+        "completion": "return x == 15\nNEW: return x < 15\n</answer>\n\n# Reference:\ndef f_ref(x: int) -> bool:",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=0, f_ref=False but f_mut=True. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "cmp_eq_15",
+        "completion": "return x == 15\nNEW: return x >= 15\n</answer>\n\ndef f(x: int) -> int:\n    x = x",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=25, f_ref=False but f_mut=True. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "cmp_eq_15",
+        "completion": "return x == 15\nNEW: return x == 10\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "cmp_neq_0",
+        "completion": "return x != 0\nNEW: return x != -10\n</answer>\n\n\n# Reference:\ndef f_ref(x: float) -> bool:",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=-10, f_ref=True but f_mut=False. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "cmp_neq_0",
+        "completion": "return x != 0\nNEW: return x > 0\n</answer>\n\n# Reference:\ndef f_ref(x: int) -> int:\n    return",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=-10, f_ref=True but f_mut=False. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "cmp_neq_0",
+        "completion": "return x != 0\nNEW: return x != 1\n</answer>\n\n# Reference:\ndef f_ref(x: int) -> bool:\n    return",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "cmp_neq_0",
+        "completion": "return x != 0\nNEW: return x > 0\n</answer>",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=-10, f_ref=True but f_mut=False. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "return x < -5\nNEW: return x <= -5\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "return x < -5\nNEW: return x <= -5\n</answer>\n\ndef f(x: int) -> bool:\n    return x < -5",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "return x < -5\nNEW: return x <= -5\n</answer>\n\n# Reference:\ndef f_ref(x: int) -> bool:\n    return",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "return x < -5\nNEW: return x <= -5\n</answer>\n\ndef f_ref(x: int) -> bool:\n    return x >",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "return x >= -10\nNEW: return x > -10\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "return x >= -10\nNEW: return x > -10\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "return x >= -10\nNEW: return x >= -20\n</answer>\n\ndef f(x: int) -> bool:\n    return x >",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "return x >= -10\nNEW: return x >= 0\n</answer>\n\n# Reference:\ndef f_ref(x: int) -> bool:",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "interval_closed_15_35",
+        "completion": "return 15 <= x <= 35\nNEW: return 15 <= x <= 32\n</answer>\n\ndef f(x: int",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "interval_closed_15_35",
+        "completion": "return 15 <= x <= 35\nNEW: return 15 <= x < 35\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "interval_closed_15_35",
+        "completion": "return 15 <= x <= 35\nNEW: return 15 <= x < 35\n</answer>\n\n# Please delete the <",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "interval_closed_15_35",
+        "completion": "return 15 <= x <= 35\nNEW: return 15 <= x <= 34\n</answer>\n\n# Reference:\ndef f",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "interval_open_10_40",
+        "completion": "return 10 < x < 40\nNEW: return 10 < x < 45\n</answer>\n\n# Reference:\ndef f",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "interval_open_10_40",
+        "completion": "10 < x < 40\nNEW: 10 < x <= 40\n</answer>\n\n# Reference:\ndef f_ref(x",
+        "valid": false,
+        "reason": "Mutated function crashed on sanity input 5: Unsupported or non-finite return value"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "interval_open_10_40",
+        "completion": "return 10 < x < 40\nNEW: return x > 9 and x < 41\n</answer>\n\n# Reference:\ndef",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "interval_open_10_40",
+        "completion": "return 10 < x < 40\nNEW: return 10 < x <= 40\n</answer>\n\ndef f(x: int",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "return 20 < x <= 45\nNEW: return 20 < x <= 46\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "return 20 < x <= 45\nNEW: return x > 20 <= x <= 45\n</answer>\n\ndef f(x",
+        "valid": false,
+        "reason": "Equivalent function: f_mut behaves identically to f_ref across entire domain"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "return 20 < x <= 45\nNEW: return 20 < x <= 44\n</answer>\n\n# Reference:\ndef f",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "return x < 20 or x > 45\nNEW: return x < 20 or x >= 45\n</answer>",
+        "valid": false,
+        "reason": "SyntaxError in code: invalid syntax (<unknown>, line 2)"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "return 5 <= x < 30\nNEW: return 5 <= x\n</answer>\n\n# Reference:\ndef f_ref(x: int) ->",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=40, f_ref=False but f_mut=True. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "5 <= x < 30\nNEW: 5 < x < 25\n</answer>",
+        "valid": false,
+        "reason": "Mutated function crashed on sanity input 2: Unsupported or non-finite return value"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "return 5 <= x < 30\nNEW: return 5 <= x <= 29\n</answer>",
+        "valid": false,
+        "reason": "Equivalent function: f_mut behaves identically to f_ref across entire domain"
+      },
+      {
+        "mutator_round": 3,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "return 5 <= x < 30\nNEW: return 5 <= x < 30 or x == 2\n</answer>\n\n# Reference",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=2, f_ref=False but f_mut=True. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "cmp_lt_30",
+        "completion": "return x < 30\nNEW: return x <= 30\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "cmp_lt_30",
+        "completion": "return x < 30\nNEW: return x <= 30\n</answer>\n\ndef f(x: int) -> bool:\n    if x <",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "cmp_lt_30",
+        "completion": "return x < 30\nNEW: return x <= 30\n</answer>\n\n\n# Reference:\ndef f_ref(x: int) -> bool:",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "cmp_lt_30",
+        "completion": "return x < 30\nNEW: return x <= 30\n</answer>\n\ndef f_ref(x: int) -> bool:\n    return x",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "cmp_lte_25",
+        "completion": "return x <= 25\nNEW: return x < 25\n</answer>\n\ndef f_ref(x: int) -> bool:\n    return x",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "cmp_lte_25",
+        "completion": "return x <= 25\nNEW: return x < 25\n</answer>\n\n\n# Reference:\ndef f_ref(x: int) -> bool:",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "cmp_lte_25",
+        "completion": "return x <= 25\nNEW: return x >= 25\n</answer>\n\ndef f(x: int) -> bool:\n    return abs(x",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=5, f_ref=True but f_mut=False. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "cmp_lte_25",
+        "completion": "return x <= 25\nNEW: return x <= 30\n</answer>\n\ndef f(x: int) -> bool:\n    if x <=",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "cmp_gt_20",
+        "completion": "return x > 20\nNEW: return x >= 20\n</answer>\n\ndef f(x: int) -> bool:\n    return x >",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "cmp_gt_20",
+        "completion": "return x > 20\nNEW: return x >= 20\n</answer>\n\n# Reference:\ndef f_ref(x: int) -> bool:",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "cmp_gt_20",
+        "completion": "return x > 20\nNEW: return x >= 20\n</answer>\n\n# Reference:\ndef f_ref(x: float) -> bool:",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "cmp_gt_20",
+        "completion": "return x > 20\nNEW: return x >= 20\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "cmp_gte_35",
+        "completion": "return x >= 35\nNEW: return x >= 30\n</answer>\n\n# Note that the mutation is subtle, and the line edit may",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "cmp_gte_35",
+        "completion": "return x >= 35\nNEW: return x >= 30\n</answer>\n\n\n# Reference:\ndef f_ref(x: int) -> bool:",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "cmp_gte_35",
+        "completion": "return x >= 35\nNEW: return x >= 34\n</answer>\n\ndef f(x: int) -> bool:\n    return x >=",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "cmp_gte_35",
+        "completion": "return x >= 35\nNEW: return x >= 35 or x == 35\n</answer>\n\ndef f(x: int) ->",
+        "valid": false,
+        "reason": "Equivalent function: f_mut behaves identically to f_ref across entire domain"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "cmp_eq_15",
+        "completion": "return x == 15\nNEW: return x == 20\n</answer>\n# END_DESCRIPTION\n# BEGIN_DESCRIPTION\n# The boundary case is",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "cmp_eq_15",
+        "completion": "return x == 15\nNEW: return x == 16\n</answer>\n\n# Reference:\ndef f_ref(x: int) -> bool:",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "cmp_eq_15",
+        "completion": "return x == 15\nNEW: return x > 15\n</answer>",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=25, f_ref=False but f_mut=True. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "cmp_eq_15",
+        "completion": "return x == 15\nNEW: return x == 16\n</answer>\n\ndef f(x: int) -> int:\n    if x <",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "cmp_neq_0",
+        "completion": "return x != 0\nNEW: return x != -10\n</answer>\n\ndef f(x: int) -> bool:\n    return x >",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=-10, f_ref=True but f_mut=False. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "cmp_neq_0",
+        "completion": "return x != 0\nNEW: return x != 1",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "cmp_neq_0",
+        "completion": "return x != 0\nNEW: return x > 0\n</answer>\n\n# Reference:\ndef f_ref(x: int) -> bool:\n    return",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=-10, f_ref=True but f_mut=False. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "cmp_neq_0",
+        "completion": "return x != 0\nNEW: return x != 1\n</answer>\n\ndef f_ref(x: int) -> bool:\n    return x %",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "return x >= -5\nNEW: return x > -5\n</answer>\n\ndef g(x: int) -> bool:\n    return x >= 1",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=-20, f_ref=True but f_mut=False. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "return x < -5\nNEW: return x <= -5\n</answer>\n\ndef f_ref(x: int) -> bool:\n    return x >",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "return x < -5\nNEW: return x <= -5\n</answer>\n\ndef f_ref(x: int) -> bool:\n    return x >",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "return x < -5\nNEW: return x <= -5\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "return x >= -10\nNEW: return x > -10\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "return x >= -10\nNEW: return x > -10\n</answer>\n\ndef f(x: int) -> bool:\n    return x >",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "return x >= -10\nNEW: return x >= -20\n</answer>\n\ndef f(x: int) -> bool:\n    return x >=",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "return x >= -10\nNEW: return x > -10\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "interval_closed_15_35",
+        "completion": "return 15 <= x <= 35\nNEW: return 14 <= x <= 35\n</answer>\n\ndef f_ref(x:",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "interval_closed_15_35",
+        "completion": "return 15 <= x <= 35\nNEW: return 15 <= x < 35\n</answer>\n\ndef f(x: int",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "interval_closed_15_35",
+        "completion": "return 15 <= x <= 35\nNEW: return 15 <= x < 35\n</answer>\n\n# Reference:\ndef f",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "interval_closed_15_35",
+        "completion": "return 15 <= x <= 35\nNEW: return 16 <= x <= 35\n</answer>\n\n\ndef f(x: int",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "interval_open_10_40",
+        "completion": "return 10 < x < 40\nNEW: return 10 < x < 41\n</answer>\n\n# Example:\ndef f",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "interval_open_10_40",
+        "completion": "10 < x < 40\nNEW: 10 < x < 45\n</answer>\n\n\n# Reference:\ndef f_ref(x",
+        "valid": false,
+        "reason": "Mutated function crashed on sanity input 5: Unsupported or non-finite return value"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "interval_open_10_40",
+        "completion": "return 10 < x < 40\nNEW: return 10 < x <= 40\n</answer>\n\ndef f(x: int",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "interval_open_10_40",
+        "completion": "return 10 < x < 40\nNEW: return 10 < x <= 40\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "20 < x <= 45\nNEW: 20 < x <= 44\n</answer>",
+        "valid": false,
+        "reason": "Mutated function crashed on sanity input 5: Unsupported or non-finite return value"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "return 20 < x <= 45\nNEW: return 20 < x <= 46\n</answer>\n\ndef f(x: int",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "return 20 < x <= 45\nNEW: return 20 < x <= 49\n</answer>\n\ndef f(x: int",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=48, f_ref=False but f_mut=True. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "return 20 < x <= 45\nNEW: return 20 < x <= 40\n</answer>\n\n# Reference:\ndef f",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "return 5 <= x < 30\nNEW: return 5 < x < 30\n</answer>\n\n\ndef f_ref(x: int)",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "return 5 <= x < 30\nNEW: return 5 <= x < 31\n</answer>\n\ndef f_ref(x: int)",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "return 5 <= x < 30\nNEW: return 5 <= x <= 30\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 4,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "5 <= x < 30\nNEW: 5 <= x < 25\n</answer>\n\n\ndef f(x: int) -> bool:",
+        "valid": false,
+        "reason": "Mutated function crashed on sanity input 2: Unsupported or non-finite return value"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "cmp_lt_30",
+        "completion": "return x < 30\nNEW: return x <= 29\n</answer>\n\ndef f(x: int) -> bool:\n    if x <",
+        "valid": false,
+        "reason": "Equivalent function: f_mut behaves identically to f_ref across entire domain"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "cmp_lt_30",
+        "completion": "return x < 30\nNEW: return x <= 30\n</answer>\n\ndef f(x):\n    return x > 10\n\ndef",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "cmp_lt_30",
+        "completion": "return x < 30\nNEW: return x <= 30\n</answer>\n\ndef f(x: int) -> bool:\n    return x >",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "cmp_lt_30",
+        "completion": "return x < 30\nNEW: return x <= 30\n</answer>\n\n\ndef f(x: int) -> str:\n    if x <",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "cmp_lte_25",
+        "completion": "return x <= 25\nNEW: return x < 30\n</answer>\n\n# Reference:\ndef f_ref(x: int) -> int:",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "cmp_lte_25",
+        "completion": "return x <= 25\nNEW: return x < 25\n</answer>\n\ndef f(x: int) -> bool:\n    if x <",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "cmp_lte_25",
+        "completion": "return x <= 25\nNEW: return x < 25\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "cmp_lte_25",
+        "completion": "return x <= 25\nNEW: return x < 25\n</answer>\n\n# Reference:\ndef f_ref(x: int) -> bool:",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "cmp_gt_20",
+        "completion": "return x >= 10\nNEW: return x >= 20\n</answer>",
+        "valid": false,
+        "reason": "SyntaxError in code: invalid syntax (<unknown>, line 2)"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "cmp_gt_20",
+        "completion": "return x > 20\nNEW: return x >= 20\n</answer>\n\ndef f(x: int) -> bool:\n    return x >",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "cmp_gt_20",
+        "completion": "return x > 20\nNEW: return x >= 20\n</answer>\n\ndef f(x: int) -> bool:\n    return x >",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "cmp_gt_20",
+        "completion": "return x > 20\nNEW: return x >= 20\n</answer>\n\ndef f(x: int) -> bool:\n    return x >",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "cmp_gte_35",
+        "completion": "return x >= 35\nNEW: return x > 35\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "cmp_gte_35",
+        "completion": "return x >= 35\nNEW: return x >= 30\n</answer>\n\ndef f(x: int) -> bool:\n    return x >",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "cmp_gte_35",
+        "completion": "return x >= 35\nNEW: return x >= 25\n</answer>\n\ndef f(x: int) -> bool:\n    if x >=",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "cmp_gte_35",
+        "completion": "return x >= 35\nNEW: return x >= 30\n</answer>\n\n# Reference:\ndef f_ref(x: str) -> int:",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "cmp_eq_15",
+        "completion": "return x == 15\nNEW: return x == 14\n</answer>\n\ndef f(x:int)->bool:\n    if x>=10",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "cmp_eq_15",
+        "completion": "return x == 15\nNEW: return x != 15\n</answer>\n\ndef f(x: int) -> bool:\n    return x ==",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=0, f_ref=False but f_mut=True. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "cmp_eq_15",
+        "completion": "return x == 15\nNEW: return x == 15 or x == 0\n</answer>\n\ndef f(x):\n    if x ==",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=0, f_ref=False but f_mut=True. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "cmp_eq_15",
+        "completion": "return x == 15\nNEW: return x <= 15\n</answer>\n\ndef f(x: int) -> bool:\n    return x >",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=0, f_ref=False but f_mut=True. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "cmp_neq_0",
+        "completion": "return x != 0\nNEW: return x < 0\n</answer>",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=5, f_ref=True but f_mut=False. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "cmp_neq_0",
+        "completion": "return x != 0\nNEW: return x == 0\n</answer>\n\ndef f(f_arg: int) -> bool:\n    return f_arg !=",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=-10, f_ref=True but f_mut=False. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "cmp_neq_0",
+        "completion": "return x != 0\nNEW: return x != 1\n</answer>\n\ndef f(x: int) -> bool:\n    return x != 0",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "cmp_neq_0",
+        "completion": "return x != 0\nNEW: return x != 0 and x != 0\n</answer>\n\ndef f(x: int) -> int:",
+        "valid": false,
+        "reason": "Equivalent function: f_mut behaves identically to f_ref across entire domain"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "return x < -5\nNEW: return x <= -5\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "return x < -5\nNEW: return x <= -5\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "return x < -5\nNEW: return x <= -5\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "return x < -5\nNEW: return x <= -5\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "return x >= -10\nNEW: return x > -10\n</answer>",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "return x >= -10\nNEW: return x > -10\n</answer>\n\n# Reference:\ndef f_ref(x: int) -> bool:",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "return x >= -10\nNEW: return x >= 0\n</answer>\n\n\ndef f(x: int) -> bool:\n    return x >= -",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "return x >= -10\nNEW: return x > 0\n</answer>\n\n\ndef f(x: int) -> bool:\n    return x >",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=0, f_ref=True but f_mut=False. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "interval_closed_15_35",
+        "completion": "return 15 <= x <= 35\nNEW: return 15 <= x and x <= 35\n</answer>\n\n\ndef f_ref",
+        "valid": false,
+        "reason": "Equivalent function: f_mut behaves identically to f_ref across entire domain"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "interval_closed_15_35",
+        "completion": "return 15 <= x <= 35\nNEW: return 15 <= x < 35\n</answer>\n\n\nfrom typing import List",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "interval_closed_15_35",
+        "completion": "35 <= x <= 45\nNEW: 35 <= x < 45\n</answer>\n\ndef f(x: int) ->",
+        "valid": false,
+        "reason": "SyntaxError in code: expected ':' (<unknown>, line 1)"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "interval_closed_15_35",
+        "completion": "return 15 <= x <= 35\nNEW: return 15 <= x and x <= 35\n</answer>\n\ndef f(x",
+        "valid": false,
+        "reason": "Equivalent function: f_mut behaves identically to f_ref across entire domain"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "interval_open_10_40",
+        "completion": "return 10 < x < 40\nNEW: return 10 < x <= 40\n</answer>\n\n\ndef f(x: int",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "interval_open_10_40",
+        "completion": "return 10 < x < 40\nNEW: return 10 < x < 50\n</answer>\n\ndef f(x: int",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=45, f_ref=False but f_mut=True. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "interval_open_10_40",
+        "completion": "return 10 < x < 40\nNEW: return 10 < x <= 40\n</answer>\n\ndef f_ref(x:",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "interval_open_10_40",
+        "completion": "return 10 < x < 40\nNEW: return 10 < x < 45\n</answer>\n\ndef f(x: int",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "return 20 < x <= 45\nNEW: return 20 < x <= 40\n</answer>\n\ndef f_ref(x:",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "return 20 < x <= 45\nNEW: return x > 20 >= 45\n</answer>\n\ndef f(x):",
+        "valid": false,
+        "reason": "Sanity invariant violated: for x=30, f_ref=True but f_mut=False. Mutation is too crude and failed basic sanity test."
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "20 < x <= 45\nNEW: 20 < x\n</answer>\n\ndef f(x: int) -> bool:\n    return",
+        "valid": false,
+        "reason": "Mutated function crashed on sanity input 5: Unsupported or non-finite return value"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "return 20 < x <= 45\nNEW: return 20 < x <= 44\n</answer>\n\ndef f(x: int",
+        "valid": true,
+        "reason": "valid_mutation"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "return x > 10\nNEW: return x >= 10\n</answer>\n\ndef f_ref(x: int) -> bool:\n    return",
+        "valid": false,
+        "reason": "Mutated function crashed on sanity input 2: Unsupported or non-finite return value"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "return 5 <= x < 30\nNEW: return 5 <= x <= 29\n</answer>",
+        "valid": false,
+        "reason": "Equivalent function: f_mut behaves identically to f_ref across entire domain"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "return 5 <= x < 30\nNEW: return x >= 5 and x < 30\n</answer>\n# Make sure to use",
+        "valid": false,
+        "reason": "Equivalent function: f_mut behaves identically to f_ref across entire domain"
+      },
+      {
+        "mutator_round": 5,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "return 5 <= x < 30\nNEW: return x > 5 and x < 30\n</answer>\n\ndef f(x: int",
+        "valid": true,
+        "reason": "valid_mutation"
+      }
+    ],
+    "breaker_trials": [
+      {
+        "mutator_round": 0,
+        "breaker_round": 0,
+        "seed_id": "cmp_lt_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 0,
+        "seed_id": "cmp_lte_25",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 0,
+        "seed_id": "cmp_gt_20",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 0,
+        "seed_id": "cmp_gte_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 0,
+        "seed_id": "cmp_eq_15",
+        "completion": "15</input>",
+        "input": 15,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 0,
+        "seed_id": "cmp_neq_0",
+        "completion": "1</input>",
+        "input": 1,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 0,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 0,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "10</input>",
+        "input": 10,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 0,
+        "seed_id": "interval_closed_15_35",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 0,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "42</input>",
+        "input": 42,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 0,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 1,
+        "seed_id": "cmp_lt_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 1,
+        "seed_id": "cmp_lte_25",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 1,
+        "seed_id": "cmp_gt_20",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 1,
+        "seed_id": "cmp_gte_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 1,
+        "seed_id": "cmp_eq_15",
+        "completion": "15</input>",
+        "input": 15,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 1,
+        "seed_id": "cmp_neq_0",
+        "completion": "1</input>",
+        "input": 1,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 1,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 1,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "10</input>",
+        "input": 10,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 1,
+        "seed_id": "interval_closed_15_35",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 1,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "45</input>",
+        "input": 45,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 1,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 2,
+        "seed_id": "cmp_lt_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 2,
+        "seed_id": "cmp_lte_25",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 2,
+        "seed_id": "cmp_gt_20",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 2,
+        "seed_id": "cmp_gte_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 2,
+        "seed_id": "cmp_eq_15",
+        "completion": "15</input>",
+        "input": 15,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 2,
+        "seed_id": "cmp_neq_0",
+        "completion": "0</input>",
+        "input": 0,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 2,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 2,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 2,
+        "seed_id": "interval_closed_15_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 2,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "45</input>",
+        "input": 45,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 2,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 3,
+        "seed_id": "cmp_lt_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 3,
+        "seed_id": "cmp_lte_25",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 3,
+        "seed_id": "cmp_gt_20",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 3,
+        "seed_id": "cmp_gte_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 3,
+        "seed_id": "cmp_eq_15",
+        "completion": "15</input>",
+        "input": 15,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 3,
+        "seed_id": "cmp_neq_0",
+        "completion": "0</input>",
+        "input": 0,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 3,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 3,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 3,
+        "seed_id": "interval_closed_15_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 3,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "45</input>",
+        "input": 45,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 3,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 4,
+        "seed_id": "cmp_lt_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 4,
+        "seed_id": "cmp_lte_25",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 4,
+        "seed_id": "cmp_gt_20",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 4,
+        "seed_id": "cmp_gte_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 4,
+        "seed_id": "cmp_eq_15",
+        "completion": "16</input>",
+        "input": 16,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 4,
+        "seed_id": "cmp_neq_0",
+        "completion": "0</input>",
+        "input": 0,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 4,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 4,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 4,
+        "seed_id": "interval_closed_15_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 4,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "45</input>",
+        "input": 45,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 4,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 5,
+        "seed_id": "cmp_lt_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 5,
+        "seed_id": "cmp_lte_25",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 5,
+        "seed_id": "cmp_gt_20",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 5,
+        "seed_id": "cmp_gte_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 5,
+        "seed_id": "cmp_eq_15",
+        "completion": "16</input>",
+        "input": 16,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 5,
+        "seed_id": "cmp_neq_0",
+        "completion": "1</input>",
+        "input": 1,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 5,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "-5</input>",
+        "input": -5,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 5,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 5,
+        "seed_id": "interval_closed_15_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 5,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "45</input>",
+        "input": 45,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 0,
+        "breaker_round": 5,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 0,
+        "seed_id": "cmp_lt_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 0,
+        "seed_id": "cmp_lte_25",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 0,
+        "seed_id": "cmp_gt_20",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 0,
+        "seed_id": "cmp_gte_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 0,
+        "seed_id": "cmp_eq_15",
+        "completion": "15</input>",
+        "input": 15,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 0,
+        "seed_id": "cmp_neq_0",
+        "completion": "1</input>",
+        "input": 1,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 0,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 0,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "10</input>",
+        "input": 10,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 0,
+        "seed_id": "interval_closed_15_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 0,
+        "seed_id": "interval_open_10_40",
+        "completion": "42</input>",
+        "input": 42,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 0,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "42</input>",
+        "input": 42,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 0,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "3</input>",
+        "input": 3,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 1,
+        "seed_id": "cmp_lt_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 1,
+        "seed_id": "cmp_lte_25",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 1,
+        "seed_id": "cmp_gt_20",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 1,
+        "seed_id": "cmp_gte_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 1,
+        "seed_id": "cmp_eq_15",
+        "completion": "15</input>",
+        "input": 15,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 1,
+        "seed_id": "cmp_neq_0",
+        "completion": "1</input>",
+        "input": 1,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 1,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 1,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "10</input>",
+        "input": 10,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 1,
+        "seed_id": "interval_closed_15_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 1,
+        "seed_id": "interval_open_10_40",
+        "completion": "42</input>",
+        "input": 42,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 1,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "45</input>",
+        "input": 45,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 1,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "3</input>",
+        "input": 3,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 2,
+        "seed_id": "cmp_lt_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 2,
+        "seed_id": "cmp_lte_25",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 2,
+        "seed_id": "cmp_gt_20",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 2,
+        "seed_id": "cmp_gte_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 2,
+        "seed_id": "cmp_eq_15",
+        "completion": "15</input>",
+        "input": 15,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 2,
+        "seed_id": "cmp_neq_0",
+        "completion": "0</input>",
+        "input": 0,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 2,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 2,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 2,
+        "seed_id": "interval_closed_15_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 2,
+        "seed_id": "interval_open_10_40",
+        "completion": "40</input>",
+        "input": 40,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 2,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "45</input>",
+        "input": 45,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 2,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 3,
+        "seed_id": "cmp_lt_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 3,
+        "seed_id": "cmp_lte_25",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 3,
+        "seed_id": "cmp_gt_20",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 3,
+        "seed_id": "cmp_gte_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 3,
+        "seed_id": "cmp_eq_15",
+        "completion": "15</input>",
+        "input": 15,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 3,
+        "seed_id": "cmp_neq_0",
+        "completion": "0</input>",
+        "input": 0,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 3,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 3,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 3,
+        "seed_id": "interval_closed_15_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 3,
+        "seed_id": "interval_open_10_40",
+        "completion": "40</input>",
+        "input": 40,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 3,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "45</input>",
+        "input": 45,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 3,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 4,
+        "seed_id": "cmp_lt_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 4,
+        "seed_id": "cmp_lte_25",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 4,
+        "seed_id": "cmp_gt_20",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 4,
+        "seed_id": "cmp_gte_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 4,
+        "seed_id": "cmp_eq_15",
+        "completion": "15</input>",
+        "input": 15,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 4,
+        "seed_id": "cmp_neq_0",
+        "completion": "0</input>",
+        "input": 0,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 4,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 4,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 4,
+        "seed_id": "interval_closed_15_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 4,
+        "seed_id": "interval_open_10_40",
+        "completion": "40</input>",
+        "input": 40,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 4,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "45</input>",
+        "input": 45,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 4,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 5,
+        "seed_id": "cmp_lt_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 5,
+        "seed_id": "cmp_lte_25",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 5,
+        "seed_id": "cmp_gt_20",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 5,
+        "seed_id": "cmp_gte_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 5,
+        "seed_id": "cmp_eq_15",
+        "completion": "15</input>",
+        "input": 15,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 5,
+        "seed_id": "cmp_neq_0",
+        "completion": "1</input>",
+        "input": 1,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 5,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "-5</input>",
+        "input": -5,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 5,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 5,
+        "seed_id": "interval_closed_15_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 5,
+        "seed_id": "interval_open_10_40",
+        "completion": "40</input>",
+        "input": 40,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 5,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "45</input>",
+        "input": 45,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 1,
+        "breaker_round": 5,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 0,
+        "seed_id": "cmp_lt_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 0,
+        "seed_id": "cmp_lte_25",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 0,
+        "seed_id": "cmp_gt_20",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 0,
+        "seed_id": "cmp_gte_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 0,
+        "seed_id": "cmp_eq_15",
+        "completion": "15</input>",
+        "input": 15,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 0,
+        "seed_id": "cmp_neq_0",
+        "completion": "1</input>",
+        "input": 1,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 0,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 0,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "10</input>",
+        "input": 10,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 0,
+        "seed_id": "interval_closed_15_35",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 0,
+        "seed_id": "interval_open_10_40",
+        "completion": "45</input>",
+        "input": 45,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 0,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "45</input>",
+        "input": 45,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 0,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 1,
+        "seed_id": "cmp_lt_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 1,
+        "seed_id": "cmp_lte_25",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 1,
+        "seed_id": "cmp_gt_20",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 1,
+        "seed_id": "cmp_gte_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 1,
+        "seed_id": "cmp_eq_15",
+        "completion": "15</input>",
+        "input": 15,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 1,
+        "seed_id": "cmp_neq_0",
+        "completion": "1</input>",
+        "input": 1,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 1,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 1,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "10</input>",
+        "input": 10,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 1,
+        "seed_id": "interval_closed_15_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 1,
+        "seed_id": "interval_open_10_40",
+        "completion": "45</input>",
+        "input": 45,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 1,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "45</input>",
+        "input": 45,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 1,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 2,
+        "seed_id": "cmp_lt_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 2,
+        "seed_id": "cmp_lte_25",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 2,
+        "seed_id": "cmp_gt_20",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 2,
+        "seed_id": "cmp_gte_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 2,
+        "seed_id": "cmp_eq_15",
+        "completion": "15</input>",
+        "input": 15,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 2,
+        "seed_id": "cmp_neq_0",
+        "completion": "0</input>",
+        "input": 0,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 2,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 2,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 2,
+        "seed_id": "interval_closed_15_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 2,
+        "seed_id": "interval_open_10_40",
+        "completion": "40</input>",
+        "input": 40,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 2,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "45</input>",
+        "input": 45,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 2,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 3,
+        "seed_id": "cmp_lt_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 3,
+        "seed_id": "cmp_lte_25",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 3,
+        "seed_id": "cmp_gt_20",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 3,
+        "seed_id": "cmp_gte_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 3,
+        "seed_id": "cmp_eq_15",
+        "completion": "15</input>",
+        "input": 15,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 3,
+        "seed_id": "cmp_neq_0",
+        "completion": "0</input>",
+        "input": 0,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 3,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 3,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 3,
+        "seed_id": "interval_closed_15_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 3,
+        "seed_id": "interval_open_10_40",
+        "completion": "40</input>",
+        "input": 40,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 3,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "45</input>",
+        "input": 45,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 3,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 4,
+        "seed_id": "cmp_lt_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 4,
+        "seed_id": "cmp_lte_25",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 4,
+        "seed_id": "cmp_gt_20",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 4,
+        "seed_id": "cmp_gte_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 4,
+        "seed_id": "cmp_eq_15",
+        "completion": "15</input>",
+        "input": 15,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 4,
+        "seed_id": "cmp_neq_0",
+        "completion": "0</input>",
+        "input": 0,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 4,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 4,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 4,
+        "seed_id": "interval_closed_15_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 4,
+        "seed_id": "interval_open_10_40",
+        "completion": "40</input>",
+        "input": 40,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 4,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "45</input>",
+        "input": 45,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 4,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 5,
+        "seed_id": "cmp_lt_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 5,
+        "seed_id": "cmp_lte_25",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 5,
+        "seed_id": "cmp_gt_20",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 5,
+        "seed_id": "cmp_gte_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 5,
+        "seed_id": "cmp_eq_15",
+        "completion": "15</input>",
+        "input": 15,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 5,
+        "seed_id": "cmp_neq_0",
+        "completion": "1</input>",
+        "input": 1,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 5,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "-5</input>",
+        "input": -5,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 5,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 5,
+        "seed_id": "interval_closed_15_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 5,
+        "seed_id": "interval_open_10_40",
+        "completion": "40</input>",
+        "input": 40,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 5,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "45</input>",
+        "input": 45,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 2,
+        "breaker_round": 5,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 0,
+        "seed_id": "cmp_lt_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 0,
+        "seed_id": "cmp_lte_25",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 0,
+        "seed_id": "cmp_gt_20",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 0,
+        "seed_id": "cmp_gte_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 0,
+        "seed_id": "cmp_eq_15",
+        "completion": "15</input>",
+        "input": 15,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 0,
+        "seed_id": "cmp_neq_0",
+        "completion": "1</input>",
+        "input": 1,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 0,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 0,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "10</input>",
+        "input": 10,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 0,
+        "seed_id": "interval_closed_15_35",
+        "completion": "33</input>",
+        "input": 33,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 0,
+        "seed_id": "interval_open_10_40",
+        "completion": "42</input>",
+        "input": 42,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 0,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "45</input>",
+        "input": 45,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 1,
+        "seed_id": "cmp_lt_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 1,
+        "seed_id": "cmp_lte_25",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 1,
+        "seed_id": "cmp_gt_20",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 1,
+        "seed_id": "cmp_gte_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 1,
+        "seed_id": "cmp_eq_15",
+        "completion": "15</input>",
+        "input": 15,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 1,
+        "seed_id": "cmp_neq_0",
+        "completion": "1</input>",
+        "input": 1,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 1,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 1,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "10</input>",
+        "input": 10,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 1,
+        "seed_id": "interval_closed_15_35",
+        "completion": "32</input>",
+        "input": 32,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 1,
+        "seed_id": "interval_open_10_40",
+        "completion": "42</input>",
+        "input": 42,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 1,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "45</input>",
+        "input": 45,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 2,
+        "seed_id": "cmp_lt_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 2,
+        "seed_id": "cmp_lte_25",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 2,
+        "seed_id": "cmp_gt_20",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 2,
+        "seed_id": "cmp_gte_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 2,
+        "seed_id": "cmp_eq_15",
+        "completion": "15</input>",
+        "input": 15,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 2,
+        "seed_id": "cmp_neq_0",
+        "completion": "0</input>",
+        "input": 0,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 2,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 2,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 2,
+        "seed_id": "interval_closed_15_35",
+        "completion": "32</input>",
+        "input": 32,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 2,
+        "seed_id": "interval_open_10_40",
+        "completion": "40</input>",
+        "input": 40,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 2,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "45</input>",
+        "input": 45,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 3,
+        "seed_id": "cmp_lt_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 3,
+        "seed_id": "cmp_lte_25",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 3,
+        "seed_id": "cmp_gt_20",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 3,
+        "seed_id": "cmp_gte_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 3,
+        "seed_id": "cmp_eq_15",
+        "completion": "15</input>",
+        "input": 15,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 3,
+        "seed_id": "cmp_neq_0",
+        "completion": "0</input>",
+        "input": 0,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 3,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 3,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 3,
+        "seed_id": "interval_closed_15_35",
+        "completion": "32</input>",
+        "input": 32,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 3,
+        "seed_id": "interval_open_10_40",
+        "completion": "40</input>",
+        "input": 40,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 3,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "45</input>",
+        "input": 45,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 4,
+        "seed_id": "cmp_lt_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 4,
+        "seed_id": "cmp_lte_25",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 4,
+        "seed_id": "cmp_gt_20",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 4,
+        "seed_id": "cmp_gte_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 4,
+        "seed_id": "cmp_eq_15",
+        "completion": "15</input>",
+        "input": 15,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 4,
+        "seed_id": "cmp_neq_0",
+        "completion": "0</input>",
+        "input": 0,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 4,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 4,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 4,
+        "seed_id": "interval_closed_15_35",
+        "completion": "32</input>",
+        "input": 32,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 4,
+        "seed_id": "interval_open_10_40",
+        "completion": "40</input>",
+        "input": 40,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 4,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "45</input>",
+        "input": 45,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 5,
+        "seed_id": "cmp_lt_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 5,
+        "seed_id": "cmp_lte_25",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 5,
+        "seed_id": "cmp_gt_20",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 5,
+        "seed_id": "cmp_gte_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 5,
+        "seed_id": "cmp_eq_15",
+        "completion": "15</input>",
+        "input": 15,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 5,
+        "seed_id": "cmp_neq_0",
+        "completion": "1</input>",
+        "input": 1,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 5,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "-5</input>",
+        "input": -5,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 5,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 5,
+        "seed_id": "interval_closed_15_35",
+        "completion": "32</input>",
+        "input": 32,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 5,
+        "seed_id": "interval_open_10_40",
+        "completion": "40</input>",
+        "input": 40,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 3,
+        "breaker_round": 5,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "45</input>",
+        "input": 45,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 0,
+        "seed_id": "cmp_lt_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 0,
+        "seed_id": "cmp_lte_25",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 0,
+        "seed_id": "cmp_gt_20",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 0,
+        "seed_id": "cmp_gte_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 0,
+        "seed_id": "cmp_eq_15",
+        "completion": "15</input>",
+        "input": 15,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 0,
+        "seed_id": "cmp_neq_0",
+        "completion": "1</input>",
+        "input": 1,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 0,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 0,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "10</input>",
+        "input": 10,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 0,
+        "seed_id": "interval_closed_15_35",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 0,
+        "seed_id": "interval_open_10_40",
+        "completion": "40</input>",
+        "input": 40,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 0,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "45</input>",
+        "input": 45,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 0,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 1,
+        "seed_id": "cmp_lt_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 1,
+        "seed_id": "cmp_lte_25",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 1,
+        "seed_id": "cmp_gt_20",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 1,
+        "seed_id": "cmp_gte_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 1,
+        "seed_id": "cmp_eq_15",
+        "completion": "15</input>",
+        "input": 15,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 1,
+        "seed_id": "cmp_neq_0",
+        "completion": "1</input>",
+        "input": 1,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 1,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 1,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "10</input>",
+        "input": 10,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 1,
+        "seed_id": "interval_closed_15_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 1,
+        "seed_id": "interval_open_10_40",
+        "completion": "40</input>",
+        "input": 40,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 1,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "45</input>",
+        "input": 45,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 1,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 2,
+        "seed_id": "cmp_lt_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 2,
+        "seed_id": "cmp_lte_25",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 2,
+        "seed_id": "cmp_gt_20",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 2,
+        "seed_id": "cmp_gte_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 2,
+        "seed_id": "cmp_eq_15",
+        "completion": "15</input>",
+        "input": 15,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 2,
+        "seed_id": "cmp_neq_0",
+        "completion": "0</input>",
+        "input": 0,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 2,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 2,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 2,
+        "seed_id": "interval_closed_15_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 2,
+        "seed_id": "interval_open_10_40",
+        "completion": "40</input>",
+        "input": 40,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 2,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "45</input>",
+        "input": 45,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 2,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 3,
+        "seed_id": "cmp_lt_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 3,
+        "seed_id": "cmp_lte_25",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 3,
+        "seed_id": "cmp_gt_20",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 3,
+        "seed_id": "cmp_gte_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 3,
+        "seed_id": "cmp_eq_15",
+        "completion": "15</input>",
+        "input": 15,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 3,
+        "seed_id": "cmp_neq_0",
+        "completion": "0</input>",
+        "input": 0,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 3,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 3,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 3,
+        "seed_id": "interval_closed_15_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 3,
+        "seed_id": "interval_open_10_40",
+        "completion": "40</input>",
+        "input": 40,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 3,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "45</input>",
+        "input": 45,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 3,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 4,
+        "seed_id": "cmp_lt_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 4,
+        "seed_id": "cmp_lte_25",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 4,
+        "seed_id": "cmp_gt_20",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 4,
+        "seed_id": "cmp_gte_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 4,
+        "seed_id": "cmp_eq_15",
+        "completion": "15</input>",
+        "input": 15,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 4,
+        "seed_id": "cmp_neq_0",
+        "completion": "0</input>",
+        "input": 0,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 4,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 4,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 4,
+        "seed_id": "interval_closed_15_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 4,
+        "seed_id": "interval_open_10_40",
+        "completion": "40</input>",
+        "input": 40,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 4,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "45</input>",
+        "input": 45,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 4,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 5,
+        "seed_id": "cmp_lt_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 5,
+        "seed_id": "cmp_lte_25",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 5,
+        "seed_id": "cmp_gt_20",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 5,
+        "seed_id": "cmp_gte_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 5,
+        "seed_id": "cmp_eq_15",
+        "completion": "15</input>",
+        "input": 15,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 5,
+        "seed_id": "cmp_neq_0",
+        "completion": "1</input>",
+        "input": 1,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 5,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "-5</input>",
+        "input": -5,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 5,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 5,
+        "seed_id": "interval_closed_15_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 5,
+        "seed_id": "interval_open_10_40",
+        "completion": "40</input>",
+        "input": 40,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 5,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "45</input>",
+        "input": 45,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 4,
+        "breaker_round": 5,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 0,
+        "seed_id": "cmp_lt_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 0,
+        "seed_id": "cmp_lte_25",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 0,
+        "seed_id": "cmp_gt_20",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 0,
+        "seed_id": "cmp_gte_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 0,
+        "seed_id": "cmp_eq_15",
+        "completion": "15</input>",
+        "input": 15,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 0,
+        "seed_id": "cmp_neq_0",
+        "completion": "1</input>",
+        "input": 1,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 0,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 0,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "10</input>",
+        "input": 10,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 0,
+        "seed_id": "interval_closed_15_35",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 0,
+        "seed_id": "interval_open_10_40",
+        "completion": "45</input>",
+        "input": 45,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 0,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "45</input>",
+        "input": 45,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 0,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 1,
+        "seed_id": "cmp_lt_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 1,
+        "seed_id": "cmp_lte_25",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 1,
+        "seed_id": "cmp_gt_20",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 1,
+        "seed_id": "cmp_gte_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 1,
+        "seed_id": "cmp_eq_15",
+        "completion": "15</input>",
+        "input": 15,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 1,
+        "seed_id": "cmp_neq_0",
+        "completion": "1</input>",
+        "input": 1,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 1,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 1,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "10</input>",
+        "input": 10,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 1,
+        "seed_id": "interval_closed_15_35",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 1,
+        "seed_id": "interval_open_10_40",
+        "completion": "45</input>",
+        "input": 45,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 1,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "45</input>",
+        "input": 45,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 1,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 2,
+        "seed_id": "cmp_lt_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 2,
+        "seed_id": "cmp_lte_25",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 2,
+        "seed_id": "cmp_gt_20",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 2,
+        "seed_id": "cmp_gte_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 2,
+        "seed_id": "cmp_eq_15",
+        "completion": "15</input>",
+        "input": 15,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 2,
+        "seed_id": "cmp_neq_0",
+        "completion": "0</input>",
+        "input": 0,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 2,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 2,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 2,
+        "seed_id": "interval_closed_15_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 2,
+        "seed_id": "interval_open_10_40",
+        "completion": "40</input>",
+        "input": 40,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 2,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "45</input>",
+        "input": 45,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 2,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 3,
+        "seed_id": "cmp_lt_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 3,
+        "seed_id": "cmp_lte_25",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 3,
+        "seed_id": "cmp_gt_20",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 3,
+        "seed_id": "cmp_gte_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 3,
+        "seed_id": "cmp_eq_15",
+        "completion": "15</input>",
+        "input": 15,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 3,
+        "seed_id": "cmp_neq_0",
+        "completion": "0</input>",
+        "input": 0,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 3,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 3,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 3,
+        "seed_id": "interval_closed_15_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 3,
+        "seed_id": "interval_open_10_40",
+        "completion": "40</input>",
+        "input": 40,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 3,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "45</input>",
+        "input": 45,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 3,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 4,
+        "seed_id": "cmp_lt_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 4,
+        "seed_id": "cmp_lte_25",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 4,
+        "seed_id": "cmp_gt_20",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 4,
+        "seed_id": "cmp_gte_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 4,
+        "seed_id": "cmp_eq_15",
+        "completion": "15</input>",
+        "input": 15,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 4,
+        "seed_id": "cmp_neq_0",
+        "completion": "0</input>",
+        "input": 0,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 4,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 4,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 4,
+        "seed_id": "interval_closed_15_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 4,
+        "seed_id": "interval_open_10_40",
+        "completion": "40</input>",
+        "input": 40,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 4,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "45</input>",
+        "input": 45,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 4,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 5,
+        "seed_id": "cmp_lt_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 5,
+        "seed_id": "cmp_lte_25",
+        "completion": "25</input>",
+        "input": 25,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 5,
+        "seed_id": "cmp_gt_20",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 5,
+        "seed_id": "cmp_gte_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 5,
+        "seed_id": "cmp_eq_15",
+        "completion": "15</input>",
+        "input": 15,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 5,
+        "seed_id": "cmp_neq_0",
+        "completion": "1</input>",
+        "input": 1,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 5,
+        "seed_id": "cmp_lt_neg5",
+        "completion": "-5</input>",
+        "input": -5,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 5,
+        "seed_id": "cmp_gte_neg10",
+        "completion": "20</input>",
+        "input": 20,
+        "reward": 0.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 5,
+        "seed_id": "interval_closed_15_35",
+        "completion": "35</input>",
+        "input": 35,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 5,
+        "seed_id": "interval_open_10_40",
+        "completion": "40</input>",
+        "input": 40,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 5,
+        "seed_id": "interval_left_open_20_45",
+        "completion": "45</input>",
+        "input": 45,
+        "reward": 1.0
+      },
+      {
+        "mutator_round": 5,
+        "breaker_round": 5,
+        "seed_id": "interval_right_open_5_30",
+        "completion": "30</input>",
+        "input": 30,
+        "reward": 0.0
+      }
+    ]
+  },
+  "run_dir": "checkpoints_v2_pure/20261018T080726Z-seed42",
+  "available_rounds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "heldout_eval": {
+    "Validation Set": {
+      "pass1": [
+        0.55,
+        0.7,
+        0.75,
+        0.8,
+        0.8,
+        0.8
+      ],
+      "pass4": [
+        0.55,
+        0.65,
+        0.85,
+        0.85,
+        0.9,
+        0.9
+      ],
+      "hit": [
+        0.2625,
+        0.35,
+        0.6375,
+        0.7625,
+        0.775,
+        0.7625
+      ],
+      "size": 20,
+      "problem_ids": [
+        "cmp_lte_lt_prev_5",
+        "cmp_gt_gte_3",
+        "cmp_lte_lt_prev_18",
+        "cmp_gte_gt_next_25",
+        "cmp_lt_lte_28",
+        "piecewise_scale_branch_9",
+        "cmp_gt_gte_30",
+        "piecewise_scale_branch_3",
+        "piecewise_scale_branch_20",
+        "cmp_lte_lt_prev_10",
+        "cmp_lte_lt_prev_21",
+        "interval_both_open_20",
+        "piecewise_mod_shift_12",
+        "piecewise_sign_branch_22",
+        "interval_extended_right_16",
+        "interval_both_open_19",
+        "clamp_abs_min_clip_36",
+        "interval_right_open_37",
+        "interval_extended_right_34",
+        "piecewise_sign_branch_5"
+      ],
+      "problem_sha256": "cee4735d79c3f33cc3096c847fc9d117b338e01fcb38768d1752cc843b217148"
+    },
+    "Held-out Test Set": {
+      "pass1": [
+        0.4,
+        0.4,
+        0.6,
+        0.6,
+        0.6,
+        0.6
+      ],
+      "pass4": [
+        0.55,
+        0.65,
+        0.8,
+        0.8,
+        0.8,
+        0.8
+      ],
+      "hit": [
+        0.325,
+        0.35,
+        0.5625,
+        0.625,
+        0.65,
+        0.65
+      ],
+      "size": 20,
+      "problem_ids": [
+        "cmp_lt_lte_26",
+        "cmp_gt_gte_36",
+        "clamp_abs_max_clip_24",
+        "clamp_abs_abs_dist_diff_27",
+        "clamp_abs_min_clip_33",
+        "interval_left_open_32",
+        "interval_extended_right_38",
+        "cmp_gt_gte_22",
+        "clamp_abs_min_clip_6",
+        "piecewise_scale_branch_13",
+        "clamp_abs_abs_dist_diff_30",
+        "interval_left_open_13",
+        "cmp_gte_gt_next_24",
+        "cmp_lt_lte_16",
+        "interval_right_open_30",
+        "cmp_lt_lte_37",
+        "interval_right_open_11",
+        "interval_left_open_1",
+        "interval_left_open_12",
+        "piecewise_sign_branch_2"
+      ],
+      "problem_sha256": "5ae147ce6c8789ca552f1e753be390e9c8596bb4d2307ee934b55ddcfdc43baf"
+    }
+  },
+  "mutator_vmr": {
+    "0": 0.625,
+    "1": 0.7708333333333334,
+    "2": 0.6666666666666666,
+    "3": 0.6875,
+    "4": 0.7916666666666666,
+    "5": 0.625
+  },
+  "deception_vs_v0": {
+    "0": 0.6363636363636364,
+    "1": 0.5,
+    "2": 0.5833333333333333,
+    "3": 0.4545454545454546,
+    "4": 0.5833333333333333,
+    "5": 0.5833333333333333
+  },
+  "solve_matrix": [
+    [
+      0.36363636363636365,
+      0.5454545454545454,
+      0.7272727272727273,
+      0.7272727272727273,
+      0.8181818181818182,
+      0.9090909090909091
+    ],
+    [
+      0.5,
+      0.6666666666666666,
+      0.6666666666666666,
+      0.6666666666666666,
+      0.6666666666666666,
+      0.75
+    ],
+    [
+      0.4166666666666667,
+      0.5,
+      0.6666666666666666,
+      0.6666666666666666,
+      0.6666666666666666,
+      0.75
+    ],
+    [
+      0.5454545454545454,
+      0.5454545454545454,
+      0.5454545454545454,
+      0.5454545454545454,
+      0.5454545454545454,
+      0.6363636363636364
+    ],
+    [
+      0.4166666666666667,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5833333333333334
+    ],
+    [
+      0.4166666666666667,
+      0.5,
+      0.6666666666666666,
+      0.6666666666666666,
+      0.6666666666666666,
+      0.75
+    ]
+  ],
+  "deception_matrix": [
+    [
+      0.6363636363636364,
+      0.4545454545454546,
+      0.2727272727272727,
+      0.2727272727272727,
+      0.18181818181818177,
+      0.09090909090909094
+    ],
+    [
+      0.5,
+      0.33333333333333337,
+      0.33333333333333337,
+      0.33333333333333337,
+      0.33333333333333337,
+      0.25
+    ],
+    [
+      0.5833333333333333,
+      0.5,
+      0.33333333333333337,
+      0.33333333333333337,
+      0.33333333333333337,
+      0.25
+    ],
+    [
+      0.4545454545454546,
+      0.4545454545454546,
+      0.4545454545454546,
+      0.4545454545454546,
+      0.4545454545454546,
+      0.36363636363636365
+    ],
+    [
+      0.5833333333333333,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.41666666666666663
+    ],
+    [
+      0.5833333333333333,
+      0.5,
+      0.33333333333333337,
+      0.33333333333333337,
+      0.33333333333333337,
+      0.25
+    ]
+  ],
+  "pool_sizes": [
+    0,
+    21,
+    39,
+    45,
+    63,
+    67
+  ]
+}
