@@ -188,28 +188,19 @@ def render_readme_results(summary):
     return '\n'.join(rows)
 
 
-def render_readme_cost(summary):
-    rows = ['| 方案 | Breaker 有效更新（完整运行） | Breaker 候选数 | Mutator 候选数 | 耗时（秒） |',
-            '| :--- | ---: | ---: | ---: | ---: |']
-    for key, (label, _) in GROUPS.items():
-        rows.append('| ' + label + ' | ' + ' | '.join(format_stat(summary[key]['cost'][k])
-                    for k in ['breaker_updates','breaker_candidates','mutator_candidates','walltime_seconds']) + ' |')
-    return '\n'.join(rows)
-
-
 def update_readme(path, summary):
     import re
     content = path.read_text()
-    for name, table in [('results', render_readme_results(summary)), ('cost', render_readme_cost(summary))]:
-        pattern = rf'<!-- {name}:start -->.*?<!-- {name}:end -->'
-        content, n = re.subn(pattern, f'<!-- {name}:start -->\n{table}\n<!-- {name}:end -->', content, flags=re.S)
-        if n != 1:
-            raise ValueError(f'Expected exactly one README marker for {name}')
+    pattern = r'<!-- results:start -->.*?<!-- results:end -->'
+    table = render_readme_results(summary)
+    content, n = re.subn(pattern, f'<!-- results:start -->\n{table}\n<!-- results:end -->', content, flags=re.S)
+    if n != 1:
+        raise ValueError('Expected exactly one README marker for results')
     path.write_text(content)
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--update-readme', action='store_true', help='Refresh only the marked result/cost tables')
+    parser.add_argument('--update-readme', action='store_true', help='Refresh only the marked results table')
     parser.add_argument('--source', choices=['archive','runs'], default='archive', help='Default: published raw reports; runs: completed local checkpoints')
     parser.add_argument('--root', type=Path, default=ROOT)
     parser.add_argument('--output-dir', type=Path)

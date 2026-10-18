@@ -183,7 +183,7 @@ python train_selfplay.py --total_steps 75 --eval_interval 15 \
   --breaker_only_static --seed 42 --output_dir checkpoints_v2_breaker_static
 ```
 
-静态模式从第 1 步训练，按种子打乱 60 题后循环遍历；其余三组的前 5 步只预热 Mutator。**75 个外层步不代表相同的更新次数或计算预算。**
+静态模式从第 1 步训练，按种子打乱 60 题后循环遍历；其余三组的前 5 步只预热 Mutator。**各组计算预算未严格对齐，75 个外层步不代表相同的更新次数或计算量。**
 
 ### 不加载模型，重建发布图表
 
@@ -195,21 +195,6 @@ python scripts/plot_comparison.py
 ```
 
 汇总器默认读取 `reports/runs/`，验证分组配置、种子完整性、选模和共享判题指纹。缺失或重复种子会报错，不补零或静默覆盖。未来本地新实验可用 `--source runs` 读取检查点目录下的报告；同组同种子的多个运行需先明确选定。
-
-### 训练计算量
-
-<!-- cost:start -->
-| 方案 | Breaker 有效更新（完整运行） | Breaker 候选数 | Mutator 候选数 | 耗时（秒） |
-| :--- | ---: | ---: | ---: | ---: |
-| Static GRPO | 43.00 ± 3.00 | 600.00 ± 0.00 | 0.00 ± 0.00 | 312.63 ± 55.43 |
-| Self-play | 54.00 ± 3.61 | N/A (not recorded) | N/A (not recorded) | N/A (not recorded) |
-| Mixed replay (configured ratio 0.1) | 53.67 ± 5.03 | N/A (not recorded) | N/A (not recorded) | N/A (not recorded) |
-| Frozen after warmup | 59.33 ± 1.53 | N/A (not recorded) | N/A (not recorded) | N/A (not recorded) |
-<!-- cost:end -->
-
-有效更新次数来自 AdamW 检查点计数；静态组生成量与耗时来自运行记录。其余旧运行没有完整保存所有探针、救援候选数及耗时，因此显示 N/A，不使用手写近似值。
-
-冻结组依然每步生成 4 个候选，75 步的配置对应 300 个 Mutator 候选，不能只算预热的 20 个。这个配置推导也不能替代包含中断丢弃尝试的真实耗时记录。静态组耗时包括主循环中的周期验证与保存，排除模型加载、初始验证和最终测试。
 
 <details>
 <summary><strong>评估、检查点与续训</strong></summary>

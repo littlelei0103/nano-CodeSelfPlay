@@ -159,12 +159,13 @@ class TestReleaseReports(unittest.TestCase):
         with self.assertRaises(KeyError):
             prepare_plot_data(bad)
 
-    def test_readme_refresh_only_updates_marked_tables(self):
+    def test_readme_refresh_only_updates_marked_results(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp)/'README.md'
-            path.write_text('keep\n<!-- results:start -->old<!-- results:end -->\n<!-- cost:start -->old<!-- cost:end -->\nend')
+            path.write_text('keep\n<!-- results:start -->old<!-- results:end -->\nend')
             update_readme(path, build_summary())
             self.assertTrue(path.read_text().startswith('keep\n'))
             self.assertTrue(path.read_text().endswith('\nend'))
             self.assertIn('63.33', path.read_text())
-            self.assertIn('N/A (not recorded)', path.read_text())
+            self.assertNotIn('cost:start', path.read_text())
+            self.assertNotIn('N/A (not recorded)', path.read_text())
