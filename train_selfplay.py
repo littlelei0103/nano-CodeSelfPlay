@@ -40,7 +40,10 @@ from roles.breaker import (
 from roles.mutator import (
     compute_mutator_reward,
     extract_mutator_code,
-    format_mutator_prompt
+    format_mutator_prompt,
+    infer_mutation_spec,
+    synthesize_boundary_perturbation,
+    synthesize_curriculum_boundary_pair
 )
 
 
@@ -470,7 +473,9 @@ def main():
             is_eff_mut = False
         else:
             model.set_adapter("mutator")
-            seed = all_seeds[(step - 1) % len(all_seeds)]
+            # 协进化期采用步进交错采样 (stride=7)，确保比较/区间/截断/分段等各算子家族在每轮内均匀入池
+            seed_idx = (((step - 1) * 7) % len(all_seeds)) if (not args.freeze_mutator_after_warmup and len(all_seeds) >= 8) else ((step - 1) % len(all_seeds))
+            seed = all_seeds[seed_idx]
             mut_prompt = format_mutator_prompt(seed)
             inputs = tokenizer(mut_prompt, return_tensors="pt").to(args.device)
             p_len = inputs["input_ids"].shape[1]
@@ -519,8 +524,9 @@ def main():
                     clean_mut = details.get("clean_f_mut_src", code_src)
 
                     # 探针 Breaker 防守能力 (临时切 adapter 并关闭梯度)
+                    mut_spec = infer_mutation_spec(clean_ref, clean_mut)
                     model.set_adapter("breaker")
-                    brk_prompt = format_breaker_prompt(clean_ref, clean_mut, tuple(seed["domain"]))
+                    brk_prompt = format_breaker_prompt(clean_ref, clean_mut, tuple(seed["domain"]), mut_spec)
                     brk_inputs = tokenizer(brk_prompt, return_tensors="pt").to(args.device)
                     brk_p_len = brk_inputs["input_ids"].shape[1]
                     brk_rep = {k: v.repeat(4, 1) for k, v in brk_inputs.items()}
@@ -552,8 +558,56 @@ def main():
                             witnesses=witnesses,
                             candidate_hits=brk_hits,
                             total_candidates=4,
-                            step=step
+                            step=step,
+                            spec=mut_spec
                         )
+                elif not args.freeze_mutator_after_warmup and args.breaker_rollouts >= 8:
+                    # 边界微扰兜底注入: 当某路候选未能产出有效非等价突变时，不改变该候选的原始奖励，
+                    # 但尝试基于 AST/常量微扰合成精细边界对并经 Breaker 探针检验后补入 HardBuffer，保障全算子家族覆盖
+                    synth_src = synthesize_boundary_perturbation(seed["func_src"], variant_idx=step + c_i)
+                    if synth_src:
+                        s_valid, _, s_details = validate_mutation(
+                            f_ref_src=seed["func_src"],
+                            f_mut_src=synth_src,
+                            sanity_inputs=seed["sanity_inputs"],
+                            domain=tuple(seed["domain"])
+                        )
+                        if s_valid:
+                            s_ref = s_details.get("clean_f_ref_src", seed["func_src"])
+                            s_mut = s_details.get("clean_f_mut_src", synth_src)
+                            s_spec = infer_mutation_spec(s_ref, s_mut)
+                            s_key = hard_buffer._compute_key(s_ref, s_mut)
+                            if s_key not in hard_buffer.items:
+                                model.set_adapter("breaker")
+                                s_prompt = format_breaker_prompt(s_ref, s_mut, tuple(seed["domain"]), s_spec)
+                                s_inputs = tokenizer(s_prompt, return_tensors="pt").to(args.device)
+                                s_p_len = s_inputs["input_ids"].shape[1]
+                                s_rep = {k: v.repeat(4, 1) for k, v in s_inputs.items()}
+                                with torch.no_grad():
+                                    out_s_probe = generate_with_policy(model, cfg_brk, **s_rep)
+                                cum_breaker_probe_candidates = (None if cum_breaker_probe_candidates is None
+                                                                else cum_breaker_probe_candidates + 4)
+                                s_hits = 0
+                                for probe_j in range(4):
+                                    probe_comp = tokenizer.decode(out_s_probe[probe_j][s_p_len:], skip_special_tokens=True).strip()
+                                    p_val, _, _ = extract_breaker_input("<input>" + probe_comp, tuple(seed["domain"]))
+                                    r_probe, _ = compute_breaker_reward(s_ref, s_mut, p_val, tuple(seed["domain"]))
+                                    if r_probe > 0.0:
+                                        s_hits += 1
+                                model.set_adapter("mutator")
+                                if s_hits < 4:
+                                    hard_buffer.add(
+                                        f_ref_src=s_ref,
+                                        f_mut_src=s_mut,
+                                        domain=tuple(seed["domain"]),
+                                        seed_id=seed["id"],
+                                        sparsity=s_details.get("sparsity", 0.0),
+                                        witnesses=s_details.get("witnesses", []),
+                                        candidate_hits=s_hits,
+                                        total_candidates=4,
+                                        step=step,
+                                        spec=s_spec
+                                    )
 
                 # 阶梯塑形奖励 (支持前后期渐进式甜蜜点课程收紧)
                 r_mut, _ = compute_mutator_reward(
@@ -566,6 +620,57 @@ def main():
                     is_tightened=is_tightened
                 )
                 candidate_rewards.append(r_mut)
+
+            # 阶梯塑形奖励后: 针对协进化模式注入两道参数化 [0, 50] 精确边界对，
+            # 补充静态种子在左开区间、上下界截断、分段奇异点上的多常量实例覆盖
+            if not args.freeze_mutator_after_warmup and args.breaker_rollouts >= 8:
+                injected_count = 0
+                for v_offset in range(4):
+                    if injected_count >= 2:
+                        break
+                    c_ref, c_mut, c_dom, c_sid, c_spec = synthesize_curriculum_boundary_pair(step, variant_idx=v_offset)
+                    c_valid, _, c_details = validate_mutation(
+                        f_ref_src=c_ref,
+                        f_mut_src=c_mut,
+                        sanity_inputs=[],
+                        domain=c_dom
+                    )
+                    if c_valid:
+                        s_ref = c_details.get("clean_f_ref_src", c_ref)
+                        s_mut = c_details.get("clean_f_mut_src", c_mut)
+                        s_key = hard_buffer._compute_key(s_ref, s_mut)
+                        if s_key not in hard_buffer.items:
+                            model.set_adapter("breaker")
+                            s_prompt = format_breaker_prompt(s_ref, s_mut, c_dom, c_spec)
+                            s_inputs = tokenizer(s_prompt, return_tensors="pt").to(args.device)
+                            s_p_len = s_inputs["input_ids"].shape[1]
+                            s_rep = {k: v.repeat(4, 1) for k, v in s_inputs.items()}
+                            with torch.no_grad():
+                                out_s_probe = generate_with_policy(model, cfg_brk, **s_rep)
+                            cum_breaker_probe_candidates = (None if cum_breaker_probe_candidates is None
+                                                            else cum_breaker_probe_candidates + 4)
+                            s_hits = 0
+                            for probe_j in range(4):
+                                probe_comp = tokenizer.decode(out_s_probe[probe_j][s_p_len:], skip_special_tokens=True).strip()
+                                p_val, _, _ = extract_breaker_input("<input>" + probe_comp, c_dom)
+                                r_probe, _ = compute_breaker_reward(s_ref, s_mut, p_val, c_dom)
+                                if r_probe > 0.0:
+                                    s_hits += 1
+                            model.set_adapter("mutator")
+                            if s_hits < 4:
+                                hard_buffer.add(
+                                    f_ref_src=s_ref,
+                                    f_mut_src=s_mut,
+                                    domain=c_dom,
+                                    seed_id=c_sid,
+                                    sparsity=c_details.get("sparsity", 0.0),
+                                    witnesses=c_details.get("witnesses", []),
+                                    candidate_hits=s_hits,
+                                    total_candidates=4,
+                                    step=step,
+                                    spec=c_spec
+                                )
+                                injected_count += 1
 
             # Mutator GRPO 反向传播与优化器更新
             if args.freeze_mutator_after_warmup and not is_warmup:
@@ -627,116 +732,266 @@ def main():
                 source_tag = "EmptyBuffer"
 
             if prob is not None:
-                f_ref = prob["f_ref_src"]
-                f_mut = prob["f_mut_src"]
-                domain = tuple(prob["domain"])
-
-                brk_prompt = format_breaker_prompt(f_ref, f_mut, domain, prob.get("spec", ""))
-                brk_inputs = tokenizer(brk_prompt, return_tensors="pt").to(args.device)
-                brk_p_len = brk_inputs["input_ids"].shape[1]
-                brk_rep = {k: v.repeat(args.breaker_rollouts, 1) for k, v in brk_inputs.items()}
-
-                with torch.no_grad():
-                    out_brk = generate_with_policy(model, cfg_brk, **brk_rep)
-
-                brk_candidate_rewards = []
-                solved_count = 0
-                for c_j in range(args.breaker_rollouts):
-                    comp = tokenizer.decode(out_brk[c_j][brk_p_len:], skip_special_tokens=True).strip()
-                    val, _, _ = extract_breaker_input("<input>" + comp, domain)
-                    r_brk, _ = compute_breaker_reward(f_ref, f_mut, val, domain)
-                    brk_candidate_rewards.append(r_brk)
-                    if r_brk > 0.0:
-                        solved_count += 1
-
-                brk_evaluated = True
-                brk_attempts += args.breaker_rollouts
-                brk_total_hits += solved_count
-                cum_breaker_candidates = None if cum_breaker_candidates is None else cum_breaker_candidates + args.breaker_rollouts
-                # 仅对 HardBuffer 中的自博弈题目更新统计 (严格按 candidate_hits 累加)
-                if source_tag == "HardBuffer" and "key" in prob:
-                    hard_buffer.update_result(
-                        prob["key"],
-                        candidate_hits=solved_count,
-                        total_candidates=args.breaker_rollouts,
-                        solved=(solved_count > 0)
-                    )
-
-                # Breaker GRPO 反向传播与优化器更新
-                is_eff_brk, loss_brk, _ = trainer.backward_grpo_group(
-                    prompt_ids=brk_inputs["input_ids"],
-                    generated_ids=out_brk,
-                    rewards=brk_candidate_rewards,
-                    temperature=args.temperature,
-                    num_groups_in_update=1
+                use_multibatch = (
+                    not args.breaker_only_static
+                    and not args.freeze_mutator_after_warmup
+                    and args.breaker_rollouts >= 8
+                    and len(hard_buffer) >= 3
                 )
+                if use_multibatch:
+                    if source_tag == "Anchor":
+                        batch_probs = [(prob, "Anchor")] + [
+                            (p, "HardBuffer") for p in hard_buffer.sample(k=2, is_tightened=is_tightened)
+                        ]
+                    else:
+                        extra_probs = [
+                            p for p in hard_buffer.sample(k=3, is_tightened=is_tightened)
+                            if p.get("key") != prob.get("key")
+                        ][:2]
+                        batch_probs = [(prob, "HardBuffer")] + [(p, "HardBuffer") for p in extra_probs]
 
-                # 动态零方差救援 (Dynamic Variance Rescue):
-                # 若 HardBuffer 题目因过难导致候选反例全错 (方差为 0)，尝试通过备用题提供有效梯度
-                if (not is_eff_brk) and (source_tag == "HardBuffer"):
-                    rescue_prob = None
-                    rescue_tag = ""
-                    if args.anchor_ratio > 0.0 and len(anchor_tasks) > 0:
-                        rescue_prob = random.choice(anchor_tasks)
-                        rescue_tag = "Rescue[Anchor]"
-                    elif len(hard_buffer) > 1:
-                        # 纯自博弈模式: 仅从自博弈 HardBuffer 中抽取已知有解的题目进行方差补充，绝不碰外部人工题
-                        easier_tasks = [it for it in hard_buffer.items.values() if it.get("solve_rate", 0) > 0]
-                        if easier_tasks:
-                            rescue_prob = random.choice(easier_tasks)
-                            rescue_tag = "Rescue[Buffer]"
+                    pending_groups = []
+                    all_rewards = []
+                    brk_evaluated = True
 
-                    if rescue_prob is not None:
-                        r_ref = rescue_prob["f_ref_src"]
-                        r_mut = rescue_prob["f_mut_src"]
-                        r_dom = tuple(rescue_prob["domain"])
-                        r_prompt = format_breaker_prompt(r_ref, r_mut, r_dom, rescue_prob.get("spec", ""))
-                        r_inputs = tokenizer(r_prompt, return_tensors="pt").to(args.device)
-                        r_p_len = r_inputs["input_ids"].shape[1]
-                        r_rep = {k: v.repeat(args.breaker_rollouts, 1) for k, v in r_inputs.items()}
+                    for b_prob, b_tag in batch_probs:
+                        f_ref = b_prob["f_ref_src"]
+                        f_mut = b_prob["f_mut_src"]
+                        domain = tuple(b_prob["domain"])
+
+                        brk_prompt = format_breaker_prompt(f_ref, f_mut, domain, b_prob.get("spec", ""))
+                        brk_inputs = tokenizer(brk_prompt, return_tensors="pt").to(args.device)
+                        brk_p_len = brk_inputs["input_ids"].shape[1]
+                        brk_rep = {k: v.repeat(args.breaker_rollouts, 1) for k, v in brk_inputs.items()}
 
                         with torch.no_grad():
-                            out_rescue = generate_with_policy(model, cfg_brk, **r_rep)
+                            out_brk = generate_with_policy(model, cfg_brk, **brk_rep)
 
-                        rescue_rewards = []
-                        rescue_hits = 0
-                        for c_k in range(args.breaker_rollouts):
-                            r_comp = tokenizer.decode(out_rescue[c_k][r_p_len:], skip_special_tokens=True).strip()
-                            r_val, _, _ = extract_breaker_input("<input>" + r_comp, r_dom)
-                            r_reward, _ = compute_breaker_reward(r_ref, r_mut, r_val, r_dom)
-                            rescue_rewards.append(r_reward)
-                            if r_reward > 0.0:
-                                rescue_hits += 1
+                        b_rewards = []
+                        b_hits = 0
+                        for c_j in range(args.breaker_rollouts):
+                            comp = tokenizer.decode(out_brk[c_j][brk_p_len:], skip_special_tokens=True).strip()
+                            val, _, _ = extract_breaker_input("<input>" + comp, domain)
+                            r_brk, _ = compute_breaker_reward(f_ref, f_mut, val, domain)
+                            b_rewards.append(r_brk)
+                            if r_brk > 0.0:
+                                b_hits += 1
 
                         brk_attempts += args.breaker_rollouts
-                        brk_total_hits += rescue_hits
+                        brk_total_hits += b_hits
                         cum_breaker_candidates = None if cum_breaker_candidates is None else cum_breaker_candidates + args.breaker_rollouts
-                        if rescue_tag == "Rescue[Buffer]":
-                            rescue_prob["times_sampled"] += 1
-                            hard_buffer.update_result(rescue_prob["key"], candidate_hits=rescue_hits,
-                                                      total_candidates=args.breaker_rollouts)
-                        is_rescued, _, _ = trainer.backward_grpo_group(
-                            prompt_ids=r_inputs["input_ids"],
-                            generated_ids=out_rescue,
-                            rewards=rescue_rewards,
+                        if b_tag == "HardBuffer" and "key" in b_prob:
+                            hard_buffer.update_result(
+                                b_prob["key"],
+                                candidate_hits=b_hits,
+                                total_candidates=args.breaker_rollouts,
+                                solved=(b_hits > 0)
+                            )
+
+                        # 沙箱反例引导救援 (Sandbox Witness Guided Rescue):
+                        # 当 8 路采样全部落入字面复读陷阱 (b_hits == 0) 时，利用沙箱在 Phase 1 发现的真实边界反例
+                        # 替换第 0 路序列 (R=1.0)，与其余 7 路错误输出 (R=0.0) 构成正负对比优势，打破零方差死锁
+                        witness_pool = b_prob.get("witnesses") or b_prob.get("counterexamples") or []
+                        if b_hits == 0 and witness_pool:
+                            if "max(" in f_ref and "min(" not in f_ref:
+                                w_val = witness_pool[-1]
+                            else:
+                                w_val = witness_pool[0]
+                            w_tokens = tokenizer.encode(f"{w_val}</input>", add_special_tokens=False)
+                            if tokenizer.eos_token_id is not None:
+                                w_tokens.append(tokenizer.eos_token_id)
+                            gen_len = out_brk.shape[1] - brk_p_len
+                            if gen_len > 0 and len(w_tokens) > 0:
+                                pad_id = tokenizer.pad_token_id if tokenizer.pad_token_id is not None else (tokenizer.eos_token_id or 0)
+                                w_padded = (w_tokens + [pad_id] * gen_len)[:gen_len]
+                                out_brk = out_brk.clone()
+                                out_brk[0, brk_p_len:] = torch.tensor(w_padded, dtype=out_brk.dtype, device=out_brk.device)
+                                b_rewards[0] = 1.0
+                                b_hits = 1
+
+                        all_rewards.extend(b_rewards)
+                        if 0 < b_hits < args.breaker_rollouts:
+                            pending_groups.append((brk_inputs["input_ids"], out_brk, b_rewards))
+
+                    # 若整个 mini-batch 仍无有效方差组，触发备用题零方差救援
+                    if not pending_groups:
+                        rescue_prob = None
+                        rescue_tag = ""
+                        if args.anchor_ratio > 0.0 and len(anchor_tasks) > 0:
+                            rescue_prob = random.choice(anchor_tasks)
+                            rescue_tag = "Rescue[Anchor]"
+                        elif len(hard_buffer) > 1:
+                            easier_tasks = [it for it in hard_buffer.items.values() if 0.0 < it.get("solve_rate", 0) < 1.0]
+                            if not easier_tasks:
+                                easier_tasks = [it for it in hard_buffer.items.values() if it.get("solve_rate", 0) > 0]
+                            if easier_tasks:
+                                rescue_prob = random.choice(easier_tasks)
+                                rescue_tag = "Rescue[Buffer]"
+
+                        if rescue_prob is not None:
+                            r_ref = rescue_prob["f_ref_src"]
+                            r_mut = rescue_prob["f_mut_src"]
+                            r_dom = tuple(rescue_prob["domain"])
+                            r_prompt = format_breaker_prompt(r_ref, r_mut, r_dom, rescue_prob.get("spec", ""))
+                            r_inputs = tokenizer(r_prompt, return_tensors="pt").to(args.device)
+                            r_p_len = r_inputs["input_ids"].shape[1]
+                            r_rep = {k: v.repeat(args.breaker_rollouts, 1) for k, v in r_inputs.items()}
+                            with torch.no_grad():
+                                out_rescue = generate_with_policy(model, cfg_brk, **r_rep)
+                            rescue_rewards = []
+                            rescue_hits = 0
+                            for c_k in range(args.breaker_rollouts):
+                                r_comp = tokenizer.decode(out_rescue[c_k][r_p_len:], skip_special_tokens=True).strip()
+                                r_val, _, _ = extract_breaker_input("<input>" + r_comp, r_dom)
+                                r_reward, _ = compute_breaker_reward(r_ref, r_mut, r_val, r_dom)
+                                rescue_rewards.append(r_reward)
+                                if r_reward > 0.0:
+                                    rescue_hits += 1
+                            brk_attempts += args.breaker_rollouts
+                            brk_total_hits += rescue_hits
+                            cum_breaker_candidates = None if cum_breaker_candidates is None else cum_breaker_candidates + args.breaker_rollouts
+                            if rescue_tag == "Rescue[Buffer]":
+                                rescue_prob["times_sampled"] += 1
+                                hard_buffer.update_result(rescue_prob["key"], candidate_hits=rescue_hits,
+                                                          total_candidates=args.breaker_rollouts)
+                            if 0 < rescue_hits < args.breaker_rollouts:
+                                pending_groups.append((r_inputs["input_ids"], out_rescue, rescue_rewards))
+                                source_tag = rescue_tag
+                                all_rewards = rescue_rewards
+
+                    is_eff_brk = False
+                    num_eff = max(1, len(pending_groups))
+                    for p_ids, g_ids, g_rews in pending_groups:
+                        eff_g, _, _ = trainer.backward_grpo_group(
+                            prompt_ids=p_ids,
+                            generated_ids=g_ids,
+                            rewards=g_rews,
                             temperature=args.temperature,
-                            num_groups_in_update=1
+                            num_groups_in_update=num_eff
                         )
-                        if is_rescued:
+                        if eff_g:
                             is_eff_brk = True
-                            source_tag = rescue_tag
-                            brk_candidate_rewards = rescue_rewards
-                            solved_count = rescue_hits
 
-                if is_eff_brk:
-                    grad_norm_brk = trainer.step_optimizer(role="breaker")
-                    cum_breaker_updates += 1
+                    if is_eff_brk:
+                        grad_norm_brk = trainer.step_optimizer(role="breaker")
+                        cum_breaker_updates += 1
+                    else:
+                        trainer.opt_breaker.zero_grad()
+
+                    brk_win_rate = brk_total_hits / max(1, brk_attempts)
+                    avg_brk_reward = sum(all_rewards) / max(1, len(all_rewards))
+                    brk_desc = f"[{source_tag}x{len(batch_probs)}] Solve: {brk_win_rate:.0%} | R: {avg_brk_reward:.2f} | Grad: {grad_norm_brk:.3f}"
                 else:
-                    trainer.opt_breaker.zero_grad()
+                    f_ref = prob["f_ref_src"]
+                    f_mut = prob["f_mut_src"]
+                    domain = tuple(prob["domain"])
 
-                brk_win_rate = solved_count / max(1, args.breaker_rollouts)
-                avg_brk_reward = sum(brk_candidate_rewards) / max(1, len(brk_candidate_rewards))
-                brk_desc = f"[{source_tag}] Solve: {brk_win_rate:.0%} | R: {avg_brk_reward:.2f} | Grad: {grad_norm_brk:.3f}"
+                    brk_prompt = format_breaker_prompt(f_ref, f_mut, domain, prob.get("spec", ""))
+                    brk_inputs = tokenizer(brk_prompt, return_tensors="pt").to(args.device)
+                    brk_p_len = brk_inputs["input_ids"].shape[1]
+                    brk_rep = {k: v.repeat(args.breaker_rollouts, 1) for k, v in brk_inputs.items()}
+
+                    with torch.no_grad():
+                        out_brk = generate_with_policy(model, cfg_brk, **brk_rep)
+
+                    brk_candidate_rewards = []
+                    solved_count = 0
+                    for c_j in range(args.breaker_rollouts):
+                        comp = tokenizer.decode(out_brk[c_j][brk_p_len:], skip_special_tokens=True).strip()
+                        val, _, _ = extract_breaker_input("<input>" + comp, domain)
+                        r_brk, _ = compute_breaker_reward(f_ref, f_mut, val, domain)
+                        brk_candidate_rewards.append(r_brk)
+                        if r_brk > 0.0:
+                            solved_count += 1
+
+                    brk_evaluated = True
+                    brk_attempts += args.breaker_rollouts
+                    brk_total_hits += solved_count
+                    cum_breaker_candidates = None if cum_breaker_candidates is None else cum_breaker_candidates + args.breaker_rollouts
+                    # 仅对 HardBuffer 中的自博弈题目更新统计 (严格按 candidate_hits 累加)
+                    if source_tag == "HardBuffer" and "key" in prob:
+                        hard_buffer.update_result(
+                            prob["key"],
+                            candidate_hits=solved_count,
+                            total_candidates=args.breaker_rollouts,
+                            solved=(solved_count > 0)
+                        )
+
+                    # Breaker GRPO 反向传播与优化器更新
+                    is_eff_brk, loss_brk, _ = trainer.backward_grpo_group(
+                        prompt_ids=brk_inputs["input_ids"],
+                        generated_ids=out_brk,
+                        rewards=brk_candidate_rewards,
+                        temperature=args.temperature,
+                        num_groups_in_update=1
+                    )
+
+                    # 动态零方差救援 (Dynamic Variance Rescue):
+                    # 若 HardBuffer 题目因过难导致候选反例全错 (方差为 0)，尝试通过备用题提供有效梯度
+                    if (not is_eff_brk) and (source_tag == "HardBuffer"):
+                        rescue_prob = None
+                        rescue_tag = ""
+                        if args.anchor_ratio > 0.0 and len(anchor_tasks) > 0:
+                            rescue_prob = random.choice(anchor_tasks)
+                            rescue_tag = "Rescue[Anchor]"
+                        elif len(hard_buffer) > 1:
+                            # 纯自博弈模式: 仅从自博弈 HardBuffer 中抽取已知有解的题目进行方差补充，绝不碰外部人工题
+                            easier_tasks = [it for it in hard_buffer.items.values() if it.get("solve_rate", 0) > 0]
+                            if easier_tasks:
+                                rescue_prob = random.choice(easier_tasks)
+                                rescue_tag = "Rescue[Buffer]"
+
+                        if rescue_prob is not None:
+                            r_ref = rescue_prob["f_ref_src"]
+                            r_mut = rescue_prob["f_mut_src"]
+                            r_dom = tuple(rescue_prob["domain"])
+                            r_prompt = format_breaker_prompt(r_ref, r_mut, r_dom, rescue_prob.get("spec", ""))
+                            r_inputs = tokenizer(r_prompt, return_tensors="pt").to(args.device)
+                            r_p_len = r_inputs["input_ids"].shape[1]
+                            r_rep = {k: v.repeat(args.breaker_rollouts, 1) for k, v in r_inputs.items()}
+
+                            with torch.no_grad():
+                                out_rescue = generate_with_policy(model, cfg_brk, **r_rep)
+
+                            rescue_rewards = []
+                            rescue_hits = 0
+                            for c_k in range(args.breaker_rollouts):
+                                r_comp = tokenizer.decode(out_rescue[c_k][r_p_len:], skip_special_tokens=True).strip()
+                                r_val, _, _ = extract_breaker_input("<input>" + r_comp, r_dom)
+                                r_reward, _ = compute_breaker_reward(r_ref, r_mut, r_val, r_dom)
+                                rescue_rewards.append(r_reward)
+                                if r_reward > 0.0:
+                                    rescue_hits += 1
+
+                            brk_attempts += args.breaker_rollouts
+                            brk_total_hits += rescue_hits
+                            cum_breaker_candidates = None if cum_breaker_candidates is None else cum_breaker_candidates + args.breaker_rollouts
+                            if rescue_tag == "Rescue[Buffer]":
+                                rescue_prob["times_sampled"] += 1
+                                hard_buffer.update_result(rescue_prob["key"], candidate_hits=rescue_hits,
+                                                          total_candidates=args.breaker_rollouts)
+                            is_rescued, _, _ = trainer.backward_grpo_group(
+                                prompt_ids=r_inputs["input_ids"],
+                                generated_ids=out_rescue,
+                                rewards=rescue_rewards,
+                                temperature=args.temperature,
+                                num_groups_in_update=1
+                            )
+                            if is_rescued:
+                                is_eff_brk = True
+                                source_tag = rescue_tag
+                                brk_candidate_rewards = rescue_rewards
+                                solved_count = rescue_hits
+
+                    if is_eff_brk:
+                        grad_norm_brk = trainer.step_optimizer(role="breaker")
+                        cum_breaker_updates += 1
+                    else:
+                        trainer.opt_breaker.zero_grad()
+
+                    brk_win_rate = solved_count / max(1, args.breaker_rollouts)
+                    avg_brk_reward = sum(brk_candidate_rewards) / max(1, len(brk_candidate_rewards))
+                    brk_desc = f"[{source_tag}] Solve: {brk_win_rate:.0%} | R: {avg_brk_reward:.2f} | Grad: {grad_norm_brk:.3f}"
             else:
                 brk_desc = "SKIPPED (EmptyBuffer)"
 

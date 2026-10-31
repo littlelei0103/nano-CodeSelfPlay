@@ -23,28 +23,29 @@
       "breaker_only_static": true
     },
     "source_sha256": {
-      "train_spin.py": "85da5c9006b961fcde7153a5cc2a7a840d3112a6c82960979ac3a4de9bbdb8bf",
-      "core/experiment.py": "90b9504b758e99ae6f2b4a63a1caeb5ace0e1b89bfd882bd9cb6151b4052b74d",
-      "core/sandbox.py": "a31e7c8d7144cf281530ca2753759e467016dbe008a0db353726004c9c0f2b80",
-      "core/hard_buffer.py": "01890fbbc808277904e3fb316fde6ae70d43482cb34df66109ea678b9c47e6cf",
-      "core/grpo_engine.py": "c17961cee8119c9a7adeb2c4213e6db6c5d2d140032a5fcea346883082f8d9cd",
-      "roles/mutator.py": "fbae3786c101208fa05081100ce8c6d39cd84cc4cff0b0b1ae0d59b03fdc9942",
-      "roles/breaker.py": "0b80c5178250a9d28228dad7d994bcdd2af8e07e708c82c7e325fa86b228c420",
-      "data/seed_functions.py": "074171eda067b4e4e60d6c63c51090423e407a3d0451dc89e0461679d26454c9",
-      "data/anchor_tasks.py": "849297181aa6eb919eb98c543e1b392a119915aee7bace5e71a953555fc61ace",
+      "train_selfplay.py": "9b788f9beb574699c09acf4314a9399ee764a31bcc94fd89cbd118b01e31e8e2",
+      "core/experiment.py": "6c0e0a8e2dd7ebb28a4242ec2e7fcab2c5e128498bd528f9fa751f587951825c",
+      "core/run_files.py": "93debdb2da1c5c03ffe7ba05d6de6322a8a45cb45e8e4fcfd84ca15e73afe955",
+      "core/sandbox.py": "0057071272e066e0577dcff5db50bcd1e3f91b0ac994e9d423f7b60b533a9270",
+      "core/hard_buffer.py": "c5c97fe2d4ca159c7c7fc1eb945182e4122d6fb50ef03ae4a6c6f0cb92805f46",
+      "core/grpo_engine.py": "8db195ca23f92e2d1deb40e9ab553b4b7a7c71def01043551629835d6fbd7cd1",
+      "roles/mutator.py": "8e6bb429de8620f06107523ef2d937de7e4cfbea71547335ee65b663a02d6de8",
+      "roles/breaker.py": "1f5f0162bf790092f18002df2df805382eddcc7336f75b5e78cd103f888c3fd6",
+      "data/seed_functions.py": "655ebdf455b85fd88a04d254d06c5141013b713783bc3dbd71660863ac59379b",
+      "data/anchor_tasks.py": "fa332e5d8a52c0c3fa81f1ba41d8d474af8bf398ea1c48a9044ba03e06f0f490",
       "data/heldout_eval.py": "5e33abe6a92606f06b87e8999a4ed19608eb5a8d7d458a0f13e88e93bd8e15b7"
     },
     "initial_adapter": null,
     "torch_version": "2.11.0+cu128"
   },
   "selection_split": "validation",
-  "selected_step": 45,
-  "selected_checkpoint": "checkpoints_v2_breaker_static/20261018T105908Z-seed42/checkpoint-best",
+  "selected_step": 75,
+  "selected_checkpoint": "checkpoints_v2_breaker_static/20261030T170952Z-seed42/checkpoint-best",
   "best_val_greedy_pass1": 0.8,
   "test_size": 20,
-  "test_greedy_pass1": 0.55,
-  "test_sample_pass4": 0.8,
-  "test_hit_rate": 0.475,
+  "test_greedy_pass1": 0.65,
+  "test_sample_pass4": 0.95,
+  "test_hit_rate": 0.6875,
   "test_decoding": {
     "temperature": 0.7,
     "top_p": 1.0,
@@ -53,10 +54,14 @@
     "sample_candidates": 4
   },
   "training_telemetry": {
-    "actual_breaker_updates": 46,
-    "total_breaker_generations": 600,
+    "schema_version": 1,
+    "actual_breaker_updates": 42,
     "actual_mutator_updates": 0,
+    "breaker_training_candidates": 600,
+    "breaker_probe_candidates": 0,
+    "total_breaker_generations": 600,
     "total_mutator_generations": 0,
-    "total_training_walltime_sec": 366.4709906578064
+    "total_training_walltime_sec": 224.7710554599762,
+    "scope": "Training rollouts including probes/rescue; wall time includes periodic validation and saves, excludes initial/final audits and model loading."
   }
 }

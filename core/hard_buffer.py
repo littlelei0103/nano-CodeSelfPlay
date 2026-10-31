@@ -41,7 +41,8 @@ class HardBuffer:
         candidate_hits: Optional[int] = None,
         total_candidates: int = 4,
         solve_rate: Optional[float] = None,
-        step: int = 0
+        step: int = 0,
+        spec: str = ""
     ) -> bool:
         """
         向题库注入新的突变题对。若已存在完全相同的代码对则累加测试结果更新指标，否则新增。
@@ -80,6 +81,7 @@ class HardBuffer:
         self.items[key] = {
             "key": key,
             "seed_id": seed_id,
+            "spec": spec,
             "domain": list(domain),
             "f_ref_src": f_ref_src.strip(),
             "f_mut_src": f_mut_src.strip(),
@@ -122,27 +124,51 @@ class HardBuffer:
                 if 0.0 < p_solve <= curriculum_threshold:
                     diff_factor = 2.5
                 elif p_solve == 0.0:
-                    diff_factor = 0.6  # 盲区题目适度采样，避免早期零梯度死锁
+                    # 优先攻坚精确边界题，抑制复杂非 [0, 50] 突变题长期霸占采样预算
+                    diff_factor = 1.4
                 else:
                     diff_factor = max(0.2, 1.0 - p_solve)
 
-                subtle_factor = 1.0 / (sparsity + 0.05)
+                # 对 min/max 截断与双端区间题赋予结构均衡加成，避免因截断题天然高 sparsity 而被边缘化
+                f_ref_text = item.get("f_ref_src", "")
+                spec_text = item.get("spec", "")
+                domain_list = item.get("domain", [0, 50])
+                domain_bonus = 1.25 if domain_list == [0, 50] else 0.35
+                # 结构清晰的单行精确边界题优先采样，抑制多分支/复合逻辑污染梯度
+                struct_bonus = 1.6 if (spec_text and not spec_text.startswith("Find an input x")) else 0.65
+                if ("min(" in f_ref_text or "max(" in f_ref_text) and len(item.get("witnesses", [])) >= 5:
+                    subtle_factor = 1.0 / (0.015 + 0.05)
+                else:
+                    subtle_factor = 1.0 / (sparsity + 0.05)
                 decay_factor = 1.0 / math.sqrt(sampled_count + 1)
 
-                w = diff_factor * subtle_factor * decay_factor
+                w = diff_factor * subtle_factor * decay_factor * domain_bonus * struct_bonus
                 weights.append(max(1e-4, w))
 
-            # 无放回加权采样
+            # 无放回加权采样 (优先选择不同 seed_id 的多样化题目)
             total_w = sum(weights)
             probs = [w / total_w for w in weights]
-            selected_indices = random.choices(range(len(keys)), weights=probs, k=k)
-            # 使用 set 去重保证批次内题目多样性
-            unique_indices = list(dict.fromkeys(selected_indices))
-            while len(unique_indices) < min(k, len(keys)):
-                extra = random.randint(0, len(keys) - 1)
-                if extra not in unique_indices:
-                    unique_indices.append(extra)
-            selected_keys = [keys[i] for i in unique_indices]
+            selected_indices = []
+            used_seeds = set()
+            for _ in range(k * 3):
+                if len(selected_indices) >= min(k, len(keys)):
+                    break
+                cand_idx = random.choices(range(len(keys)), weights=probs, k=1)[0]
+                if cand_idx in selected_indices:
+                    continue
+                cand_seed = self.items[keys[cand_idx]].get("seed_id", "")
+                if cand_seed not in used_seeds or len(selected_indices) + (len(keys) - len(selected_indices)) <= k:
+                    selected_indices.append(cand_idx)
+                    used_seeds.add(cand_seed)
+            while len(selected_indices) < min(k, len(keys)):
+                cand_idx = random.choices(range(len(keys)), weights=probs, k=1)[0]
+                if cand_idx not in selected_indices:
+                    selected_indices.append(cand_idx)
+                else:
+                    extra = random.randint(0, len(keys) - 1)
+                    if extra not in selected_indices:
+                        selected_indices.append(extra)
+            selected_keys = [keys[i] for i in selected_indices]
 
         results = []
         for key in selected_keys:

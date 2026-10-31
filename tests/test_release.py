@@ -142,14 +142,14 @@ class TestReleaseReports(unittest.TestCase):
                 shutil.copyfile(ROOT/'reports'/name, root/'reports'/name)
             summary = build_summary(root)
             self.assertEqual(summary['pure_selfplay']['num_seeds'], 3)
-            self.assertAlmostEqual(summary['breaker_only_static']['test_greedy_pass1'][0], 19/30)
-            self.assertEqual(summary['pure_selfplay']['cost']['walltime_seconds'], (None,None))
+            self.assertAlmostEqual(summary['breaker_only_static']['test_greedy_pass1'][0], 0.65)
+            self.assertIsNotNone(summary['pure_selfplay']['cost']['walltime_seconds'][0])
             self.assertNotEqual(summary['frozen_mutator_ablation']['cost']['breaker_updates'][0], 48)
 
     def test_plots_use_raw_values_and_sample_standard_deviation(self):
         summary = build_summary()
         data = prepare_plot_data(summary)
-        self.assertEqual(data['test']['breaker_only_static']['test_greedy_pass1'], [.55,.60,.75])
+        self.assertEqual(data['test']['breaker_only_static']['test_greedy_pass1'], [.65,.75,.55])
         self.assertEqual(data['trajectories']['frozen_mutator_ablation']['steps'], [0,15,30,45,60,75])
         bad = copy.deepcopy(summary)
         bad['pure_selfplay']['test_greedy_pass1'] = [1.0,0.0]
@@ -166,6 +166,6 @@ class TestReleaseReports(unittest.TestCase):
             update_readme(path, build_summary())
             self.assertTrue(path.read_text().startswith('keep\n'))
             self.assertTrue(path.read_text().endswith('\nend'))
-            self.assertIn('63.33', path.read_text())
+            self.assertIn('65.00', path.read_text())
             self.assertNotIn('cost:start', path.read_text())
             self.assertNotIn('N/A (not recorded)', path.read_text())
